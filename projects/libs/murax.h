@@ -6,6 +6,7 @@
 #include "interrupt.h"
 #include "gpio.h"
 #include "uart.h"
+#include "conf.h"
 
 #define GPIOA ((GPIO_TypeDef *)(0xF0000000))
 #define GPIOB ((GPIO_TypeDef *)(0xF0000010))
