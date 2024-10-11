@@ -28,7 +28,7 @@
 
 /**
  * @brief  Deinitializes the GPIOx peripheral registers to their default reset values.
- * @param  GPIOx: where x can be (A..G) to select the GPIO peripheral.
+ * @param  GPIOx: where x can be (A..D) to select the GPIO peripheral.
  * @retval None
  */
 void GPIO_DeInit(GPIO_TypeDef *GPIOx)
@@ -66,7 +66,7 @@ void GPIO_AFIODeInit(void)
 /**
  * @brief  Initializes the GPIOx peripheral according to the specified
  *         parameters in the GPIO_InitStruct.
- * @param  GPIOx: where x can be (A..G) to select the GPIO peripheral.
+ * @param  GPIOx: where x can be (A..D) to select the GPIO peripheral.
  * @param  GPIO_InitStruct: pointer to a GPIO_InitTypeDef structure that
  *         contains the configuration information for the specified GPIO peripheral.
  * @retval None
@@ -174,7 +174,7 @@ void GPIO_StructInit(GPIO_InitTypeDef *GPIO_InitStruct)
 
 /**
  * @brief  Reads the specified input port pin.
- * @param  GPIOx: where x can be (A..G) to select the GPIO peripheral.
+ * @param  GPIOx: where x can be (A..D) to select the GPIO peripheral.
  * @param  GPIO_Pin:  specifies the port bit to read.
  *   This parameter can be GPIO_Pin_x where x can be (0..15).
  * @retval The input port pin value.
@@ -200,7 +200,7 @@ uint8_t GPIO_ReadInputDataBit(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 
 /**
  * @brief  Reads the specified GPIO input data port.
- * @param  GPIOx: where x can be (A..G) to select the GPIO peripheral.
+ * @param  GPIOx: where x can be (A..D) to select the GPIO peripheral.
  * @retval GPIO input data port value.
  */
 uint16_t GPIO_ReadInputData(GPIO_TypeDef *GPIOx)
@@ -213,7 +213,7 @@ uint16_t GPIO_ReadInputData(GPIO_TypeDef *GPIOx)
 
 /**
  * @brief  Reads the specified output data port bit.
- * @param  GPIOx: where x can be (A..G) to select the GPIO peripheral.
+ * @param  GPIOx: where x can be (A..D) to select the GPIO peripheral.
  * @param  GPIO_Pin:  specifies the port bit to read.
  *   This parameter can be GPIO_Pin_x where x can be (0..15).
  * @retval The output port pin value.
@@ -238,7 +238,7 @@ uint8_t GPIO_ReadOutputDataBit(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 
 /**
  * @brief  Reads the specified GPIO output data port.
- * @param  GPIOx: where x can be (A..G) to select the GPIO peripheral.
+ * @param  GPIOx: where x can be (A..D) to select the GPIO peripheral.
  * @retval GPIO output data port value.
  */
 uint16_t GPIO_ReadOutputData(GPIO_TypeDef *GPIOx)
@@ -251,7 +251,7 @@ uint16_t GPIO_ReadOutputData(GPIO_TypeDef *GPIOx)
 
 /**
  * @brief  Sets the selected data port bits.
- * @param  GPIOx: where x can be (A..G) to select the GPIO peripheral.
+ * @param  GPIOx: where x can be (A..D) to select the GPIO peripheral.
  * @param  GPIO_Pin: specifies the port bits to be written.
  *   This parameter can be any combination of GPIO_Pin_x where x can be (0..15).
  * @retval None
@@ -267,7 +267,7 @@ void GPIO_SetBits(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 
 /**
  * @brief  Clears the selected data port bits.
- * @param  GPIOx: where x can be (A..G) to select the GPIO peripheral.
+ * @param  GPIOx: where x can be (A..D) to select the GPIO peripheral.
  * @param  GPIO_Pin: specifies the port bits to be written.
  *   This parameter can be any combination of GPIO_Pin_x where x can be (0..15).
  * @retval None
@@ -283,7 +283,7 @@ void GPIO_ResetBits(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 
 /**
  * @brief  Sets or clears the selected data port bit.
- * @param  GPIOx: where x can be (A..G) to select the GPIO peripheral.
+ * @param  GPIOx: where x can be (A..D) to select the GPIO peripheral.
  * @param  GPIO_Pin: specifies the port bit to be written.
  *   This parameter can be one of GPIO_Pin_x where x can be (0..15).
  * @param  BitVal: specifies the value to be written to the selected bit.
@@ -311,7 +311,7 @@ void GPIO_WriteBit(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, BitAction BitVal)
 
 /**
  * @brief  Writes data to the specified GPIO data port.
- * @param  GPIOx: where x can be (A..G) to select the GPIO peripheral.
+ * @param  GPIOx: where x can be (A..D) to select the GPIO peripheral.
  * @param  PortVal: specifies the value to be written to the port output data register.
  * @retval None
  */

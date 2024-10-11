@@ -12,13 +12,12 @@
  */
 typedef struct
 {
-    uint32_t CRL;
-    uint32_t CRH;
-    uint32_t IDR;
-    uint32_t ODR;
-    uint32_t BSRR;
-    uint32_t BRR;
-    uint32_t LCKR;
+    volatile uint32_t CRL;
+    volatile uint32_t CRH;
+    volatile uint32_t IDR;
+    volatile uint32_t ODR;
+    volatile uint32_t BSRR;
+    volatile uint32_t BRR;
 } GPIO_TypeDef;
 
 typedef struct
@@ -26,7 +25,7 @@ typedef struct
     volatile uint32_t INPUT;
     volatile uint32_t OUTPUT;
     volatile uint32_t OUTPUT_ENABLE;
-} Gpio_Reg;
+} Gpio_Reg;  // old
 
 #define IS_GPIO_ALL_PERIPH(PERIPH) (((PERIPH) == GPIOA) || \
                                     ((PERIPH) == GPIOB) || \
@@ -153,45 +152,6 @@ typedef enum
                                               ((PORTSOURCE) == GPIO_PortSourceGPIOB) || \
                                               ((PORTSOURCE) == GPIO_PortSourceGPIOC) || \
                                               ((PORTSOURCE) == GPIO_PortSourceGPIOD))
-
-
-/** @defgroup GPIO_Pin_sources
- * @{
- */
-#define GPIO_PinSource0 ((uint8_t)0x00)
-#define GPIO_PinSource1 ((uint8_t)0x01)
-#define GPIO_PinSource2 ((uint8_t)0x02)
-#define GPIO_PinSource3 ((uint8_t)0x03)
-#define GPIO_PinSource4 ((uint8_t)0x04)
-#define GPIO_PinSource5 ((uint8_t)0x05)
-#define GPIO_PinSource6 ((uint8_t)0x06)
-#define GPIO_PinSource7 ((uint8_t)0x07)
-#define GPIO_PinSource8 ((uint8_t)0x08)
-#define GPIO_PinSource9 ((uint8_t)0x09)
-#define GPIO_PinSource10 ((uint8_t)0x0A)
-#define GPIO_PinSource11 ((uint8_t)0x0B)
-#define GPIO_PinSource12 ((uint8_t)0x0C)
-#define GPIO_PinSource13 ((uint8_t)0x0D)
-#define GPIO_PinSource14 ((uint8_t)0x0E)
-#define GPIO_PinSource15 ((uint8_t)0x0F)
-
-#define IS_GPIO_PIN_SOURCE(PINSOURCE) (((PINSOURCE) == GPIO_PinSource0) ||  \
-                                       ((PINSOURCE) == GPIO_PinSource1) ||  \
-                                       ((PINSOURCE) == GPIO_PinSource2) ||  \
-                                       ((PINSOURCE) == GPIO_PinSource3) ||  \
-                                       ((PINSOURCE) == GPIO_PinSource4) ||  \
-                                       ((PINSOURCE) == GPIO_PinSource5) ||  \
-                                       ((PINSOURCE) == GPIO_PinSource6) ||  \
-                                       ((PINSOURCE) == GPIO_PinSource7) ||  \
-                                       ((PINSOURCE) == GPIO_PinSource8) ||  \
-                                       ((PINSOURCE) == GPIO_PinSource9) ||  \
-                                       ((PINSOURCE) == GPIO_PinSource10) || \
-                                       ((PINSOURCE) == GPIO_PinSource11) || \
-                                       ((PINSOURCE) == GPIO_PinSource12) || \
-                                       ((PINSOURCE) == GPIO_PinSource13) || \
-                                       ((PINSOURCE) == GPIO_PinSource14) || \
-                                       ((PINSOURCE) == GPIO_PinSource15))
-
 
 /** @defgroup GPIO_Exported_Functions
  * @{
