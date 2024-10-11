@@ -1,3 +1,5 @@
+# make clean && make
+
 PROJ_NAME = gpio
 DEBUG = yes
 BENCH = no
@@ -10,7 +12,7 @@ SRCS = $(wildcard libs/*.c) \
        $(wildcard src/*.cpp) \
        $(wildcard src/*.S)
 
-INC += -I libs/
+INC += -I libs
 LDSCRIPT = linker.ld
 
 include ../../resources/gcc.mk

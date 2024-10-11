@@ -7,7 +7,7 @@ ifeq ($(DEBUG), no)
 	CFLAGS += -g -O3
 endif
 
-ifeq ($(BENCH),yes)
+ifeq ($(BENCH), yes)
 	CFLAGS += -fno-inline
 endif
 
@@ -25,37 +25,37 @@ RISCV_CC=$(RISCV_PATH)/bin/$(RISCV_NAME)-gcc
 
 CFLAGS +=  -MD -fstrict-volatile-bitfields
 LDFLAGS +=  -nostdlib -lgcc -mcmodel=medany -nostartfiles -ffreestanding -Wl,-Bstatic,-T,$(LDSCRIPT),-Map,$(OBJDIR)/$(PROJ_NAME).map,--print-memory-usage
-#LDFLAGS += -lgcc -lc -lg -nostdlib  -lgcc  -msave-restore    --strip-debug,
 
 OBJDIR = build
 OBJS := $(SRCS)
 OBJS := $(OBJS:.c=.o)
 OBJS := $(OBJS:.cpp=.o)
 OBJS := $(OBJS:.S=.o)
-OBJS := $(OBJS:..=miaou)
 OBJS := $(addprefix $(OBJDIR)/,$(OBJS))
 
-
 all: $(OBJDIR)/$(PROJ_NAME).elf $(OBJDIR)/$(PROJ_NAME).hex $(OBJDIR)/$(PROJ_NAME).asm $(OBJDIR)/$(PROJ_NAME).v
+	@echo "\n$(OBJS)  $(SRCS)\n"
 	@echo "\nBuild successful for project: $(PROJ_NAME)\n"  # Add success message
-
-
-$(OBJDIR)/%.elf: $(OBJS) | $(OBJDIR)
-	$(RISCV_CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
-
-%.hex: %.elf
-	$(RISCV_OBJCOPY) -O ihex $^ $@
 
 %.bin: %.elf
 	$(RISCV_OBJCOPY) -O binary $^ $@
 
+%.hex: %.elf
+	$(RISCV_OBJCOPY) -O ihex $^ $@
+
 %.v: %.elf
 	$(RISCV_OBJCOPY) -O verilog $^ $@
 
-
-
 %.asm: %.elf
 	$(RISCV_OBJDUMP) -S -d $^ > $@
+
+$(OBJDIR):
+	mkdir -p $@
+
+$(OBJDIR)/%.elf: $(OBJS) | $(OBJDIR)
+	@echo "\n---------\n"
+	$(RISCV_CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
+	@echo "\n---------\n"
 
 $(OBJDIR)/%.o: %.c
 	mkdir -p $(dir $@)
@@ -69,15 +69,9 @@ $(OBJDIR)/%.o: %.S
 	mkdir -p $(dir $@)
 	$(RISCV_CC) -c $(CFLAGS) -o $@ $^ -D__ASSEMBLY__=1
 
-$(OBJDIR):
-	mkdir -p $@
+
 
 clean:
-	rm -f $(OBJDIR)/$(PROJ_NAME).elf
-	rm -f $(OBJDIR)/$(PROJ_NAME).hex
-	rm -f $(OBJDIR)/$(PROJ_NAME).map
-	rm -f $(OBJDIR)/$(PROJ_NAME).v
-	rm -f $(OBJDIR)/$(PROJ_NAME).asm
-	find $(OBJDIR) -type f -name '*.o' -print0 | xargs -0 -r rm
+	rm -rf $(OBJDIR)/*
 
 .SECONDARY: $(OBJS)
