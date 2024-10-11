@@ -1,9 +1,9 @@
 
-ifeq ($(DEBUG),yes)
+ifeq ($(DEBUG), yes)
 	CFLAGS += -g3 -O0
 endif
 
-ifeq ($(DEBUG),no)
+ifeq ($(DEBUG), no)
 	CFLAGS += -g -O3
 endif
 
@@ -11,7 +11,7 @@ ifeq ($(BENCH),yes)
 	CFLAGS += -fno-inline
 endif
 
-ifeq ($(SIFIVE_GCC_PACK),yes)
+ifeq ($(SIFIVE_GCC_PACK), yes)
 	RISCV_CLIB=$(RISCV_PATH)/$(RISCV_NAME)/lib/$(MARCH)/$(MABI)/
 else
 	RISCV_CLIB=$(RISCV_PATH)/$(RISCV_NAME)/lib/
@@ -59,11 +59,11 @@ $(OBJDIR)/%.elf: $(OBJS) | $(OBJDIR)
 
 $(OBJDIR)/%.o: %.c
 	mkdir -p $(dir $@)
-	$(RISCV_CC) -c $(CFLAGS)  $(INC) -o $@ $^
+	$(RISCV_CC) -c $(CFLAGS) $(INC) -o $@ $^
 
 $(OBJDIR)/%.o: %.cpp
 	mkdir -p $(dir $@)
-	$(RISCV_CC) -c $(CFLAGS)  $(INC) -o $@ $^
+	$(RISCV_CC) -c $(CFLAGS) $(INC) -o $@ $^
 
 $(OBJDIR)/%.o: %.S
 	mkdir -p $(dir $@)
