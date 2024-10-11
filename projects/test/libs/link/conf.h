@@ -1,1 +1,0 @@
-/home/moon/Riscv-SoC-Software/projects/test/libs/conf.h
