@@ -6,8 +6,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "murax.h"
 
-/**
- * @brief GPIO Structure
+
+/** @defgroup GPIO_Exported_Types
+ * @{
  */
 typedef struct
 {
@@ -27,13 +28,11 @@ typedef struct
     volatile uint32_t OUTPUT_ENABLE;
 } Gpio_Reg;
 
-/** @defgroup GPIO_Exported_Types
- * @{
- */
 #define IS_GPIO_ALL_PERIPH(PERIPH) (((PERIPH) == GPIOA) || \
                                     ((PERIPH) == GPIOB) || \
                                     ((PERIPH) == GPIOC) || \
                                     ((PERIPH) == GPIOD))
+
 
 /**
  * @brief  Output Maximum frequency selection
@@ -46,6 +45,7 @@ typedef enum
 } GPIOSpeed_TypeDef;
 #define IS_GPIO_SPEED(SPEED) (((SPEED) == GPIO_Speed_10MHz) || ((SPEED) == GPIO_Speed_2MHz) || \
                               ((SPEED) == GPIO_Speed_50MHz))
+
 
 /**
  * @brief  Configuration Mode enumeration
@@ -67,10 +67,10 @@ typedef enum
                             ((MODE) == GPIO_Mode_Out_OD) || ((MODE) == GPIO_Mode_Out_PP) ||   \
                             ((MODE) == GPIO_Mode_AF_OD) || ((MODE) == GPIO_Mode_AF_PP))
 
+
 /**
  * @brief  GPIO Init structure definition
  */
-
 typedef struct
 {
     uint16_t GPIO_Pin;            /*!< Specifies the GPIO pins to be configured.
@@ -81,10 +81,10 @@ typedef struct
                                        This parameter can be a value of @ref GPIOMode_TypeDef */
 } GPIO_InitTypeDef;
 
+
 /**
  * @brief  Bit_SET and Bit_RESET enumeration
  */
-
 typedef enum
 {
     Bit_RESET = 0,
@@ -93,9 +93,6 @@ typedef enum
 
 #define IS_GPIO_BIT_ACTION(ACTION) (((ACTION) == Bit_RESET) || ((ACTION) == Bit_SET))
 
-/**
- * @}
- */
 
 /** @defgroup GPIO_Exported_Constants
  * @{
@@ -104,7 +101,6 @@ typedef enum
 /** @defgroup GPIO_pins_define
  * @{
  */
-
 #define GPIO_Pin_0 ((uint16_t)0x0001)   /*!< Pin 0 selected */
 #define GPIO_Pin_1 ((uint16_t)0x0002)   /*!< Pin 1 selected */
 #define GPIO_Pin_2 ((uint16_t)0x0004)   /*!< Pin 2 selected */
@@ -141,14 +137,10 @@ typedef enum
                               ((PIN) == GPIO_Pin_14) || \
                               ((PIN) == GPIO_Pin_15))
 
-/**
- * @}
- */
 
 /** @defgroup GPIO_Port_Sources
  * @{
  */
-
 #define GPIO_PortSourceGPIOA ((uint8_t)0x00)
 #define GPIO_PortSourceGPIOB ((uint8_t)0x01)
 #define GPIO_PortSourceGPIOC ((uint8_t)0x02)
@@ -162,14 +154,10 @@ typedef enum
                                               ((PORTSOURCE) == GPIO_PortSourceGPIOC) || \
                                               ((PORTSOURCE) == GPIO_PortSourceGPIOD))
 
-/**
- * @}
- */
 
 /** @defgroup GPIO_Pin_sources
  * @{
  */
-
 #define GPIO_PinSource0 ((uint8_t)0x00)
 #define GPIO_PinSource1 ((uint8_t)0x01)
 #define GPIO_PinSource2 ((uint8_t)0x02)
@@ -204,18 +192,10 @@ typedef enum
                                        ((PINSOURCE) == GPIO_PinSource14) || \
                                        ((PINSOURCE) == GPIO_PinSource15))
 
-/**
- * @}
- */
-
-/**
- * @}
- */
 
 /** @defgroup GPIO_Exported_Functions
  * @{
  */
-
 void GPIO_DeInit(GPIO_TypeDef *GPIOx);
 void GPIO_AFIODeInit(void);
 void GPIO_Init(GPIO_TypeDef *GPIOx, GPIO_InitTypeDef *GPIO_InitStruct);
@@ -230,16 +210,3 @@ void GPIO_WriteBit(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, BitAction BitVal);
 void GPIO_Write(GPIO_TypeDef *GPIOx, uint16_t PortVal);
 
 #endif /* GPIO_H */
-/**
- * @}
- */
-
-/**
- * @}
- */
-
-/**
- * @}
- */
-
-/******************* (C) COPYRIGHT 2011 STMicroelectronics ********************/
