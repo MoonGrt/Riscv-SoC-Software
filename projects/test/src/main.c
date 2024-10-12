@@ -8,9 +8,10 @@ void main()
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
     GPIO_SetBits(GPIOA, GPIO_Pin_0);
+    GPIO_ResetBits(GPIOA, GPIO_Pin_0);
 
-    // GPIO_A->OUTPUT_ENABLE = 0x000000FF;
-    // GPIO_A->OUTPUT = 0x00000011;
+    GPIO_A->OUTPUT_ENABLE = 0x000000FF;
+    GPIO_A->OUTPUT = 0x00000011;
 }
 
 void irqCallback()

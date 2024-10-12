@@ -12,19 +12,20 @@
  */
 typedef struct
 {
-    volatile uint32_t CRL;
-    volatile uint32_t CRH;
-    volatile uint32_t IDR;
-    volatile uint32_t ODR;
-    volatile uint32_t BSRR;
-    volatile uint32_t BRR;
+    volatile uint32_t CRL;  // +0 0x00000
+    volatile uint32_t CRH;  // +4 0x00100
+    volatile uint32_t IDR;  // +8 0x01000
+    volatile uint32_t ODR;  // +12 0x01100
+    volatile uint32_t BSRR;  // +16 0x10000
+    volatile uint32_t BRR;  // +20 0x10100
+    volatile uint32_t LCKR;  // +24 0x11000
 } GPIO_TypeDef;
 
 typedef struct
 {
-    volatile uint32_t INPUT;
-    volatile uint32_t OUTPUT;
-    volatile uint32_t OUTPUT_ENABLE;
+    volatile uint32_t INPUT;  // +0 0x0000
+    volatile uint32_t OUTPUT;  // +4 0x0100
+    volatile uint32_t OUTPUT_ENABLE;  // +8 0x1000
 } Gpio_Reg;  // old
 
 #define IS_GPIO_ALL_PERIPH(PERIPH) (((PERIPH) == GPIOA) || \
