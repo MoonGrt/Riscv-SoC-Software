@@ -1,7 +1,7 @@
 # make clean && make
 
 PROJ_NAME = test
-DEBUG = yes
+DEBUG = no
 BENCH = no
 MULDIV = no
 

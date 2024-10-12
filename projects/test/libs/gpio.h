@@ -16,7 +16,7 @@ typedef struct
     volatile uint32_t CRH;  // +4 0x00100
     volatile uint32_t IDR;  // +8 0x01000
     volatile uint32_t ODR;  // +12 0x01100
-    volatile uint32_t BSRR;  // +16 0x10000
+    volatile uint32_t BSR;  // +16 0x10000
     volatile uint32_t BRR;  // +20 0x10100
     volatile uint32_t LCKR;  // +24 0x11000
 } GPIO_TypeDef;

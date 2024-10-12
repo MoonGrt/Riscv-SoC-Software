@@ -35,22 +35,6 @@ void GPIO_DeInit(GPIO_TypeDef *GPIOx)
 {
     /* Check the parameters */
     assert_param(IS_GPIO_ALL_PERIPH(GPIOx));
-
-    if (GPIOx == GPIOA)
-    {
-    }
-    else if (GPIOx == GPIOB)
-    {
-    }
-    else if (GPIOx == GPIOC)
-    {
-    }
-    else
-    {
-        if (GPIOx == GPIOD)
-        {
-        }
-    }
 }
 
 /**
@@ -117,7 +101,7 @@ void GPIO_Init(GPIO_TypeDef *GPIOx, GPIO_InitTypeDef *GPIO_InitStruct)
                     /* Set the corresponding ODR bit */
                     if (GPIO_InitStruct->GPIO_Mode == GPIO_Mode_IPU)
                     {
-                        GPIOx->BSRR = (((uint32_t)0x01) << pinpos);
+                        GPIOx->BSR = (((uint32_t)0x01) << pinpos);
                     }
                 }
             }
@@ -150,7 +134,7 @@ void GPIO_Init(GPIO_TypeDef *GPIOx, GPIO_InitTypeDef *GPIO_InitStruct)
                 /* Set the corresponding ODR bit */
                 if (GPIO_InitStruct->GPIO_Mode == GPIO_Mode_IPU)
                 {
-                    GPIOx->BSRR = (((uint32_t)0x01) << (pinpos + 0x08));
+                    GPIOx->BSR = (((uint32_t)0x01) << (pinpos + 0x08));
                 }
             }
         }
@@ -262,7 +246,7 @@ void GPIO_SetBits(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
     assert_param(IS_GPIO_ALL_PERIPH(GPIOx));
     assert_param(IS_GPIO_PIN(GPIO_Pin));
 
-    GPIOx->BSRR = GPIO_Pin;
+    GPIOx->BSR = GPIO_Pin;
 }
 
 /**
@@ -301,7 +285,7 @@ void GPIO_WriteBit(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, BitAction BitVal)
 
     if (BitVal != Bit_RESET)
     {
-        GPIOx->BSRR = GPIO_Pin;
+        GPIOx->BSR = GPIO_Pin;
     }
     else
     {
