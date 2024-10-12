@@ -7,6 +7,14 @@ void main()
     GPIO_A->OUTPUT_ENABLE = 0x000000FF;
     GPIO_A->OUTPUT = 0x00000000;
 
+    Uart_Config uartConfig;
+    uartConfig.dataLength = 8;
+    uartConfig.parity = NONE;
+    uartConfig.stop = ONE;
+    uartConfig.clockDivider = CORE_HZ / UART_SAMPLE_PER_BAUD / 115200 - 1;
+    uart_applyConfig(UART, &uartConfig);
+    // UART->STATUS = 2; // Enable RX interrupts
+    UART->DATA = 'A';
 
     // interruptCtrl_init(TIMER_INTERRUPT);
     // prescaler_init(TIMER_PRESCALER);
@@ -17,15 +25,6 @@ void main()
     // TIMER_A->CLEARS_TICKS = 0x00010002;
     // TIMER_INTERRUPT->PENDINGS = 0xF;
     // TIMER_INTERRUPT->MASKS = 0x1;
-
-    // Uart_Config uartConfig;
-    // uartConfig.dataLength = 8;
-    // uartConfig.parity = NONE;
-    // uartConfig.stop = ONE;
-    // uartConfig.clockDivider = 12000000/UART_SAMPLE_PER_BAUD/115200-1;
-    // uart_applyConfig(UART,&uartConfig);
-    // UART->STATUS = 2; // Enable RX interrupts
-    // UART->DATA = 'A';
 
     // volatile uint32_t a = 1, b = 2, c = 3;
     // uint32_t result = 0;
