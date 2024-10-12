@@ -7,6 +7,7 @@
         "stdint-gcc.h": "c",
         "cstdint": "c",
         "interrupt.h": "c",
-        "prescaler.h": "c"
+        "prescaler.h": "c",
+        "stdarg.h": "c"
     }
 }

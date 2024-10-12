@@ -3,14 +3,13 @@
 
 #include <stdint.h>
 
-
 typedef struct
 {
-  volatile uint32_t LIMIT;
+    volatile uint32_t LIMIT;
 } Prescaler_Reg;
 
-static void prescaler_init(Prescaler_Reg* reg){
-
+static void prescaler_init(Prescaler_Reg *reg)
+{
 }
 
 #endif /* PRESCALERCTRL_H_ */

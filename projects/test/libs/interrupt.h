@@ -5,13 +5,14 @@
 
 typedef struct
 {
-  volatile uint32_t PENDINGS;
-  volatile uint32_t MASKS;
+    volatile uint32_t PENDINGS;
+    volatile uint32_t MASKS;
 } InterruptCtrl_Reg;
 
-static void interruptCtrl_init(InterruptCtrl_Reg* reg){
-	reg->MASKS = 0;
-	reg->PENDINGS = 0xFFFFFFFF;
+static void interruptCtrl_init(InterruptCtrl_Reg *reg)
+{
+    reg->MASKS = 0;
+    reg->PENDINGS = 0xFFFFFFFF;
 }
 
 #endif /* INTERRUPTCTRL_H_ */
