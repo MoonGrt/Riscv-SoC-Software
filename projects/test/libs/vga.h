@@ -1,5 +1,6 @@
-#ifndef VGA_H_
-#define VGA_H_
+#ifndef __VGA_H_
+#define __VGA_H_
+
 #include <stdint.h>
 
 typedef struct
@@ -67,4 +68,4 @@ static void vga_stop(Vga_Reg *reg)
         ;
 }
 
-#endif /* VGA_H_ */
+#endif /* __VGA_H_ */

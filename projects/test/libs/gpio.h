@@ -6,7 +6,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "murax.h"
 
-
 /** @defgroup GPIO_Exported_Types
  * @{
  */
@@ -18,21 +17,19 @@ typedef struct
     volatile uint32_t ODR;  // +12 0x01100
     volatile uint32_t BSR;  // +16 0x10000
     volatile uint32_t BRR;  // +20 0x10100
-    volatile uint32_t LCKR;  // +24 0x11000
+    volatile uint32_t LCKR; // +24 0x11000
 } GPIO_TypeDef;
-
 typedef struct
 {
-    volatile uint32_t INPUT;  // +0 0x0000
-    volatile uint32_t OUTPUT;  // +4 0x0100
-    volatile uint32_t OUTPUT_ENABLE;  // +8 0x1000
-} Gpio_Reg;  // old
+    volatile uint32_t INPUT;         // +0 0x0000
+    volatile uint32_t OUTPUT;        // +4 0x0100
+    volatile uint32_t OUTPUT_ENABLE; // +8 0x1000
+} Gpio_Reg;                          // old
 
 #define IS_GPIO_ALL_PERIPH(PERIPH) (((PERIPH) == GPIOA) || \
                                     ((PERIPH) == GPIOB) || \
                                     ((PERIPH) == GPIOC) || \
                                     ((PERIPH) == GPIOD))
-
 
 /**
  * @brief  Output Maximum frequency selection
@@ -45,7 +42,6 @@ typedef enum
 } GPIOSpeed_TypeDef;
 #define IS_GPIO_SPEED(SPEED) (((SPEED) == GPIO_Speed_10MHz) || ((SPEED) == GPIO_Speed_2MHz) || \
                               ((SPEED) == GPIO_Speed_50MHz))
-
 
 /**
  * @brief  Configuration Mode enumeration
@@ -67,7 +63,6 @@ typedef enum
                             ((MODE) == GPIO_Mode_Out_OD) || ((MODE) == GPIO_Mode_Out_PP) ||   \
                             ((MODE) == GPIO_Mode_AF_OD) || ((MODE) == GPIO_Mode_AF_PP))
 
-
 /**
  * @brief  GPIO Init structure definition
  */
@@ -81,7 +76,6 @@ typedef struct
                                        This parameter can be a value of @ref GPIOMode_TypeDef */
 } GPIO_InitTypeDef;
 
-
 /**
  * @brief  Bit_SET and Bit_RESET enumeration
  */
@@ -92,11 +86,6 @@ typedef enum
 } BitAction;
 
 #define IS_GPIO_BIT_ACTION(ACTION) (((ACTION) == Bit_RESET) || ((ACTION) == Bit_SET))
-
-
-/** @defgroup GPIO_Exported_Constants
- * @{
- */
 
 /** @defgroup GPIO_pins_define
  * @{
@@ -137,7 +126,6 @@ typedef enum
                               ((PIN) == GPIO_Pin_14) || \
                               ((PIN) == GPIO_Pin_15))
 
-
 /** @defgroup GPIO_Port_Sources
  * @{
  */
@@ -170,4 +158,4 @@ void GPIO_ResetBits(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin);
 void GPIO_WriteBit(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, BitAction BitVal);
 void GPIO_Write(GPIO_TypeDef *GPIOx, uint16_t PortVal);
 
-#endif /* GPIO_H */
+#endif /* __GPIO_H */

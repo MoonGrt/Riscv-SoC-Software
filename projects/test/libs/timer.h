@@ -1,7 +1,5 @@
-#ifndef TIMERCTRL_H_
-#define TIMERCTRL_H_
-
-#include <stdint.h>
+#ifndef __TIMER_H_
+#define __TIMER_H_
 
 typedef struct
 {
@@ -16,4 +14,4 @@ static void timer_init(Timer_Reg *reg)
     reg->VALUE = 0;
 }
 
-#endif /* TIMERCTRL_H_ */
+#endif /* __TIMER_H_ */

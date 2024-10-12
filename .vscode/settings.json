@@ -3,11 +3,16 @@
         "murax.h": "c",
         "gpio.h": "c",
         "timer.h": "c",
+        "iwdg.h": "c",
         "stdint.h": "c",
         "stdint-gcc.h": "c",
         "cstdint": "c",
         "interrupt.h": "c",
         "prescaler.h": "c",
-        "stdarg.h": "c"
+        "stdarg.h": "c",
+        "wwdg.h": "c",
+        "conf.h": "c",
+        "test.h": "c",
+        "uart.h": "c"
     }
 }

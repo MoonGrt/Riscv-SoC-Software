@@ -1,7 +1,5 @@
-#ifndef PRESCALERCTRL_H_
-#define PRESCALERCTRL_H_
-
-#include <stdint.h>
+#ifndef __PRESCALER_H_
+#define __PRESCALER_H_
 
 typedef struct
 {
@@ -12,4 +10,4 @@ static void prescaler_init(Prescaler_Reg *reg)
 {
 }
 
-#endif /* PRESCALERCTRL_H_ */
+#endif /* __PRESCALER_H_ */

@@ -1,13 +1,22 @@
-#ifndef MURAX_H_
-#define MURAX_H_
+#ifndef __MURAX_H_
+#define __MURAX_H_
 
+typedef enum {RESET = 0, SET = !RESET} FlagStatus, ITStatus;
+typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
+
+#include <stdint.h>
+#include "gpio.h"
+#include "iwdg.h"
+#include "wwdg.h"
 #include "timer.h"
 #include "prescaler.h"
 #include "interrupt.h"
-#include "gpio.h"
 #include "uart.h"
 #include "conf.h"
+#include "vga.h"
 
+
+/*!< Base memory map */
 #define SRAM_BASE   ((uint32_t)0x00000000)  /*!< SRAM base address */
 #define FLASH_BASE  ((uint32_t)0x80000000)  /*!< FLASH base address */
 #define PERIPH_BASE ((uint32_t)0xF0000000)  /*!< Peripheral base address */
@@ -17,6 +26,8 @@
 #define APB2PERIPH_BASE (PERIPH_BASE + 0x10000)
 #define AHBPERIPH_BASE  (PERIPH_BASE + 0x20000)
 
+
+/*!< GPIO */
 // #define GPIOA_BASE (APB1PERIPH_BASE + 0x0800)
 // #define GPIOB_BASE (APB1PERIPH_BASE + 0x0C00)
 // #define GPIOC_BASE (APB1PERIPH_BASE + 0x1000)
@@ -30,11 +41,19 @@
 #define GPIOC ((GPIO_TypeDef *)(0xF0032000))
 #define GPIOD ((GPIO_TypeDef *)(0xF0033000))
 
+/*!< WDG */
+// #define IWDG_BASE (APB1PERIPH_BASE + 0x3000)
+// #define IWDG ((IWDG_TypeDef *) IWDG_BASE)
+#define IWDG ((IWDG_TypeDef *)(0xF0040000))
+// #define WWDG_BASE (APB1PERIPH_BASE + 0x2C00)
+// #define WWDG ((WWDG_TypeDef *) WWDG_BASE)
+#define WWDG ((WWDG_TypeDef *)(0xF0041000))
 
 
 
 
 
+/*!< old */
 #define CORE_HZ 12000000
 
 #define GPIO_A ((Gpio_Reg *)(0xF0000000))
@@ -50,4 +69,4 @@
 #define TIMER_PRESCALER ((Prescaler_Reg *)0xF0020000)
 #define TIMER_INTERRUPT ((InterruptCtrl_Reg *)0xF0020010)
 
-#endif /* MURAX_H_ */
+#endif /* __MURAX_H_ */

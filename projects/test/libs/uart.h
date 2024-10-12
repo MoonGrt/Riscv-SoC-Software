@@ -51,4 +51,4 @@ static void uart_applyConfig(Uart_Reg *reg, Uart_Config *config)
     reg->FRAME_CONFIG = ((config->dataLength - 1) << 0) | (config->parity << 8) | (config->stop << 16);
 }
 
-#endif /* UART_H_ */
+#endif /* __UART_H_ */

@@ -1,7 +1,5 @@
-#ifndef INTERRUPTCTRL_H_
-#define INTERRUPTCTRL_H_
-
-#include <stdint.h>
+#ifndef __INTERRUPT_H_
+#define __INTERRUPT_H_
 
 typedef struct
 {
@@ -15,4 +13,4 @@ static void interruptCtrl_init(InterruptCtrl_Reg *reg)
     reg->PENDINGS = 0xFFFFFFFF;
 }
 
-#endif /* INTERRUPTCTRL_H_ */
+#endif /* __INTERRUPT_H_ */
