@@ -3,14 +3,14 @@
 
 void main()
 {
-    test_GPIO();
-    test_WDG();
-    test_USART();
+    // test_GPIO();
+    // test_WDG();
+    // test_USART();
 
 
     // old
     GPIO_A->OUTPUT_ENABLE = 0x000000FF;
-    GPIO_A->OUTPUT = 0x00000000;
+    GPIO_A->OUTPUT = 0x00000001;
 
     Uart_Config uartConfig;
     uartConfig.dataLength = 8;

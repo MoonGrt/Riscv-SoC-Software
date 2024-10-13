@@ -1,14 +1,20 @@
 
 ifeq ($(DEBUG), yes)
 	CFLAGS += -g3 -O0
-endif
-
-ifeq ($(DEBUG), no)
+else
 	CFLAGS += -g -O3
 endif
 
 ifeq ($(BENCH), yes)
 	CFLAGS += -fno-inline
+endif
+
+# 控制函数优化的选项
+ifeq ($(FUNC_OPT), yes)
+	CFLAGS += -ffunction-sections -fdata-sections
+	LDFLAGS += -Wl,--gc-sections
+else
+	CFLAGS += -fno-function-sections -fno-data-sections
 endif
 
 ifeq ($(SIFIVE_GCC_PACK), yes)
@@ -23,8 +29,8 @@ RISCV_OBJCOPY = $(RISCV_PATH)/bin/$(RISCV_NAME)-objcopy
 RISCV_OBJDUMP = $(RISCV_PATH)/bin/$(RISCV_NAME)-objdump
 RISCV_CC=$(RISCV_PATH)/bin/$(RISCV_NAME)-gcc
 
-CFLAGS +=  -MD -fstrict-volatile-bitfields
-LDFLAGS +=  -nostdlib -lgcc -mcmodel=medany -nostartfiles -ffreestanding -Wl,-Bstatic,-T,$(LDSCRIPT),-Map,$(OBJDIR)/$(PROJ_NAME).map,--print-memory-usage
+CFLAGS += -MD -fstrict-volatile-bitfields
+LDFLAGS += -nostdlib -lgcc -mcmodel=medany -nostartfiles -ffreestanding -Wl,-Bstatic,-T,$(LDSCRIPT),-Map,$(OBJDIR)/$(PROJ_NAME).map,--print-memory-usage
 
 OBJDIR = build
 OBJS := $(SRCS)

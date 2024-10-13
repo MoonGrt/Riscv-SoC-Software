@@ -3,6 +3,7 @@
 PROJ_NAME = test
 DEBUG = no
 BENCH = no
+FUNC_OPT = yes
 MULDIV = no
 
 SRCS = $(wildcard libs/*.c) \

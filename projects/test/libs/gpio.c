@@ -12,13 +12,11 @@
 #define EVOE_BitNumber              ((uint8_t)0x07)
 #define EVCR_EVOE_BB                (PERIPH_BB_BASE + (EVCR_OFFSET * 32) + (EVOE_BitNumber * 4))
 
-
 /* ---  MAPR Register ---*/ 
 /* Alias word address of MII_RMII_SEL bit */ 
 #define MAPR_OFFSET                 (AFIO_OFFSET + 0x04) 
 #define MII_RMII_SEL_BitNumber      ((u8)0x17) 
 #define MAPR_MII_RMII_SEL_BB        (PERIPH_BB_BASE + (MAPR_OFFSET * 32) + (MII_RMII_SEL_BitNumber * 4))
-
 
 #define EVCR_PORTPINCONFIG_MASK     ((uint16_t)0xFF80)
 #define LSB_MASK                    ((uint16_t)0xFFFF)
@@ -27,6 +25,9 @@
 #define DBGAFR_LOCATION_MASK        ((uint32_t)0x00200000)
 #define DBGAFR_NUMBITS_MASK         ((uint32_t)0x00100000)
 
+/** @defgroup GPIO_Private_Functions
+  * @{
+  */
 
 /**
  * @brief  Deinitializes the GPIOx peripheral registers to their default reset values.
