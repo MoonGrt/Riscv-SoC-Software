@@ -13,6 +13,6 @@
         "wwdg.h": "c",
         "conf.h": "c",
         "test.h": "c",
-        "uart.h": "c"
+        "usart.h": "c"
     }
 }

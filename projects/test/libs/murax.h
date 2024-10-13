@@ -11,7 +11,7 @@ typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
 #include "timer.h"
 #include "prescaler.h"
 #include "interrupt.h"
-#include "uart.h"
+#include "usart.h"
 #include "conf.h"
 #include "vga.h"
 
@@ -30,16 +30,15 @@ typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
 /*!< GPIO */
 // #define GPIOA_BASE (APB1PERIPH_BASE + 0x0800)
 // #define GPIOB_BASE (APB1PERIPH_BASE + 0x0C00)
-// #define GPIOC_BASE (APB1PERIPH_BASE + 0x1000)
-// #define GPIOD_BASE (APB1PERIPH_BASE + 0x1400)
 // #define GPIOA ((GPIO_TypeDef *) GPIOA_BASE)
 // #define GPIOB ((GPIO_TypeDef *) GPIOB_BASE)
-// #define GPIOC ((GPIO_TypeDef *) GPIOC_BASE)
-// #define GPIOD ((GPIO_TypeDef *) GPIOD_BASE)
 #define GPIOA ((GPIO_TypeDef *)(0xF0030000))
 #define GPIOB ((GPIO_TypeDef *)(0xF0031000))
-#define GPIOC ((GPIO_TypeDef *)(0xF0032000))
-#define GPIOD ((GPIO_TypeDef *)(0xF0033000))
+
+/*!< USART */
+// #define USART1_BASE (APB2PERIPH_BASE + 0x3800)
+// #define USART1 ((USART_TypeDef *) USART1_BASE)
+#define USART1 ((USART_TypeDef *)(0xF0050000))
 
 /*!< WDG */
 // #define IWDG_BASE (APB1PERIPH_BASE + 0x3000)

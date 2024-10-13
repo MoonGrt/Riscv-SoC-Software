@@ -5,7 +5,7 @@ void main()
 {
     test_GPIO();
     test_WDG();
-
+    test_USART();
 
 
     // old

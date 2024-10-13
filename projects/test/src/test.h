@@ -3,5 +3,6 @@
 
 void test_GPIO(void);
 void test_WDG(void);
+void test_USART(void);
 
 #endif /* __TEST_H_ */
