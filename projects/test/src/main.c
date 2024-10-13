@@ -3,7 +3,12 @@
 
 void main()
 {
-    // test_GPIO();
+    test_GPIO();
+    test_WDG();
+
+
+
+    // old
     GPIO_A->OUTPUT_ENABLE = 0x000000FF;
     GPIO_A->OUTPUT = 0x00000000;
 

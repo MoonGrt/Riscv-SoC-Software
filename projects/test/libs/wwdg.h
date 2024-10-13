@@ -36,7 +36,6 @@ typedef struct
 void WWDG_DeInit(void);
 void WWDG_SetPrescaler(uint32_t WWDG_Prescaler);
 void WWDG_SetWindowValue(uint8_t WindowValue);
-void WWDG_EnableIT(void);
 void WWDG_SetCounter(uint8_t Counter);
 void WWDG_Enable(uint8_t Counter);
 FlagStatus WWDG_GetFlagStatus(void);
