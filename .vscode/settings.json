@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "murax.h": "c",
+        "iic.h": "c",
+        "spi.h": "c",
         "gpio.h": "c",
         "timer.h": "c",
         "iwdg.h": "c",
@@ -15,6 +17,7 @@
         "test.h": "c",
         "usart.h": "c",
         "stdio.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "i2c.h": "c"
     }
 }

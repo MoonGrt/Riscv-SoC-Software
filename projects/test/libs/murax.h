@@ -1,8 +1,22 @@
 #ifndef __MURAX_H_
 #define __MURAX_H_
 
-typedef enum {RESET = 0, SET = !RESET} FlagStatus, ITStatus;
-typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
+typedef enum
+{
+    RESET = 0,
+    SET = !RESET
+} FlagStatus,
+    ITStatus;
+typedef enum
+{
+    DISABLE = 0,
+    ENABLE = !DISABLE
+} FunctionalState;
+typedef enum
+{
+    ERROR = 0,
+    SUCCESS = !ERROR
+} ErrorStatus;
 
 #include <stdint.h>
 #include "gpio.h"
@@ -14,18 +28,18 @@ typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
 #include "usart.h"
 #include "conf.h"
 #include "vga.h"
-
+#include "i2c.h"
+#include "spi.h"
 
 /*!< Base memory map */
-#define SRAM_BASE   ((uint32_t)0x00000000)  /*!< SRAM base address */
-#define FLASH_BASE  ((uint32_t)0x80000000)  /*!< FLASH base address */
-#define PERIPH_BASE ((uint32_t)0xF0000000)  /*!< Peripheral base address */
+#define SRAM_BASE ((uint32_t)0x00000000)   /*!< SRAM base address */
+#define FLASH_BASE ((uint32_t)0x80000000)  /*!< FLASH base address */
+#define PERIPH_BASE ((uint32_t)0xF0000000) /*!< Peripheral base address */
 
 /*!< Peripheral memory map */
 #define APB1PERIPH_BASE PERIPH_BASE
 #define APB2PERIPH_BASE (PERIPH_BASE + 0x10000)
-#define AHBPERIPH_BASE  (PERIPH_BASE + 0x20000)
-
+#define AHBPERIPH_BASE (PERIPH_BASE + 0x20000)
 
 /*!< GPIO */
 // #define GPIOA_BASE (APB1PERIPH_BASE + 0x0800)
@@ -35,14 +49,6 @@ typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
 #define GPIOA ((GPIO_TypeDef *)(0xF0030000))
 #define GPIOB ((GPIO_TypeDef *)(0xF0031000))
 
-/*!< USART */
-// #define USART1_BASE (APB2PERIPH_BASE + 0x3800)
-// #define USART1 ((USART_TypeDef *) USART1_BASE)
-#define USART1 ((USART_TypeDef *)(0xF0050000))
-// #define USART2_BASE (APB1PERIPH_BASE + 0x4400)
-// #define USART2 ((USART_TypeDef *) USART2_BASE)
-#define USART2 ((USART_TypeDef *)(0xF0051000))
-
 /*!< WDG */
 // #define IWDG_BASE (APB1PERIPH_BASE + 0x3000)
 // #define IWDG ((IWDG_TypeDef *) IWDG_BASE)
@@ -50,6 +56,33 @@ typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
 // #define WWDG_BASE (APB1PERIPH_BASE + 0x2C00)
 // #define WWDG ((WWDG_TypeDef *) WWDG_BASE)
 #define WWDG ((WWDG_TypeDef *)(0xF0041000))
+
+/*!< USART */
+// #define USART1_BASE (APB2PERIPH_BASE + 0x3800)
+// #define USART2_BASE (APB1PERIPH_BASE + 0x4400)
+// #define USART1 ((USART_TypeDef *) USART1_BASE)
+// #define USART2 ((USART_TypeDef *) USART2_BASE)
+#define USART1 ((USART_TypeDef *)(0xF0050000))
+#define USART2 ((USART_TypeDef *)(0xF0051000))
+
+/*!< I2C */
+// #define I2C1_BASE (APB1PERIPH_BASE + 0x5400)
+// #define I2C2_BASE (APB1PERIPH_BASE + 0x5800)
+// #define I2C1 ((I2C_TypeDef *) I2C1_BASE)
+// #define I2C2 ((I2C_TypeDef *) I2C2_BASE)
+#define I2C1 ((I2C_TypeDef *)(0xF0060000))
+#define I2C2 ((I2C_TypeDef *)(0xF0061000))
+
+/*!< SPI */
+// #define SPI1_BASE (APB2PERIPH_BASE + 0x3000)
+// #define SPI2_BASE (APB1PERIPH_BASE + 0x3800)
+// #define SPI1 ((SPI_TypeDef *) SPI1_BASE)
+// #define SPI2 ((SPI_TypeDef *) SPI2_BASE)
+#define SPI1 ((SPI_TypeDef *)(0xF0070000))
+
+
+
+
 
 
 

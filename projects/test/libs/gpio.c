@@ -2,6 +2,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "gpio.h"
 
+/** @defgroup GPIO_Private_Defines
+ * @{
+ */
+
 /* ------------ RCC registers bit address in the alias region ----------------*/
 #define AFIO_OFFSET                 (AFIO_BASE - PERIPH_BASE)
 
