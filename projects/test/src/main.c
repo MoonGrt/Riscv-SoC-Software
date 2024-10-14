@@ -4,7 +4,7 @@
 
 void main()
 {
-    // test_GPIO();
+    test_GPIO();
     // test_WDG();
     test_USART();
 
@@ -20,8 +20,9 @@ void main()
     uartConfig.clockDivider = CORE_HZ / UART_SAMPLE_PER_BAUD / 115200 - 1;
     uart_applyConfig(UART, &uartConfig);
     // UART->STATUS = 2; // Enable RX interrupts
-    // UART->DATA = 'A';
-    printf("Murax UART Test\n");  // 现在例程不支持printf
+    UART->DATA = 'A';
+    UART->DATA = 'B';
+    // printf("Murax UART Test\n");  // 现在例程不支持printf - SoC 上 StreamFifo_UART 有问题
 
 
 

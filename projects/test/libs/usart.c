@@ -6,49 +6,49 @@
  * @{
  */
 
-#define CR1_UE_Set                ((uint16_t)0x2000)  /*!< USART Enable Mask */
-#define CR1_UE_Reset              ((uint16_t)0xDFFF)  /*!< USART Disable Mask */
+#define CR1_UE_Set ((uint16_t)0x2000)   /*!< USART Enable Mask */
+#define CR1_UE_Reset ((uint16_t)0xDFFF) /*!< USART Disable Mask */
 
-#define CR1_WAKE_Mask             ((uint16_t)0xF7FF)  /*!< USART WakeUp Method Mask */
+#define CR1_WAKE_Mask ((uint16_t)0xF7FF) /*!< USART WakeUp Method Mask */
 
-#define CR1_RWU_Set               ((uint16_t)0x0002)  /*!< USART mute mode Enable Mask */
-#define CR1_RWU_Reset             ((uint16_t)0xFFFD)  /*!< USART mute mode Enable Mask */
-#define CR1_SBK_Set               ((uint16_t)0x0001)  /*!< USART Break Character send Mask */
-#define CR1_CLEAR_Mask            ((uint16_t)0xE9F3)  /*!< USART CR1 Mask */
-#define CR2_Address_Mask          ((uint16_t)0xFFF0)  /*!< USART address Mask */
+#define CR1_RWU_Set ((uint16_t)0x0002)      /*!< USART mute mode Enable Mask */
+#define CR1_RWU_Reset ((uint16_t)0xFFFD)    /*!< USART mute mode Enable Mask */
+#define CR1_SBK_Set ((uint16_t)0x0001)      /*!< USART Break Character send Mask */
+#define CR1_CLEAR_Mask ((uint16_t)0xE9F3)   /*!< USART CR1 Mask */
+#define CR2_Address_Mask ((uint16_t)0xFFF0) /*!< USART address Mask */
 
-#define CR2_LINEN_Set             ((uint16_t)0x4000)  /*!< USART LIN Enable Mask */
-#define CR2_LINEN_Reset           ((uint16_t)0xBFFF)  /*!< USART LIN Disable Mask */
+#define CR2_LINEN_Set ((uint16_t)0x4000)   /*!< USART LIN Enable Mask */
+#define CR2_LINEN_Reset ((uint16_t)0xBFFF) /*!< USART LIN Disable Mask */
 
-#define CR2_LBDL_Mask             ((uint16_t)0xFFDF)  /*!< USART LIN Break detection Mask */
-#define CR2_STOP_CLEAR_Mask       ((uint16_t)0xCFFF)  /*!< USART CR2 STOP Bits Mask */
-#define CR2_CLOCK_CLEAR_Mask      ((uint16_t)0xF0FF)  /*!< USART CR2 Clock Mask */
+#define CR2_LBDL_Mask ((uint16_t)0xFFDF)        /*!< USART LIN Break detection Mask */
+#define CR2_STOP_CLEAR_Mask ((uint16_t)0xCFFF)  /*!< USART CR2 STOP Bits Mask */
+#define CR2_CLOCK_CLEAR_Mask ((uint16_t)0xF0FF) /*!< USART CR2 Clock Mask */
 
-#define CR3_SCEN_Set              ((uint16_t)0x0020)  /*!< USART SC Enable Mask */
-#define CR3_SCEN_Reset            ((uint16_t)0xFFDF)  /*!< USART SC Disable Mask */
+#define CR3_SCEN_Set ((uint16_t)0x0020)   /*!< USART SC Enable Mask */
+#define CR3_SCEN_Reset ((uint16_t)0xFFDF) /*!< USART SC Disable Mask */
 
-#define CR3_NACK_Set              ((uint16_t)0x0010)  /*!< USART SC NACK Enable Mask */
-#define CR3_NACK_Reset            ((uint16_t)0xFFEF)  /*!< USART SC NACK Disable Mask */
+#define CR3_NACK_Set ((uint16_t)0x0010)   /*!< USART SC NACK Enable Mask */
+#define CR3_NACK_Reset ((uint16_t)0xFFEF) /*!< USART SC NACK Disable Mask */
 
-#define CR3_HDSEL_Set             ((uint16_t)0x0008)  /*!< USART Half-Duplex Enable Mask */
-#define CR3_HDSEL_Reset           ((uint16_t)0xFFF7)  /*!< USART Half-Duplex Disable Mask */
+#define CR3_HDSEL_Set ((uint16_t)0x0008)   /*!< USART Half-Duplex Enable Mask */
+#define CR3_HDSEL_Reset ((uint16_t)0xFFF7) /*!< USART Half-Duplex Disable Mask */
 
-#define CR3_IRLP_Mask             ((uint16_t)0xFFFB)  /*!< USART IrDA LowPower mode Mask */
-#define CR3_CLEAR_Mask            ((uint16_t)0xFCFF)  /*!< USART CR3 Mask */
+#define CR3_IRLP_Mask ((uint16_t)0xFFFB)  /*!< USART IrDA LowPower mode Mask */
+#define CR3_CLEAR_Mask ((uint16_t)0xFCFF) /*!< USART CR3 Mask */
 
-#define CR3_IREN_Set              ((uint16_t)0x0002)  /*!< USART IrDA Enable Mask */
-#define CR3_IREN_Reset            ((uint16_t)0xFFFD)  /*!< USART IrDA Disable Mask */
-#define GTPR_LSB_Mask             ((uint16_t)0x00FF)  /*!< Guard Time Register LSB Mask */
-#define GTPR_MSB_Mask             ((uint16_t)0xFF00)  /*!< Guard Time Register MSB Mask */
-#define IT_Mask                   ((uint16_t)0x001F)  /*!< USART Interrupt Mask */
+#define CR3_IREN_Set ((uint16_t)0x0002)   /*!< USART IrDA Enable Mask */
+#define CR3_IREN_Reset ((uint16_t)0xFFFD) /*!< USART IrDA Disable Mask */
+#define GTPR_LSB_Mask ((uint16_t)0x00FF)  /*!< Guard Time Register LSB Mask */
+#define GTPR_MSB_Mask ((uint16_t)0xFF00)  /*!< Guard Time Register MSB Mask */
+#define IT_Mask ((uint16_t)0x001F)        /*!< USART Interrupt Mask */
 
 /* USART OverSampling-8 Mask */
-#define CR1_OVER8_Set             ((uint16_t)0x8000)  /* USART OVER8 mode Enable Mask */
-#define CR1_OVER8_Reset           ((uint16_t)0x7FFF)  /* USART OVER8 mode Disable Mask */
+#define CR1_OVER8_Set ((uint16_t)0x8000)   /* USART OVER8 mode Enable Mask */
+#define CR1_OVER8_Reset ((uint16_t)0x7FFF) /* USART OVER8 mode Disable Mask */
 
 /* USART One Bit Sampling Mask */
-#define CR3_ONEBITE_Set           ((uint16_t)0x0800)  /* USART ONEBITE mode Enable Mask */
-#define CR3_ONEBITE_Reset         ((uint16_t)0xF7FF)  /* USART ONEBITE mode Disable Mask */
+#define CR3_ONEBITE_Set ((uint16_t)0x0800)   /* USART ONEBITE mode Enable Mask */
+#define CR3_ONEBITE_Reset ((uint16_t)0xF7FF) /* USART ONEBITE mode Disable Mask */
 
 /** @defgroup USART_Private_Functions
  * @{
@@ -134,36 +134,48 @@ void USART_Init(USART_TypeDef *USARTx, USART_InitTypeDef *USART_InitStruct)
 
     /*---------------------------- USART BRR Configuration -----------------------*/
     /* Configure the USART Baud Rate -------------------------------------------*/
-    apbclock = CORE_HZ;
-
-    /* Determine the integer part */
-    if ((USARTx->CR1 & CR1_OVER8_Set) != 0)
-    {
-        /* Integer part computing in case Oversampling mode is 8 Samples */
-        integerdivider = ((25 * apbclock) / (2 * (USART_InitStruct->USART_BaudRate)));
-    }
-    else /* if ((USARTx->CR1 & CR1_OVER8_Set) == 0) */
-    {
-        /* Integer part computing in case Oversampling mode is 16 Samples */
-        integerdivider = ((25 * apbclock) / (4 * (USART_InitStruct->USART_BaudRate)));
-    }
-    tmpreg = (integerdivider / 100) << 4;
-
-    /* Determine the fractional part */
-    fractionaldivider = integerdivider - (100 * (tmpreg >> 4));
-
-    /* Implement the fractional part in the register */
-    if ((USARTx->CR1 & CR1_OVER8_Set) != 0)
-    {
-        tmpreg |= ((((fractionaldivider * 8) + 50) / 100)) & ((uint8_t)0x07);
-    }
-    else /* if ((USARTx->CR1 & CR1_OVER8_Set) == 0) */
-    {
-        tmpreg |= ((((fractionaldivider * 16) + 50) / 100)) & ((uint8_t)0x0F);
-    }
-
-    /* Write to USART BRR */
+    integerdivider = CORE_HZ / UART_SAMPLE_PER_BAUD / USART_InitStruct->USART_BaudRate;
+    tmpreg = integerdivider << 4;
     USARTx->BRR = (uint16_t)tmpreg;
+
+    // RCC_GetClocksFreq(&RCC_ClocksStatus);
+    // if (usartxbase == USART1_BASE)
+    // {
+    //     apbclock = RCC_ClocksStatus.PCLK2_Frequency;
+    // }
+    // else
+    // {
+    //     apbclock = RCC_ClocksStatus.PCLK1_Frequency;
+    // }
+
+    // /* Determine the integer part */
+    // if ((USARTx->CR1 & CR1_OVER8_Set) != 0)
+    // {
+    //     /* Integer part computing in case Oversampling mode is 8 Samples */
+    //     integerdivider = ((25 * apbclock) / (2 * (USART_InitStruct->USART_BaudRate)));
+    // }
+    // else /* if ((USARTx->CR1 & CR1_OVER8_Set) == 0) */
+    // {
+    //     /* Integer part computing in case Oversampling mode is 16 Samples */
+    //     integerdivider = ((25 * apbclock) / (4 * (USART_InitStruct->USART_BaudRate)));
+    // }
+    // tmpreg = (integerdivider / 100) << 4;
+
+    // /* Determine the fractional part */
+    // fractionaldivider = integerdivider - (100 * (tmpreg >> 4));
+
+    // /* Implement the fractional part in the register */
+    // if ((USARTx->CR1 & CR1_OVER8_Set) != 0)
+    // {
+    //     tmpreg |= ((((fractionaldivider * 8) + 50) / 100)) & ((uint8_t)0x07);
+    // }
+    // else /* if ((USARTx->CR1 & CR1_OVER8_Set) == 0) */
+    // {
+    //     tmpreg |= ((((fractionaldivider * 16) + 50) / 100)) & ((uint8_t)0x0F);
+    // }
+
+    // /* Write to USART BRR */
+    // USARTx->BRR = (uint16_t)tmpreg;
 }
 
 /**
@@ -936,5 +948,21 @@ void USART_ClearITPendingBit(USART_TypeDef *USARTx, uint16_t USART_IT)
     itmask = ((uint16_t)0x01 << (uint16_t)bitpos);
     USARTx->SR = (uint16_t)~itmask;
 }
+
+// /*
+//  * 函数名：fputc
+//  * 描述  ：重定向c库函数printf
+//  * 输入  ：无
+//  * 输出  ：无
+//  * 调用  ：由printf调用
+//  */
+// int fputc(int ch, FILE *f)
+// {
+//     /* 将printf内容发往串口 */
+//     USART_SendData(USART1, (unsigned char)ch);
+//     while (USART_GetFlagStatus(USART1, USART_FLAG_TC) != SET)
+//         ;
+//     return (ch);
+// }
 
 /******************* END OF FILE *******************/

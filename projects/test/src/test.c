@@ -16,7 +16,6 @@ void test_GPIO(void)
     GPIO_Init(GPIOA, &GPIO_InitStructure);
     GPIO_SetBits(GPIOA, GPIO_Pin_1);
     GPIO_ResetBits(GPIOA, GPIO_Pin_1);
-    GPIO_Init(GPIOB, &GPIO_InitStructure);
 }
 
 void test_WDG(void)
@@ -76,4 +75,7 @@ void test_USART(void)
 
     /*USART使能*/
     USART_Cmd(USART1, ENABLE); // 使能USART1，串口开始运行
+    /*USART发送*/
+    USART_SendData(USART1, 'A');
+    USART_SendData(USART1, 'B');
 }
