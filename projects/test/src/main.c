@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "murax.h"
 #include "test.h"
 
@@ -19,7 +20,11 @@ void main()
     uartConfig.clockDivider = CORE_HZ / UART_SAMPLE_PER_BAUD / 115200 - 1;
     uart_applyConfig(UART, &uartConfig);
     // UART->STATUS = 2; // Enable RX interrupts
-    UART->DATA = 'A';
+    // UART->DATA = 'A';
+    printf("Murax UART Test\n");  // 现在例程不支持printf
+
+
+
 
     // interruptCtrl_init(TIMER_INTERRUPT);
     // prescaler_init(TIMER_PRESCALER);

@@ -39,6 +39,9 @@ typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
 // #define USART1_BASE (APB2PERIPH_BASE + 0x3800)
 // #define USART1 ((USART_TypeDef *) USART1_BASE)
 #define USART1 ((USART_TypeDef *)(0xF0050000))
+// #define USART2_BASE (APB1PERIPH_BASE + 0x4400)
+// #define USART2 ((USART_TypeDef *) USART2_BASE)
+#define USART2 ((USART_TypeDef *)(0xF0051000))
 
 /*!< WDG */
 // #define IWDG_BASE (APB1PERIPH_BASE + 0x3000)
