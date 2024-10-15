@@ -60,9 +60,9 @@ void test_USART(void)
     USART_InitStructure.USART_StopBits = USART_StopBits_1;                          // 停止位，选择1位
     USART_InitStructure.USART_WordLength = USART_WordLength_8b;                     // 字长，选择8位
     USART_Init(USART1, &USART_InitStructure);                                       // 将结构体变量交给USART_Init，配置USART1
+    /*中断输出配置*/
+    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE); // 开启串口接收数据的中断
 
-    // /*中断输出配置*/
-    // USART_ITConfig(USART1, USART_IT_RXNE, ENABLE); // 开启串口接收数据的中断
     // /*NVIC中断分组*/
     // NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); // 配置NVIC为分组2
     // /*NVIC配置*/

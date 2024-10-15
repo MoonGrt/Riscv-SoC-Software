@@ -99,7 +99,6 @@ typedef struct
                                           at the MSB position of the transmitted data (9th bit when
                                           the word length is set to 9 data bits; 8th bit when the
                                           word length is set to 8 data bits). */
-
     uint16_t USART_Mode;                /*!< Specifies wether the Receive or Transmit mode is enabled or disabled.
                                              This parameter can be a value of @ref USART_Mode */
     uint16_t USART_HardwareFlowControl; /*!< Specifies wether the hardware flow control mode is enabled

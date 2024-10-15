@@ -878,11 +878,11 @@ ITStatus USART_GetITStatus(USART_TypeDef *USARTx, uint16_t USART_IT)
     itmask = USART_IT & IT_Mask;
     itmask = (uint32_t)0x01 << itmask;
 
-    if (usartreg == 0x01) /* The IT  is in CR1 register */
+    if (usartreg == 0x01) /* The IT is in CR1 register */
     {
         itmask &= USARTx->CR1;
     }
-    else if (usartreg == 0x02) /* The IT  is in CR2 register */
+    else if (usartreg == 0x02) /* The IT is in CR2 register */
     {
         itmask &= USARTx->CR2;
     }
