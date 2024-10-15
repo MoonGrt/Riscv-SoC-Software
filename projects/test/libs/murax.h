@@ -79,7 +79,7 @@ typedef enum
 // #define SPI1 ((SPI_TypeDef *) SPI1_BASE)
 // #define SPI2 ((SPI_TypeDef *) SPI2_BASE)
 #define SPI1 ((SPI_TypeDef *)(0xF0070000))
-
+#define SPI2 ((SPI_TypeDef *)(0xF0071000))
 
 
 

@@ -120,6 +120,7 @@ void I2C_Init(I2C_TypeDef *I2Cx, I2C_InitTypeDef *I2C_InitStruct)
     assert_param(IS_I2C_ACKNOWLEDGE_ADDRESS(I2C_InitStruct->I2C_AcknowledgedAddress));
 
     /*---------------------------- I2Cx CR2 Configuration ------------------------*/
+    pclk1 = CORE_HZ;
     // /* Get the I2Cx CR2 value */
     // tmpreg = I2Cx->CR2;
     // /* Clear frequency FREQ[5:0] bits */

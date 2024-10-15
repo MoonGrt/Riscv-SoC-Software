@@ -8,6 +8,7 @@ void main()
     // test_WDG();
     // test_USART();
     test_I2C();
+    // test_SPI();
 
     /*!< old */
     // GPIO
