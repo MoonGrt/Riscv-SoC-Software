@@ -80,7 +80,7 @@ void test_USART(void)
     USART_SendData(USART1, 'B');
 }
 
-void test_IIC(void)
+void test_I2C(void)
 {
     /*GPIO初始化*/
     GPIO_InitTypeDef GPIO_InitStructure;
@@ -138,4 +138,3 @@ void test_SPI(void)
     /*SPI使能*/
     SPI_Cmd(SPI1, ENABLE); // 使能SPI1，开始运行
 }
-

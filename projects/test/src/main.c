@@ -6,7 +6,8 @@ void main()
 {
     test_GPIO();
     // test_WDG();
-    test_USART();
+    // test_USART();
+    test_I2C();
 
     /*!< old */
     // GPIO
@@ -53,16 +54,16 @@ uint8_t Serial_RxFlag; // 定义串口接收的标志位变量
 
 void irqCallback()
 {
-    if (USART_GetITStatus(USART1, USART_IT_RXNE) == SET) // 判断是否是USART1的接收事件触发的中断
-    {
-        Serial_RxData = USART_ReceiveData(USART1);      // 读取数据寄存器，存放在接收的数据变量
-        USART_SendData(USART1, Serial_RxData);
-        // Serial_RxData = USART_ReceiveData(USART1);      // 读取数据寄存器，存放在接收的数据变量
-        // Serial_RxFlag = 1;                              // 置接收标志位变量为1
-        // USART_ClearITPendingBit(USART1, USART_IT_RXNE); // 清除USART1的RXNE标志位
-        //                                                 // 读取数据寄存器会自动清除此标志位
-        //                                                 // 如果已经读取了数据寄存器，也可以不执行此代码
-    }
+    // if (USART_GetITStatus(USART1, USART_IT_RXNE) == SET) // 判断是否是USART1的接收事件触发的中断
+    // {
+    //     Serial_RxData = USART_ReceiveData(USART1);      // 读取数据寄存器，存放在接收的数据变量
+    //     USART_SendData(USART1, Serial_RxData);
+    //     // Serial_RxData = USART_ReceiveData(USART1);      // 读取数据寄存器，存放在接收的数据变量
+    //     // Serial_RxFlag = 1;                              // 置接收标志位变量为1
+    //     // USART_ClearITPendingBit(USART1, USART_IT_RXNE); // 清除USART1的RXNE标志位
+    //     //                                                 // 读取数据寄存器会自动清除此标志位
+    //     //                                                 // 如果已经读取了数据寄存器，也可以不执行此代码
+    // }
 
     /*!< old */
     // if (TIMER_INTERRUPT->PENDINGS & 1)
