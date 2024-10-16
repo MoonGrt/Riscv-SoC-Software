@@ -3,7 +3,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "murax.h"
-// #include <stdio.h>
 
 /*---------------------------------------------------------------old--------------------------------------------------------------*/
 
@@ -334,6 +333,6 @@ FlagStatus USART_GetFlagStatus(USART_TypeDef *USARTx, uint16_t USART_FLAG);
 void USART_ClearFlag(USART_TypeDef *USARTx, uint16_t USART_FLAG);
 ITStatus USART_GetITStatus(USART_TypeDef *USARTx, uint16_t USART_IT);
 void USART_ClearITPendingBit(USART_TypeDef *USARTx, uint16_t USART_IT);
-// extern int fputc(int ch, FILE *f);  // 重定向c库函数printf
+// extern int fputc(int ch, FILE *f);  // 重定向c库函数printf  
 
 #endif /* __USART_H_ */

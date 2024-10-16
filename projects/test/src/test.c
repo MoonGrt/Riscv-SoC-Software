@@ -1,5 +1,6 @@
-#include "test.h"
 #include "murax.h"
+#include "test.h"
+// #include <stdio.h> // printf 依赖  // 可以不用，只不过有warning
 
 void test_GPIO(void)
 {
@@ -77,8 +78,8 @@ void test_USART(void)
     USART_Cmd(USART1, ENABLE); // 使能USART1，串口开始运行
     /*USART发送*/
     USART_SendData(USART1, 'A');
-    USART_SendData(USART1, 'B');
-    // printf("Murax USART Test\n");
+    // USART_SendData(USART1, 'B');
+    printf("Murax USART Test\n");
 }
 
 /**
