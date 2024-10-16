@@ -30,11 +30,15 @@ typedef enum
 #include "vga.h"
 #include "i2c.h"
 #include "spi.h"
+#include "tim.h"
+#include "rcc.h"
 
 /*!< Base memory map */
 #define SRAM_BASE ((uint32_t)0x00000000)   /*!< SRAM base address */
 #define FLASH_BASE ((uint32_t)0x80000000)  /*!< FLASH base address */
 #define PERIPH_BASE ((uint32_t)0xF0000000) /*!< Peripheral base address */
+#define SRAM_BB_BASE ((uint32_t)0x22000000) /*!< SRAM base address in the bit-band region */
+#define PERIPH_BB_BASE ((uint32_t)0x42000000) /*!< Peripheral base address in the bit-band region */
 
 /*!< Peripheral memory map */
 #define APB1PERIPH_BASE PERIPH_BASE
@@ -81,11 +85,21 @@ typedef enum
 #define SPI1 ((SPI_TypeDef *)(0xF0070000))
 #define SPI2 ((SPI_TypeDef *)(0xF0071000))
 
+/*!< TIM */
+// #define TIM1_BASE (APB2PERIPH_BASE + 0x2C00)
+// #define TIM2_BASE (APB1PERIPH_BASE + 0x0000)
+// #define TIM3_BASE (APB1PERIPH_BASE + 0x0400)
+// #define TIM1 ((TIM_TypeDef *) TIM1_BASE)
+// #define TIM2 ((TIM_TypeDef *) TIM2_BASE)
+// #define TIM3 ((TIM_TypeDef *) TIM3_BASE)
+// #define TIM1 ((TIM_TypeDef *)(0xF0080000))
+#define TIM2 ((TIM_TypeDef *)(0xF0081000))
+#define TIM3 ((TIM_TypeDef *)(0xF0082000))
 
-
-
-
-
+/*!< RCC */
+#define RCC_BASE (AHBPERIPH_BASE + 0x1000)
+// #define RCC ((RCC_TypeDef *) RCC_BASE)
+#define RCC ((RCC_TypeDef *)(0xF0090000))
 
 
 /*!< old */

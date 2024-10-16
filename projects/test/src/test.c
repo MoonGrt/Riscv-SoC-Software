@@ -107,19 +107,19 @@ void I2C_WaitEvent(I2C_TypeDef *I2Cx, uint32_t I2C_EVENT)
  */
 void I2C_WriteReg(uint8_t DevAddress, uint8_t RegAddress, uint8_t Data)
 {
-    I2C_GenerateSTART(I2C2, ENABLE);                   // 硬件I2C生成起始条件
-    I2C_WaitEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT); // 等待EV5
+    I2C_GenerateSTART(I2C1, ENABLE);                   // 硬件I2C生成起始条件
+    I2C_WaitEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT); // 等待EV5
 
-    I2C_Send7bitAddress(I2C2, DevAddress, I2C_Direction_Transmitter); // 硬件I2C发送从机地址，方向为发送
-    I2C_WaitEvent(I2C2, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED);  // 等待EV6
+    I2C_Send7bitAddress(I2C1, DevAddress, I2C_Direction_Transmitter); // 硬件I2C发送从机地址，方向为发送
+    I2C_WaitEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED);  // 等待EV6
 
-    I2C_SendData(I2C2, RegAddress);                          // 硬件I2C发送寄存器地址
-    I2C_WaitEvent(I2C2, I2C_EVENT_MASTER_BYTE_TRANSMITTING); // 等待EV8
+    I2C_SendData(I2C1, RegAddress);                          // 硬件I2C发送寄存器地址
+    I2C_WaitEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTING); // 等待EV8
 
-    I2C_SendData(I2C2, Data);                               // 硬件I2C发送数据
-    I2C_WaitEvent(I2C2, I2C_EVENT_MASTER_BYTE_TRANSMITTED); // 等待EV8_2
+    I2C_SendData(I2C1, Data);                               // 硬件I2C发送数据
+    I2C_WaitEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED); // 等待EV8_2
 
-    I2C_GenerateSTOP(I2C2, ENABLE); // 硬件I2C生成终止条件
+    I2C_GenerateSTOP(I2C1, ENABLE); // 硬件I2C生成终止条件
 }
 /**
  * 函    数：I2C读寄存器
@@ -130,28 +130,28 @@ uint8_t I2C_ReadReg(uint8_t DevAddress, uint8_t RegAddress)
 {
     uint8_t Data;
 
-    I2C_GenerateSTART(I2C2, ENABLE);                   // 硬件I2C生成起始条件
-    I2C_WaitEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT); // 等待EV5
+    I2C_GenerateSTART(I2C1, ENABLE);                   // 硬件I2C生成起始条件
+    I2C_WaitEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT); // 等待EV5
 
-    I2C_Send7bitAddress(I2C2, DevAddress, I2C_Direction_Transmitter); // 硬件I2C发送从机地址，方向为发送
-    I2C_WaitEvent(I2C2, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED);  // 等待EV6
+    I2C_Send7bitAddress(I2C1, DevAddress, I2C_Direction_Transmitter); // 硬件I2C发送从机地址，方向为发送
+    I2C_WaitEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED);  // 等待EV6
 
-    I2C_SendData(I2C2, RegAddress);                         // 硬件I2C发送寄存器地址
-    I2C_WaitEvent(I2C2, I2C_EVENT_MASTER_BYTE_TRANSMITTED); // 等待EV8_2
+    I2C_SendData(I2C1, RegAddress);                         // 硬件I2C发送寄存器地址
+    I2C_WaitEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED); // 等待EV8_2
 
-    I2C_GenerateSTART(I2C2, ENABLE);                   // 硬件I2C生成重复起始条件
-    I2C_WaitEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT); // 等待EV5
+    I2C_GenerateSTART(I2C1, ENABLE);                   // 硬件I2C生成重复起始条件
+    I2C_WaitEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT); // 等待EV5
 
-    I2C_Send7bitAddress(I2C2, DevAddress, I2C_Direction_Receiver); // 硬件I2C发送从机地址，方向为接收
-    I2C_WaitEvent(I2C2, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED);  // 等待EV6
+    I2C_Send7bitAddress(I2C1, DevAddress, I2C_Direction_Receiver); // 硬件I2C发送从机地址，方向为接收
+    I2C_WaitEvent(I2C1, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED);  // 等待EV6
 
-    I2C_AcknowledgeConfig(I2C2, DISABLE); // 在接收最后一个字节之前提前将应答失能
-    I2C_GenerateSTOP(I2C2, ENABLE);       // 在接收最后一个字节之前提前申请停止条件
+    I2C_AcknowledgeConfig(I2C1, DISABLE); // 在接收最后一个字节之前提前将应答失能
+    I2C_GenerateSTOP(I2C1, ENABLE);       // 在接收最后一个字节之前提前申请停止条件
 
-    I2C_WaitEvent(I2C2, I2C_EVENT_MASTER_BYTE_RECEIVED); // 等待EV7
-    Data = I2C_ReceiveData(I2C2);                        // 接收数据寄存器
+    I2C_WaitEvent(I2C1, I2C_EVENT_MASTER_BYTE_RECEIVED); // 等待EV7
+    Data = I2C_ReceiveData(I2C1);                        // 接收数据寄存器
 
-    I2C_AcknowledgeConfig(I2C2, ENABLE); // 将应答恢复为使能，为了不影响后续可能产生的读取多字节操作
+    I2C_AcknowledgeConfig(I2C1, ENABLE); // 将应答恢复为使能，为了不影响后续可能产生的读取多字节操作
 
     return Data;
 }
@@ -171,16 +171,15 @@ void test_I2C(void)
     I2C_InitStructure.I2C_DutyCycle = I2C_DutyCycle_2;                        // 时钟占空比，选择Tlow/Thigh = 2
     I2C_InitStructure.I2C_Ack = I2C_Ack_Enable;                               // 应答，选择使能
     I2C_InitStructure.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit; // 应答地址，选择7位，从机模式下才有效
-    I2C_InitStructure.I2C_OwnAddress1 = 0x00;                                 // 自身地址，从机模式下才有效
-    I2C_Init(I2C1, &I2C_InitStructure);                                       // 将结构体变量交给I2C_Init，配置I2C2
+    I2C_InitStructure.I2C_OwnAddress1 = 0xaa;                                 // 自身地址，从机模式下才有效
+    I2C_Init(I2C1, &I2C_InitStructure);                                       // 将结构体变量交给I2C_Init，配置I2C1
 
     /*I2C使能*/
     I2C_Cmd(I2C1, ENABLE); // 使能I2C1，开始运行
     // /*I2C发送接收*/
-    // I2C_WriteReg(0xab, 0xf1, 0x01);
+    I2C_WriteReg(0xab, 0xf1, 0x01);
     // I2C_ReadReg(0xab, 0xf2);
 }
-
 
 void test_SPI(void)
 {
@@ -216,4 +215,43 @@ void test_SPI(void)
 
     /*SPI使能*/
     SPI_Cmd(SPI1, ENABLE); // 使能SPI1，开始运行
+}
+
+void test_TIM(void)
+{
+    /*配置时钟源*/
+    TIM_InternalClockConfig(TIM2); // 选择TIM2为内部时钟，若不调用此函数，TIM默认也为内部时钟
+
+    /*时基单元初始化*/
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;              // 定义结构体变量
+    TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;     // 时钟分频，选择不分频，此参数用于配置滤波器时钟，不影响时基单元功能
+    TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up; // 计数器模式，选择向上计数
+    TIM_TimeBaseInitStructure.TIM_Period = 10000 - 1;               // 计数周期，即ARR的值
+    TIM_TimeBaseInitStructure.TIM_Prescaler = 7200 - 1;             // 预分频器，即PSC的值
+    TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;            // 重复计数器，高级定时器才会用到
+    TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructure);             // 将结构体变量交给TIM_TimeBaseInit，配置TIM2的时基单元
+
+    /*中断输出配置*/
+    TIM_ClearFlag(TIM2, TIM_FLAG_Update); // 清除定时器更新标志位
+                                          // TIM_TimeBaseInit函数末尾，手动产生了更新事件
+                                          // 若不清除此标志位，则开启中断后，会立刻进入一次中断
+                                          // 如果不介意此问题，则不清除此标志位也可
+    TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE); // 开启TIM2的更新中断
+
+    // /*NVIC中断分组*/
+    // NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); // 配置NVIC为分组2
+    //                                                 // 即抢占优先级范围：0~3，响应优先级范围：0~3
+    //                                                 // 此分组配置在整个工程中仅需调用一次
+    //                                                 // 若有多个中断，可以把此代码放在main函数内，while循环之前
+    //                                                 // 若调用多次配置分组的代码，则后执行的配置会覆盖先执行的配置
+    // /*NVIC配置*/
+    // NVIC_InitTypeDef NVIC_InitStructure;                      // 定义结构体变量
+    // NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;           // 选择配置NVIC的TIM2线
+    // NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;           // 指定NVIC线路使能
+    // NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2; // 指定NVIC线路的抢占优先级为2
+    // NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;        // 指定NVIC线路的响应优先级为1
+    // NVIC_Init(&NVIC_InitStructure);                           // 将结构体变量交给NVIC_Init，配置NVIC外设
+
+    /*TIM使能*/
+    TIM_Cmd(TIM2, ENABLE); // 使能TIM2，定时器开始运行
 }

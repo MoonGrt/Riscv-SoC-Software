@@ -6,5 +6,6 @@ void test_WDG(void);
 void test_USART(void);
 void test_I2C(void);
 void test_SPI(void);
+void test_TIM(void);
 
 #endif /* __TEST_H_ */

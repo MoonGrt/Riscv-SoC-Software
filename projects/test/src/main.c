@@ -9,6 +9,7 @@ void main()
     // test_USART();
     test_I2C();
     // test_SPI();
+    // test_TIM();
 
     /*!< old */
     // GPIO
@@ -52,9 +53,11 @@ void main()
 
 uint8_t Serial_RxData; // 定义串口接收的数据变量
 uint8_t Serial_RxFlag; // 定义串口接收的标志位变量
+uint16_t Num; //定义在定时器中断里自增的变量
 
 void irqCallback()
 {
+    /*!< USART */
     // if (USART_GetITStatus(USART1, USART_IT_RXNE) == SET) // 判断是否是USART1的接收事件触发的中断
     // {
     //     Serial_RxData = USART_ReceiveData(USART1);      // 读取数据寄存器，存放在接收的数据变量
@@ -64,6 +67,15 @@ void irqCallback()
     //     // USART_ClearITPendingBit(USART1, USART_IT_RXNE); // 清除USART1的RXNE标志位
     //     //                                                 // 读取数据寄存器会自动清除此标志位
     //     //                                                 // 如果已经读取了数据寄存器，也可以不执行此代码
+    // }
+
+    /*!< TIM */
+    // if (TIM_GetITStatus(TIM2, TIM_IT_Update) == SET) // 判断是否是TIM2的更新事件触发的中断
+    // {
+    //     Num++;                                      // Num变量自增，用于测试定时中断
+    //     TIM_ClearITPendingBit(TIM2, TIM_IT_Update); // 清除TIM2更新事件的中断标志位
+    //                                                 // 中断标志位必须清除
+    //                                                 // 否则中断将连续不断地触发，导致主程序卡死
     // }
 
     /*!< old */
