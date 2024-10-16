@@ -23,7 +23,6 @@ typedef enum
 #include "iwdg.h"
 #include "wwdg.h"
 #include "timer.h"
-#include "prescaler.h"
 #include "interrupt.h"
 #include "usart.h"
 #include "conf.h"
@@ -46,6 +45,9 @@ typedef enum
 #define AHBPERIPH_BASE (PERIPH_BASE + 0x20000)
 
 /*!< GPIO */
+// #define AFIO_BASE (APB2PERIPH_BASE + 0x0000)
+// #define AFIO ((AFIO_TypeDef *) AFIO_BASE)
+// #define AFIO ((AFIO_TypeDef *)(0xF0030000))
 // #define GPIOA_BASE (APB1PERIPH_BASE + 0x0800)
 // #define GPIOB_BASE (APB1PERIPH_BASE + 0x0C00)
 // #define GPIOA ((GPIO_TypeDef *) GPIOA_BASE)

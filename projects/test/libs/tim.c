@@ -359,9 +359,9 @@ void TIM_TimeBaseInit(TIM_TypeDef *TIMx, TIM_TimeBaseInitTypeDef *TIM_TimeBaseIn
 
     // if ((TIMx != TIM6) && (TIMx != TIM7))
     // {
-    //     /* Set the clock division */
-    //     tmpcr1 &= (uint16_t)(~((uint16_t)TIM_CR1_CKD));
-    //     tmpcr1 |= (uint32_t)TIM_TimeBaseInitStruct->TIM_ClockDivision;
+        /* Set the clock division */
+        tmpcr1 &= (uint16_t)(~((uint16_t)TIM_CR1_CKD));
+        tmpcr1 |= (uint32_t)TIM_TimeBaseInitStruct->TIM_ClockDivision;
     // }
 
     TIMx->CR1 = tmpcr1;

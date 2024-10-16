@@ -7,5 +7,6 @@ void test_USART(void);
 void test_I2C(void);
 void test_SPI(void);
 void test_TIM(void);
+void test_PWM(void);
 
 #endif /* __TEST_H_ */

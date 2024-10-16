@@ -78,6 +78,7 @@ void test_USART(void)
     /*USART发送*/
     USART_SendData(USART1, 'A');
     USART_SendData(USART1, 'B');
+    // printf("Murax USART Test\n");
 }
 
 /**
@@ -181,6 +182,20 @@ void test_I2C(void)
     // I2C_ReadReg(0xab, 0xf2);
 }
 
+/**
+ * 函    数：SPI交换传输一个字节，使用SPI模式0
+ * 参    数：ByteSend 要发送的一个字节
+ * 返 回 值：接收的一个字节
+ */
+uint8_t SPI_SwapByte(uint8_t ByteSend)
+{
+    while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) != SET)
+        ;                             // 等待发送数据寄存器空
+    SPI_I2S_SendData(SPI1, ByteSend); // 写入数据到发送数据寄存器，开始产生时序
+    while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) != SET)
+        ;                             // 等待接收数据寄存器非空
+    return SPI_I2S_ReceiveData(SPI1); // 读取接收到的数据并返回
+}
 void test_SPI(void)
 {
     /*GPIO初始化*/
@@ -188,17 +203,15 @@ void test_SPI(void)
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOB, &GPIO_InitStructure); // 将PA4引脚初始化为推挽输出
-
+    GPIO_Init(GPIOB, &GPIO_InitStructure); // 将PA4引脚初始化为推挽输出 SS
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOB, &GPIO_InitStructure); // 将PA5和PA7引脚初始化为复用推挽输出
-
+    GPIO_Init(GPIOB, &GPIO_InitStructure); // 将PA5和PA7引脚初始化为复用推挽输出 SCK MOSI
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOB, &GPIO_InitStructure); // 将PA6引脚初始化为上拉输入
+    GPIO_Init(GPIOB, &GPIO_InitStructure); // 将PA6引脚初始化为上拉输入 MISO
 
     /*SPI初始化*/
     SPI_InitTypeDef SPI_InitStructure;                                   // 定义结构体变量
@@ -215,6 +228,10 @@ void test_SPI(void)
 
     /*SPI使能*/
     SPI_Cmd(SPI1, ENABLE); // 使能SPI1，开始运行
+    /*设置默认电平*/
+    GPIO_WriteBit(GPIOA, GPIO_Pin_4, (BitAction)1); // SS默认高电平
+    /*SPI交换数据*/
+    SPI_SwapByte(0xbb);
 }
 
 void test_TIM(void)
@@ -226,16 +243,16 @@ void test_TIM(void)
     TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;              // 定义结构体变量
     TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;     // 时钟分频，选择不分频，此参数用于配置滤波器时钟，不影响时基单元功能
     TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up; // 计数器模式，选择向上计数
-    TIM_TimeBaseInitStructure.TIM_Period = 10000 - 1;               // 计数周期，即ARR的值
-    TIM_TimeBaseInitStructure.TIM_Prescaler = 7200 - 1;             // 预分频器，即PSC的值
+    TIM_TimeBaseInitStructure.TIM_Period = 50 - 1;                  // 计数周期，即ARR的值
+    TIM_TimeBaseInitStructure.TIM_Prescaler = 72 - 1;               // 预分频器，即PSC的值
     TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;            // 重复计数器，高级定时器才会用到
     TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructure);             // 将结构体变量交给TIM_TimeBaseInit，配置TIM2的时基单元
 
     /*中断输出配置*/
-    TIM_ClearFlag(TIM2, TIM_FLAG_Update); // 清除定时器更新标志位
-                                          // TIM_TimeBaseInit函数末尾，手动产生了更新事件
-                                          // 若不清除此标志位，则开启中断后，会立刻进入一次中断
-                                          // 如果不介意此问题，则不清除此标志位也可
+    TIM_ClearFlag(TIM2, TIM_FLAG_Update);      // 清除定时器更新标志位
+                                               // TIM_TimeBaseInit函数末尾，手动产生了更新事件
+                                               // 若不清除此标志位，则开启中断后，会立刻进入一次中断
+                                               // 如果不介意此问题，则不清除此标志位也可
     TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE); // 开启TIM2的更新中断
 
     // /*NVIC中断分组*/
@@ -254,4 +271,43 @@ void test_TIM(void)
 
     /*TIM使能*/
     TIM_Cmd(TIM2, ENABLE); // 使能TIM2，定时器开始运行
+}
+
+void test_PWM(void)
+{
+    /*GPIO初始化*/
+    GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStructure); // 将PA8引脚初始化为复用推挽输出
+                                           // 受外设控制的引脚，均需要配置为复用模式
+
+    /*配置时钟源*/
+    TIM_InternalClockConfig(TIM3); // 选择TIM3为内部时钟，若不调用此函数，TIM默认也为内部时钟
+
+    /*时基单元初始化*/
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;              // 定义结构体变量
+    TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;     // 时钟分频，选择不分频，此参数用于配置滤波器时钟，不影响时基单元功能
+    TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up; // 计数器模式，选择向上计数
+    TIM_TimeBaseInitStructure.TIM_Period = 50 - 1;                  // 计数周期，即ARR的值
+    TIM_TimeBaseInitStructure.TIM_Prescaler = 72 - 1;               // 预分频器，即PSC的值
+    TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;            // 重复计数器，高级定时器才会用到
+    TIM_TimeBaseInit(TIM3, &TIM_TimeBaseInitStructure);             // 将结构体变量交给TIM_TimeBaseInit，配置TIM3的时基单元
+
+    /*输出比较初始化*/
+    TIM_OCInitTypeDef TIM_OCInitStructure;                        // 定义结构体变量
+    TIM_OCStructInit(&TIM_OCInitStructure);                       // 结构体初始化，若结构体没有完整赋值
+                                                                  // 则最好执行此函数，给结构体所有成员都赋一个默认值
+                                                                  // 避免结构体初值不确定的问题
+    TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;             // 输出比较模式，选择PWM模式1
+    TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;     // 输出极性，选择为高，若选择极性为低，则输出高低电平取反
+    TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; // 输出使能
+    TIM_OCInitStructure.TIM_Pulse = 0;                            // 初始的CCR值
+    TIM_OC1Init(TIM3, &TIM_OCInitStructure);                      // 将结构体变量交给TIM_OC1Init，配置TIM3的输出比较通道1
+
+    /*TIM使能*/
+    TIM_Cmd(TIM3, ENABLE); // 使能TIM3，定时器开始运行
+    /*PWM输出*/
+    TIM_SetCompare1(TIM3, 20);
 }

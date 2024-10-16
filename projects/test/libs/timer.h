@@ -1,6 +1,17 @@
 #ifndef __TIMER_H_
 #define __TIMER_H_
 
+/* prescaler */
+typedef struct
+{
+    volatile uint32_t LIMIT;
+} Prescaler_Reg;
+
+static void prescaler_init(Prescaler_Reg *reg)
+{
+}
+
+/* timer */
 typedef struct
 {
     volatile uint32_t CLEARS_TICKS;

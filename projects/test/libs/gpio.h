@@ -25,6 +25,14 @@ typedef struct
     volatile uint32_t OUTPUT;        // +4 0x0100
     volatile uint32_t OUTPUT_ENABLE; // +8 0x1000
 } Gpio_Reg;                          // old
+// typedef struct
+// {
+//     volatile uint32_t EVCR;
+//     volatile uint32_t MAPR;
+//     volatile uint32_t EXTICR[4];
+//     uint32_t RESERVED0;
+//     volatile uint32_t MAPR2;
+// } AFIO_TypeDef;
 
 #define IS_GPIO_ALL_PERIPH(PERIPH) (((PERIPH) == GPIOA) || \
                                     ((PERIPH) == GPIOB) || \

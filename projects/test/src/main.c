@@ -6,10 +6,11 @@ void main()
 {
     test_GPIO();
     // test_WDG();
-    // test_USART();
-    test_I2C();
+    test_USART();
+    // test_I2C();
     // test_SPI();
     // test_TIM();
+    // test_PWM();
 
     /*!< old */
     // GPIO
@@ -53,7 +54,6 @@ void main()
 
 uint8_t Serial_RxData; // 定义串口接收的数据变量
 uint8_t Serial_RxFlag; // 定义串口接收的标志位变量
-uint16_t Num; //定义在定时器中断里自增的变量
 
 void irqCallback()
 {
@@ -69,10 +69,9 @@ void irqCallback()
     //     //                                                 // 如果已经读取了数据寄存器，也可以不执行此代码
     // }
 
-    /*!< TIM */
+    // /*!< TIM */
     // if (TIM_GetITStatus(TIM2, TIM_IT_Update) == SET) // 判断是否是TIM2的更新事件触发的中断
     // {
-    //     Num++;                                      // Num变量自增，用于测试定时中断
     //     TIM_ClearITPendingBit(TIM2, TIM_IT_Update); // 清除TIM2更新事件的中断标志位
     //                                                 // 中断标志位必须清除
     //                                                 // 否则中断将连续不断地触发，导致主程序卡死
