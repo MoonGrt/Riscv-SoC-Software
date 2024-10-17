@@ -5,7 +5,7 @@ void main()
 {
     test_GPIO();
     // test_WDG();
-    // test_USART();
+    test_USART();
     // test_I2C();
     // test_SPI();
     // test_TIM();

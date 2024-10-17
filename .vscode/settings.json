@@ -18,6 +18,12 @@
         "stdio.h": "c",
         "stdlib.h": "c",
         "i2c.h": "c",
-        "freertos.h": "c"
+        "freertos.h": "c",
+        "cstdio": "c",
+        "rtthread.h": "c",
+        "rthw.h": "c",
+        "rtconfig.h": "c",
+        "rtdef.h": "c",
+        "rtservice.h": "c"
     }
 }
