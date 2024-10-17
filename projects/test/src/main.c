@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "murax.h"
 #include "test.h"
 
@@ -27,7 +26,6 @@ void main()
     // UART->STATUS = 2; // Enable RX interrupts
     UART->DATA = 'A';
     UART->DATA = 'B';
-    // printf("Murax UART Test\n");  // 现在例程不支持printf - SoC 上 StreamFifo_UART 有问题
 
     // TIMER
     // interruptCtrl_init(TIMER_INTERRUPT);
@@ -54,7 +52,6 @@ void main()
 
 uint8_t Serial_RxData; // 定义串口接收的数据变量
 uint8_t Serial_RxFlag; // 定义串口接收的标志位变量
-
 void irqCallback()
 {
     /*!< USART */

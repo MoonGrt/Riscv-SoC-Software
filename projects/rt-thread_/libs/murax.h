@@ -100,8 +100,8 @@ typedef enum
 
 /*!< RCC */
 #define RCC_BASE (AHBPERIPH_BASE + 0x1000)
-#define RCC ((RCC_TypeDef *) RCC_BASE)
-// #define RCC ((RCC_TypeDef *)(0xF0090000))
+// #define RCC ((RCC_TypeDef *) RCC_BASE)
+#define RCC ((RCC_TypeDef *)(0xF0090000))
 
 
 /*!< old */
