@@ -1,64 +1,40 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QComboBox, QPushButton, QHBoxLayout, QMessageBox, QGridLayout
+from PyQt5.QtWidgets import QApplication, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 
-class GpioMultiplexingConfigurator(QWidget):
-    def __init__(self, gpio_count=16):
+class CustomTableWidget(QTableWidget):
+    def __init__(self, rows, columns):
+        super().__init__(rows, columns)
+
+    def mousePressEvent(self, event):
+        # 获取鼠标点击的位置
+        pos = event.pos()
+        # 获取点击的行
+        row = self.rowAt(pos.y())
+
+        # 判断鼠标是否点击在行标题旁边
+        if row != -1 and pos.x() < self.verticalHeader().width():
+            # 在当前行和上一行之间插入新行
+            self.insertRow(row)
+            # 选中插入的新行
+            self.setCurrentCell(row, 0)
+
+        # 调用基类的 mousePressEvent 方法，保持其他功能正常
+        super().mousePressEvent(event)
+
+class MainWindow(QWidget):
+    def __init__(self):
         super().__init__()
-        
-        self.setWindowTitle("GPIO Multiplexing Configurator")
-        self.layout = QVBoxLayout()
+        self.setWindowTitle("QTableWidget Example")
+        self.setGeometry(100, 100, 600, 400)
 
-        # Store GPIO configurations
-        self.gpio_configs = {}
+        layout = QVBoxLayout()
+        self.table_widget = CustomTableWidget(5, 3)  # 5行3列的表格
+        layout.addWidget(self.table_widget)
 
-        # Create a grid layout for pin configuration
-        grid_layout = QGridLayout()
-
-        # Labels for the grid
-        grid_layout.addWidget(QLabel("GPIO Pin"), 0, 0)
-        grid_layout.addWidget(QLabel("Function"), 0, 1)
-
-        # Add pin configuration options
-        for pin in range(gpio_count):
-            # Label for each GPIO pin
-            gpio_label = QLabel(f"GPIO {pin}")
-            grid_layout.addWidget(gpio_label, pin + 1, 0)
-
-            # Dropdown for function selection
-            gpio_select = QComboBox()
-            gpio_select.addItems(["GPIO", "I2C", "SPI", "UART", "Timer", "PWM"])
-            gpio_select.currentIndexChanged.connect(lambda idx, p=pin: self.update_gpio_config(p, idx))
-            grid_layout.addWidget(gpio_select, pin + 1, 1)
-
-            # Initialize configuration to default (GPIO)
-            self.gpio_configs[pin] = "GPIO"
-
-        # Add grid layout to the main layout
-        self.layout.addLayout(grid_layout)
-
-        # Generate button
-        generate_button = QPushButton("Generate Verilog")
-        generate_button.clicked.connect(self.generate_verilog)
-        self.layout.addWidget(generate_button)
-
-        self.setLayout(self.layout)
-
-    def update_gpio_config(self, pin, index):
-        """Update GPIO configuration based on user selection."""
-        functions = ["GPIO", "I2C", "SPI", "UART", "Timer", "PWM"]
-        self.gpio_configs[pin] = functions[index]
-
-    def generate_verilog(self):
-        """Generate Verilog code based on GPIO configurations."""
-        verilog_code = "// Generated Verilog for GPIO Multiplexing Configuration\n"
-        for pin, func in self.gpio_configs.items():
-            verilog_code += f"// GPIO {pin} configured as {func}\n"
-
-        # Show the generated code in a message box (or could save to file)
-        QMessageBox.information(self, "Generated Verilog", verilog_code)
+        self.setLayout(layout)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = GpioMultiplexingConfigurator(gpio_count=16)
+    window = MainWindow()
     window.show()
     sys.exit(app.exec_())
