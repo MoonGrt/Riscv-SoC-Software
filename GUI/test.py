@@ -1,40 +1,45 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QTableWidget, QInputDialog, QTableWidgetItem
 
 class CustomTableWidget(QTableWidget):
     def __init__(self, rows, columns):
         super().__init__(rows, columns)
+        self.current_row = None
+        self.current_column = None
 
     def mousePressEvent(self, event):
-        # 获取鼠标点击的位置
-        pos = event.pos()
-        # 获取点击的行
-        row = self.rowAt(pos.y())
+        # 判断是否是右键点击
+        if event.button() == 2:  # Qt.RightButton
+            # 记录当前点击的单元格位置
+            item = self.itemAt(event.pos())
+            if item:
+                self.current_row = item.row()
+                self.current_column = item.column()
+            else:
+                self.current_row, self.current_column = None, None
+            self.show_selection_dialog()
+        else:
+            super().mousePressEvent(event)  # 调用父类处理其他鼠标事件
 
-        # 判断鼠标是否点击在行标题旁边
-        if row != -1 and pos.x() < self.verticalHeader().width():
-            # 在当前行和上一行之间插入新行
-            self.insertRow(row)
-            # 选中插入的新行
-            self.setCurrentCell(row, 0)
-
-        # 调用基类的 mousePressEvent 方法，保持其他功能正常
-        super().mousePressEvent(event)
-
-class MainWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("QTableWidget Example")
-        self.setGeometry(100, 100, 600, 400)
-
-        layout = QVBoxLayout()
-        self.table_widget = CustomTableWidget(5, 3)  # 5行3列的表格
-        layout.addWidget(self.table_widget)
-
-        self.setLayout(layout)
+    def show_selection_dialog(self):
+        # 选项列表
+        options = ["Option A", "Option B", "Option C"]
+        
+        # 弹出一个输入对话框，允许用户选择
+        option, ok = QInputDialog.getItem(self, "Select an option", "Choose a value to fill in:", options, 0, False)
+        
+        # 如果用户确认选择并且当前单元格有效，填入选中的内容
+        if ok and self.current_row is not None and self.current_column is not None:
+            self.setItem(self.current_row, self.current_column, QTableWidgetItem(option))
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
+    table = CustomTableWidget(3, 3)
+
+    # 添加一些示例数据
+    for i in range(3):
+        for j in range(3):
+            table.setItem(i, j, QTableWidgetItem(f"Item {i+1},{j+1}"))
+
+    table.show()
     sys.exit(app.exec_())
