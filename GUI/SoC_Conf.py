@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QComboBox, QPushButton, QHBoxLayout, QMessageBox
-
+ 
 class GPIOConfigurator(QWidget):
     def __init__(self, gpio_count=8):
         super().__init__()
