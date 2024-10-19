@@ -1,30 +1,13 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget, QPushButton, QMenu, QAction
+from PyQt5.QtWidgets import QApplication, QTableWidget, QTableWidgetItem, QVBoxLayout,  QPushButton, QMenu, QDialog, QHBoxLayout
 from PyQt5.QtGui import QIcon, QColor, QFont, QPainter, QLinearGradient
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt
 
-# 设备
-# DEVICES = {"GPIO": ["GPIOA", "GPIOB"],
-#            "UART": ["UART1", "UART2", "UART3"],
-#            "SPI": ["SPI1", "SPI2"],
-#            "I2C": ["I2C1", "I2C2"],
-#            "TIM": ["TIM1", "TIM2", "TIM3", "TIM4"],
-#            "WDG": ["IWDG", "WWDG"]}
-DEVICES = {"GPIO": ["GPIOA"],
-           "UART": [],
-           "SPI": [],
-           "I2C": [],
-           "TIM": [],
-           "WDG": []}
-
-class GPIOTableWidget(QTableWidget):
+class GPIOConfTable(QTableWidget):
     def __init__(self):
         super().__init__(0, 0)
         self.current_row = None
         self.current_column = None
-
-        # 定义信号
-        self.actionTriggered = pyqtSignal(str)
 
         # 要设置渐变色的单元格
         self.gradient_cells = []
@@ -74,110 +57,9 @@ class GPIOTableWidget(QTableWidget):
                     item.setBackground(QColor('white'))  # 如果是淡绿色，则恢复为默认的白色
                 else:
                     item.setBackground(QColor('lightgreen'))  # 否则，将其设置为淡绿色
-        # elif event.button() == Qt.RightButton:
-        #     try:
-        #         if self.current_row > 0 and self.current_column == 0:
-        #             type = self.item(self.current_row, 0).text()
-        #             if type == "PIN":
-        #                 self.create_menu(["+ GPIO"], event.pos())
-        #             else:
-        #                 self.create_menu(["+ UART", "+ SPI", "+ I2C", "+ TIM"], event.pos(), "DEVICE")
-        #         else:
-        #             device_name = self.item(self.current_row, 0).text()
-        #             self.context_menu(event.pos(), device_name)
-        #     except:
-        #         return
         else:
             # 调用父类的默认行为
             super().mousePressEvent(event)
-
-    # # 添加设备
-    # def add_device(self, device_name):
-    #     pass
-
-    # def context_menu(self, position, device_name):
-    #     # 根据设备类型创建右键菜单
-    #     device = ''.join(filter(str.isalpha, device_name))  # 提取字母
-    #     num = ''.join(filter(str.isdigit, device_name))   # 提取数字
-    #     if device == "UART":
-    #         if self.chech_row():
-    #             menu_list = [f"RX{num}", f"TX{num}", ""]
-    #         else:
-    #             menu_list = [f"TX{num}", ""]  # 删除 RX
-    #     elif device == "SPI":
-    #         if self.chech_row():
-    #             menu_list = [f"SCK{num}", f"MOSI{num}", f"MISO{num}", f"CS{num}", ""]
-    #         else:
-    #             menu_list = [f"SCK{num}", f"MOSI{num}", f"CS{num}", ""]  # 删除 MISO
-    #     elif device == "I2C":
-    #         menu_list = [f"SCL{num}", f"SDA{num}", ""]
-    #     elif device == "TIM":
-    #         menu_list = [f"T{num}CH1", f"T{num}CH2", f"T{num}CH3", f"T{num}CH4", ""]
-    #     # 根据设备类型创建右键菜单
-    #     if menu_list:
-    #         self.create_menu(menu_list, position)
-
-    # def create_menu(self, menu_list, position, mode="PIN"):
-    #     # 创建右键菜单并连接信号与槽
-    #     menu = QMenu()
-    #     if mode == "PIN":
-    #         for text in menu_list:
-    #             menu_action = menu.addAction(text)
-    #             menu_action.triggered.connect(lambda checked, content=text: self.fill_cell(content))
-    #         # 在点击的地方显示菜单
-    #     elif mode == "DEVICE":
-    #         for text in menu_list:
-    #             menu_action = menu.addAction(text)
-    #             menu_action.triggered.connect(lambda checked, content=text: self.add_davice(content))
-    #     menu.exec_(self.viewport().mapToGlobal(position))
-
-    # def chech_row(self):
-    #     # 检查是否已经使用 RX MISO
-    #     for j in range(self.columnCount() - 1):
-    #         try:
-    #             if ''.join(filter(str.isalpha, self.item(self.current_row, j + 1).text())) in ["RX", "MISO"]:
-    #                 return False
-    #         except:
-    #             pass
-    #     return True
-
-    # # 检查列是否有值
-    # def chech_col(self):
-    #     col_list = []
-    #     for i in range(self.rowCount() - 3):
-    #         try:
-    #             if self.item(i + 3, self.current_column).text():  # 检查单元格是否有内容
-    #                 col_list.append((i + 3, self.current_column))
-    #         except:
-    #             pass
-    #     print(col_list)
-    #     return col_list
-
-    # # 填充单元格内容
-    # def fill_cell(self, content):
-    #     if self.current_row is None or self.current_column is None:
-    #         return  # 如果当前行或列为空，直接返回
-    #     if content:
-    #         col_list = self.chech_col()
-    #         self.item(self.current_row, 0).setBackground(QColor('lightgreen'))
-    #         if col_list == []:  # 检查列是否有值
-    #             self.set_item(2, self.current_column, content, False, "lightgreen")
-    #             self.set_item(self.current_row, self.current_column, content, False, "lightgreen")
-    #         else:
-    #             for item in col_list:
-    #                 self.item(item[0], item[1]).setBackground(QColor('red'))
-    #             self.set_item(2, self.current_column, "", False, "red")
-    #             self.set_item(self.current_row, self.current_column, content, False, "red")
-    #     else:
-    #         self.set_item(self.current_row, self.current_column, "", False, "white")
-    #         col_list = self.chech_col()
-    #         if col_list:
-    #             if len(col_list) == 1:  # 列只有一个值
-    #                 text = self.item(col_list[0][0], col_list[0][1]).text()
-    #                 self.set_item(2, self.current_column, text, False, "lightgreen")
-    #                 self.item(col_list[0][0], col_list[0][1]).setBackground(QColor('lightgreen'))
-    #         else:
-    #             self.set_item(2, self.current_column, "", False, "white")
 
     # 设置单元格内容
     def set_item(self, row, column, text, writeable=True, color=None, font_size=7):
@@ -201,12 +83,13 @@ class GPIOTableWidget(QTableWidget):
             self.item(row, column).setBackground(QColor(color))
 
 
-
-class GPIOTable(QWidget):
+class GPIOConf(QDialog):
+# class GPIOConf(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.folded_rows = {}  # 用于跟踪展开/折叠状态
+        self.DEVICES = {"GPIO": ["A"], "UART": [], "SPI": [], "I2C": [], "TIM": [], "WDG": []}  # 设备
+        self.gpio_config = {}  # 用于存储GPIO配置
         self.row_indexes = {}  # 用于存储每个设备对应的行索引
         self.row = 0
         self.col = 0
@@ -221,8 +104,7 @@ class GPIOTable(QWidget):
         self.resize(950, 450)  # 窗口大小
 
         # 创建表格
-        self.table = GPIOTableWidget()
-        # self.table.actionTriggered.connect(self.update_table)
+        self.table = GPIOConfTable()
         # 设置单元格格式
         self.update_table()
 
@@ -230,23 +112,65 @@ class GPIOTable(QWidget):
         self.table.setContextMenuPolicy(Qt.CustomContextMenu)
         self.table.customContextMenuRequested.connect(self.menu)
 
+        # 水平布局用于按钮
+        button = QHBoxLayout()
+        clear_button = QPushButton("Clear")
+        clear_button.clicked.connect(self.clear_table)
+        button.addWidget(clear_button)
+        generate_button = QPushButton("Gen")
+        generate_button.clicked.connect(self.Gen)
+        button.addWidget(generate_button)
+
         # 创建布局并将表格加入
         layout = QVBoxLayout()
         layout.addWidget(self.table)
+        layout.addLayout(button)
         self.setLayout(layout)
+
+    # 清除表格内容
+    def clear_table(self):
+        self.DEVICES = {"GPIO": ["A"], "UART": [], "SPI": [], "I2C": [], "TIM": [], "WDG": []}  # 设备
+        self.update_table()
+
+    # 生成配置
+    def Gen(self):
+        # 读取表格内容
+        self.gpio_config = {}
+        for i, gpio in enumerate(self.DEVICES["GPIO"]):
+            self.gpio_config[gpio] = []
+            for j in range(1, 16):
+                port = self.table.item(2, i*16+j).text()
+                if port == "":
+                    self.gpio_config[gpio].append(port)
+                    continue
+                device_type, device_num, port_name = self.get_device_type(port)
+                port = device_type + device_num + "_" + port_name
+                self.gpio_config[gpio].append(port)
+        # 退出窗口
+        self.accept()
+
+    def get_device_type(self, port):
+        device_map = { "RX": "UART", "TX": "UART", "SCK": "SPI", "MOSI": "SPI", 
+                       "MISO": "SPI", "CS": "SPI", "SCL": "I2C", "SDA": "I2C"}
+        port_name = port[:-1]  # 去掉最后的数字
+
+        if port_name in device_map:
+            return device_map[port_name], port[-1], port_name
+        elif port_name.endswith("CH"):
+            return "TIM", port[1], "CH"+port[-1]
 
     def update_table(self):
         # 重置表格
         self.table.setRowCount(0)
         self.table.setColumnCount(0)
-        self.table.setColumnCount(len(DEVICES["GPIO"])*16+1)
+        self.table.setColumnCount(len(self.DEVICES["GPIO"])*16+1)
 
         # 第一行
         self.table.insertRow(self.table.rowCount())
         self.table.set_item(0, 0, "", False, font_size=10)
-        for j, gpio in enumerate(DEVICES["GPIO"]):
+        for j, gpio in enumerate(self.DEVICES["GPIO"]):
             self.table.setSpan(0, 16*j+1, 1, 16)  # 合并单元格
-            self.table.set_item(0, 16*j+1, gpio, False, font_size=10)
+            self.table.set_item(0, 16*j+1, "GPIO"+gpio, False, font_size=10)
         # 第二行、第三行
         self.table.insertRow(self.table.rowCount())
         self.table.insertRow(self.table.rowCount())
@@ -259,8 +183,6 @@ class GPIOTable(QWidget):
                 item_row3 = ""
             self.table.set_item(1, j, item_row2, False, font_size=10)
             self.table.set_item(2, j, item_row3, False, font_size=10)
-
-        print(self.table.rowCount())
 
         # 后续行 添加所需组件
         for component in ["UART", "SPI", "I2C", "TIM", "WDG"]:
@@ -279,7 +201,7 @@ class GPIOTable(QWidget):
     # 添加行
     def add_row(self, dev):
         # 如果设备没有配置，则直接返回
-        if DEVICES[dev] == []:
+        if self.DEVICES[dev] == []:
             return
 
         # 记录当前设备的行索引
@@ -292,6 +214,7 @@ class GPIOTable(QWidget):
         # 创建一个按钮用于折叠/展开
         fold_button = QPushButton(dev)
         fold_button.setCheckable(True)
+        fold_button.setChecked(True)  # 设置为默认选中状态
         fold_button.toggled.connect(lambda checked, device=dev: self.fold_row(device, checked))
         self.table.setCellWidget(current_row, 0, fold_button)
         # 其他行合并
@@ -300,38 +223,28 @@ class GPIOTable(QWidget):
         current_row += 1
 
         # 插入项目并记录行索引
-        for item in DEVICES[dev]:
+        for item in self.DEVICES[dev]:
             self.table.insertRow(current_row)
-            self.table.set_item(current_row, 0, item, False, font_size=8)
+            self.table.set_item(current_row, 0, dev+item, False, font_size=8)
             for j in range(1, self.table.columnCount()):
                 self.table.set_item(current_row, j, "", False)  # 设置不可编辑的空白单元格
             self.row_indexes[dev].append(current_row)  # 记录行索引
             current_row += 1
 
-        # self.table.insertRow(current_row)
-        # add_button = QPushButton("+")
-        # # add_button.toggled.connect(lambda checked, device=dev: self.fold_row(device, checked))
-        # self.table.setCellWidget(current_row, 0, add_button)
-        # self.row_indexes[dev].append(current_row)
-
-        self.fold_row(dev, False)  # 默认折叠
+        self.fold_row(dev, True)  # 默认不折叠
 
     def fold_row(self, dev, checked):
         # 获取当前设备的项目行索引
         if dev not in self.row_indexes:
             return
-
         if checked:  # 如果按钮被检查（展开）
             # 显示项目行
             for row in self.row_indexes[dev]:
                 self.table.setRowHidden(row, False)
-            self.folded_rows[dev] = False  # 更新状态为展开
         else:  # 如果按钮未被检查（折叠）
             # 隐藏项目行
             for row in self.row_indexes[dev]:
                 self.table.setRowHidden(row, True)
-            self.folded_rows[dev] = True  # 更新状态为折叠
-
 
     # 右键菜单
     def menu(self, position):
@@ -347,8 +260,8 @@ class GPIOTable(QWidget):
                     self.create_menu(["+ UART", "+ SPI", "+ I2C", "+ TIM"], position, "DEVICE")
             else:
                 device_name = self.table.item(self.row, 0).text()
-                device = ''.join(filter(str.isalpha, device_name))  # 提取字母
-                num = ''.join(filter(str.isdigit, device_name))  # 提取数字
+                device = device_name[:-1]  # 提取字母
+                num = device_name[-1]  # 提取数字
                 if device == "UART":
                     if self.chech_row():
                         menu_list = [f"RX{num}", f"TX{num}", ""]
@@ -402,22 +315,20 @@ class GPIOTable(QWidget):
                     col_list.append((i + 3, self.col))
             except:
                 pass
-        print(col_list)
         return col_list
 
     # 添加设备
     def add_device(self, device_name):
         if device_name == "+ GPIO":
-            DEVICES["GPIO"].append(f"GPIO{chr(ord('A') + len(DEVICES['GPIO']))}")
-            # DEVICES["GPIO"].append(f"GPIO{len(DEVICES['GPIO'])+1}")
+            self.DEVICES["GPIO"].append(f"{chr(ord('A') + len(self.DEVICES['GPIO']))}")
         elif device_name == "+ UART":
-            DEVICES["UART"].append(f"UART{len(DEVICES['UART'])+1}")
+            self.DEVICES["UART"].append(f"{len(self.DEVICES['UART'])+1}")
         elif device_name == "+ SPI":
-            DEVICES["SPI"].append(f"SPI{len(DEVICES['SPI'])+1}")
+            self.DEVICES["SPI"].append(f"{len(self.DEVICES['SPI'])+1}")
         elif device_name == "+ I2C":
-            DEVICES["I2C"].append(f"I2C{len(DEVICES['I2C'])+1}")
+            self.DEVICES["I2C"].append(f"{len(self.DEVICES['I2C'])+1}")
         elif device_name == "+ TIM":
-            DEVICES["TIM"].append(f"TIM{len(DEVICES['TIM'])+1}")
+            self.DEVICES["TIM"].append(f"{len(self.DEVICES['TIM'])+1}")
         self.update_table()
 
     # 填充单元格内容
@@ -445,11 +356,13 @@ class GPIOTable(QWidget):
                     self.table.item(col_list[0][0], col_list[0][1]).setBackground(QColor('lightgreen'))
             else:
                 self.table.set_item(2, self.col, "", False, "white")
-
+    
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = GPIOTable()
+    window = GPIOConf()
     window.show()
     sys.exit(app.exec_())
+
+
