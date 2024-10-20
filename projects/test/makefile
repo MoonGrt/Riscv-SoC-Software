@@ -13,7 +13,7 @@ SRCS = $(wildcard libs/*.c) \
        $(wildcard src/*.cpp) \
        $(wildcard src/*.S)
 
-INC += -I libs
+INC += -I./libs -I./src
 LDSCRIPT = linker.ld
 
 include ../../resources/gcc.mk
