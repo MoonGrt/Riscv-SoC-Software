@@ -52,6 +52,12 @@ trap_entry:
   mret
   .text
 
+
+
+
+
+
+
 crtInit:
   .option push
   .option norelax
@@ -88,6 +94,7 @@ ctors_done:
   li a0, 0x1808     //1808 enable interrupts
   csrw mstatus,a0
 
+  /* 跳转到 main */
   call main
 infinitLoop:
   j infinitLoop

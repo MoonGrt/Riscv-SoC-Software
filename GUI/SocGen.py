@@ -18,7 +18,7 @@ class SocGen():
         Connection = ""
         for GPIO_port, AFIO in self.GPIOS.items():
             AFIO_connection = ""
-            for i, pin in enumerate(reversed(AFIO)):
+            for i, pin in enumerate(AFIO):
                 if pin:
                     _, type = pin.split("_", 1)
                     if type in ["RX", "MISO"]:
