@@ -24,6 +24,7 @@
         "rtdef.h": "c",
         "rtservice.h": "c",
         "printf.h": "c",
-        "uart.h": "c"
+        "uart.h": "c",
+        "config.h": "c"
     }
 }

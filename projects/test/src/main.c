@@ -10,7 +10,7 @@ void demo_PWM(void);
 
 void main()
 {
-    // demo_GPIO();
+    demo_GPIO();
     demo_USART();
     // demo_I2C();
     // demo_SPI();

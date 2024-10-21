@@ -6,6 +6,7 @@ typedef enum { DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
 typedef enum { ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 
 #include <stdint.h>
+#include "config.h"
 
 /*!< Base memory map */
 #define SRAM_BASE ((uint32_t)0x00000000)   /*!< SRAM base address */
@@ -129,6 +130,7 @@ void assert_failed(uint8_t *file, uint32_t line); // customization
 #include "timer.h"
 #include "interrupt.h"
 #include "vga.h"
+#include "uart.h"
 
 // #define CORE_HZ 12000000
 #define CORE_HZ 1200000

@@ -1,6 +1,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "iwdg.h"
+#ifdef MURAX_IWDG
 
 /** @defgroup IWDG_Private_Defines
  * @{
@@ -109,5 +110,7 @@ FlagStatus IWDG_GetFlagStatus(uint16_t IWDG_FLAG)
     /* Return the flag status */
     return bitstatus;
 }
+
+#endif /* MURAX_IWDG */
 
 /******************* END OF FILE *******************/

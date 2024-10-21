@@ -1,8 +1,8 @@
 #ifndef __CONFIG_H_
 #define __CONFIG_H_
 
-// #define MURAX_GPIO
-// #define MURAX_USART
+#define MURAX_GPIO
+#define MURAX_USART
 // #define MURAX_TIM
 // #define MURAX_PWM
 // #define MURAX_I2C

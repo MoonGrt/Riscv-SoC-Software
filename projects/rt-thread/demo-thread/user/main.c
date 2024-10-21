@@ -13,25 +13,26 @@ struct rt_thread rt_thread2;
 
 ALIGN(RT_ALIGN_SIZE)
 /* 定义线程栈 */
-rt_uint8_t rt_thread1_stack[256];
-rt_uint8_t rt_thread2_stack[256];
+rt_uint8_t rt_thread1_stack[512];
+rt_uint8_t rt_thread2_stack[512];
 
 /* 软件延时 */
 void delay(unsigned int count)
 {
     // count *= 50000;
-    count *= 500;
-    for(; count != 0; count--);
+    count *= 100;
+    for (; count != 0; count--)
+        ;
 }
 
 /* 线程 1 入口函数 */
 void thread_1_entry(void *p_arg)
 {
-    for ( ;; ) 
+    for (;;)
     {
         USART_SendData(USART1, '1');
         // printf("Th1\n");
-        delay(100);
+        delay(1);
         rt_schedule();
     }
 }
@@ -39,11 +40,11 @@ void thread_1_entry(void *p_arg)
 /* 线程 2 入口函数 */
 void thread_2_entry(void *p_arg)
 {
-    for ( ;; ) 
+    for (;;)
     {
         USART_SendData(USART1, '2');
         // printf("Th2\n");
-        delay(100);
+        delay(1);
         rt_schedule();
     }
 }
@@ -72,7 +73,7 @@ void USART_init(void)
     USART_InitStructure.USART_StopBits = USART_StopBits_1;                          // 停止位，选择1位
     USART_InitStructure.USART_WordLength = USART_WordLength_8b;                     // 字长，选择8位
     USART_Init(USART1, &USART_InitStructure);                                       // 将结构体变量交给USART_Init，配置USART1
-    // /*中断输出配置*/
+    /*中断输出配置*/
     // USART_ITConfig(USART1, USART_IT_RXNE, ENABLE); // 开启串口接收数据的中断
 
     /*USART使能*/
@@ -86,13 +87,9 @@ void USART_init(void)
 int main(void)
 {
     /* 硬件初始化 */
-    // rt_hw_interrupt_disable(); /* 关中断 */
+    rt_hw_interrupt_disable(); /* 关中断 */
     // uart_init(); /* uart init */
     USART_init();
-
-    /*!< old GPIO */
-    GPIO_A->OUTPUT_ENABLE = 0x000000FF;
-    GPIO_A->OUTPUT = 0x00000001;
 
     /* 调度器初始化 */
     rt_system_scheduler_init();
@@ -114,12 +111,11 @@ int main(void)
                    sizeof(rt_thread2_stack)); /* 线程栈大小 */
     /* 将线程插入就绪列表 */
     rt_list_insert_before(&(rt_thread_priority_table[1]), &(rt_thread2.tlist));
-    
+
     /* 启动系统调度器 */
     rt_system_scheduler_start();
 }
 
 void irqCallback()
 {
-
 }

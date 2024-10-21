@@ -6,6 +6,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "murax.h"
 
+#ifdef MURAX_GPIO
+
 /** @defgroup GPIO_Exported_Types
  * @{
  */
@@ -19,12 +21,6 @@ typedef struct
     volatile uint32_t BRR;  // +20 0x10100
     volatile uint32_t LCKR; // +24 0x11000
 } GPIO_TypeDef;
-typedef struct
-{
-    volatile uint32_t INPUT;         // +0 0x0000
-    volatile uint32_t OUTPUT;        // +4 0x0100
-    volatile uint32_t OUTPUT_ENABLE; // +8 0x1000
-} Gpio_Reg;                          // old
 // typedef struct
 // {
 //     volatile uint32_t EVCR;
@@ -166,4 +162,5 @@ void GPIO_ResetBits(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin);
 void GPIO_WriteBit(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, BitAction BitVal);
 void GPIO_Write(GPIO_TypeDef *GPIOx, uint16_t PortVal);
 
+#endif /* MURAX_GPIO */
 #endif /* __GPIO_H */

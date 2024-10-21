@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "murax.h": "c",
+        "config.h": "c"
+    }
+}

@@ -5,6 +5,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "murax.h"
+#ifdef MURAX_TIM
 
 /** @defgroup TIM_Exported_Types
  * @{
@@ -925,4 +926,5 @@ void TIM_ClearFlag(TIM_TypeDef *TIMx, uint16_t TIM_FLAG);
 ITStatus TIM_GetITStatus(TIM_TypeDef *TIMx, uint16_t TIM_IT);
 void TIM_ClearITPendingBit(TIM_TypeDef *TIMx, uint16_t TIM_IT);
 
-#endif /*__TIM_H */
+#endif /* MURAX_TIM */
+#endif /* __TIM_H */

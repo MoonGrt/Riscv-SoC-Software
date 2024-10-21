@@ -88,8 +88,7 @@ class GPIOConf(QDialog):
         super().__init__()
 
         self.DEVICES = {}  # 设备
-        self.gpio_config = {}  # 用于存储GPIO配置
-        self.row_indexes = {}  # 用于存储每个设备对应的行索引
+        self.dev_rows = {}  # 用于存储每个设备对应的行索引
         self.row = 0
         self.col = 0
 
@@ -154,18 +153,16 @@ class GPIOConf(QDialog):
 
     # 生成配置
     def Gen(self):
-        # 读取表格内容
-        self.gpio_config = {}
         for i, gpio in enumerate(self.DEVICES["GPIO"]):
-            self.gpio_config[gpio] = []
+            self.DEVICES["GPIO"][gpio] = []
             for j in range(1, 17):
                 port = self.table.item(2, i*16+j).text()
                 if port == "":
-                    self.gpio_config[gpio].append(port)
+                    self.DEVICES["GPIO"][gpio].append(port)
                     continue
                 device_type, device_num, port_name = self.get_device_type(port)
                 port = device_type + device_num + "_" + port_name
-                self.gpio_config[gpio].append(port)
+                self.DEVICES["GPIO"][gpio].append(port)
         # 退出窗口
         self.accept()
 
@@ -224,22 +221,22 @@ class GPIOConf(QDialog):
             for index, (name, port) in enumerate(self.DEVICES[component].items()):
                 # 判断字典的状态
                 if all(not value for value in port.values()):
-                    self.table.item(self.row_indexes[component][index+1], 0).setBackground(QColor("white"))
+                    self.table.item(self.dev_rows[component][index+1], 0).setBackground(QColor("white"))
                 elif all(value for value in port.values()):
-                    self.table.item(self.row_indexes[component][index+1], 0).setBackground(QColor("lightgreen"))
+                    self.table.item(self.dev_rows[component][index+1], 0).setBackground(QColor("lightgreen"))
                 else:
-                    self.table.item(self.row_indexes[component][index+1], 0).setBackground(QColor("yellow"))
+                    self.table.item(self.dev_rows[component][index+1], 0).setBackground(QColor("yellow"))
 
         for index, (name, state) in enumerate(self.DEVICES["WDG"].items()):
             if state:
-                self.table.item(self.row_indexes["WDG"][index+1], 0).setBackground(QColor("lightgreen"))
+                self.table.item(self.dev_rows["WDG"][index+1], 0).setBackground(QColor("lightgreen"))
             else:
-                self.table.item(self.row_indexes["WDG"][index+1], 0).setBackground(QColor("white"))
+                self.table.item(self.dev_rows["WDG"][index+1], 0).setBackground(QColor("white"))
 
     def update_AFIO_state(self):
         for j in range(self.table.columnCount() - 1):
             col_list = []
-            for _, rows in self.row_indexes.items():
+            for _, rows in self.dev_rows.items():
                 try:
                     text = self.table.item(rows[0], j + 1).text()
                     color = self.table.item(rows[0], j + 1).background().color()
@@ -263,8 +260,8 @@ class GPIOConf(QDialog):
         current_row = self.table.rowCount()
 
         # 记录当前设备的行索引
-        self.row_indexes[dev] = []
-        self.row_indexes[dev].append(current_row)
+        self.dev_rows[dev] = []
+        self.dev_rows[dev].append(current_row)
 
         # 添加新行
         self.table.insertRow(current_row)
@@ -301,28 +298,28 @@ class GPIOConf(QDialog):
                             else:
                                 text = key+name
                     if text:
-                        self.table.set_item(self.row_indexes[dev][0], j+1, text, False, "lightgreen")  # 设置不可编辑的单元格
+                        self.table.set_item(self.dev_rows[dev][0], j+1, text, False, "lightgreen")  # 设置不可编辑的单元格
                         self.table.set_item(current_row, j+1, text, False, "lightgreen")  # 设置不可编辑的单元格
                     else:
                         self.table.set_item(current_row, j+1, "", False)  # 设置不可编辑的空白单元格
-            self.row_indexes[dev].append(current_row)  # 记录行索引
+            self.dev_rows[dev].append(current_row)  # 记录行索引
             current_row += 1
 
         self.fold_row(dev, fold_button.isChecked())
 
     def fold_row(self, dev, checked):
         # 获取当前设备的项目行索引
-        if dev not in self.row_indexes:
+        if dev not in self.dev_rows:
             return
         if checked:  # 如果按钮被检查（展开）
             # 显示项目行
-            for index, row in enumerate(self.row_indexes[dev]):
+            for index, row in enumerate(self.dev_rows[dev]):
                 if index == 0:
                     continue  # 跳过第一个元素
                 self.table.setRowHidden(row, False)
         else:  # 如果按钮未被检查（折叠）
             # 隐藏项目行
-            for index, row in enumerate(self.row_indexes[dev]):
+            for index, row in enumerate(self.dev_rows[dev]):
                 if index == 0:
                     continue  # 跳过第一个元素
                 self.table.setRowHidden(row, True)
@@ -389,7 +386,7 @@ class GPIOConf(QDialog):
 
     # 检查列是否合法
     def chech_col(self):
-        for dev, rows in self.row_indexes.items():
+        for dev, rows in self.dev_rows.items():
             if self.row in rows:
                 col_list = []
                 for index, row in enumerate(rows):
@@ -401,13 +398,13 @@ class GPIOConf(QDialog):
                     except:
                         pass
                 if len(col_list) == 0:
-                    self.table.set_item(self.row_indexes[dev][0], self.col, "", False, "white")
+                    self.table.set_item(self.dev_rows[dev][0], self.col, "", False, "white")
                 elif len(col_list) == 1:
                     text = self.table.item(col_list[0][0], self.col).text()
                     self.table.item(col_list[0][0], self.col).setBackground(QColor('lightgreen'))
-                    self.table.set_item(self.row_indexes[dev][0], self.col, text, False, "lightgreen")
+                    self.table.set_item(self.dev_rows[dev][0], self.col, text, False, "lightgreen")
                 else:
-                    self.table.set_item(self.row_indexes[dev][0], self.col, "", False, "red")
+                    self.table.set_item(self.dev_rows[dev][0], self.col, "", False, "red")
                     for item in col_list:
                         self.table.item(item[0], self.col).setBackground(QColor('red'))
                 break

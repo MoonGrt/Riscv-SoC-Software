@@ -3,60 +3,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "murax.h"
-
-/*---------------------------------------------------------------old--------------------------------------------------------------*/
-
-typedef struct
-{
-    volatile uint32_t DATA;
-    volatile uint32_t STATUS;
-    volatile uint32_t CLOCK_DIVIDER;
-    volatile uint32_t FRAME_CONFIG;
-} Uart_Reg;
-
-enum UartParity
-{
-    NONE = 0,
-    EVEN = 1,
-    ODD = 2
-};
-enum UartStop
-{
-    ONE = 0,
-    TWO = 1
-};
-
-typedef struct
-{
-    uint32_t dataLength;
-    enum UartParity parity;
-    enum UartStop stop;
-    uint32_t clockDivider;
-} Uart_Config;
-
-static uint32_t uart_writeAvailability(Uart_Reg *reg)
-{
-    return (reg->STATUS >> 16) & 0xFF;
-}
-static uint32_t uart_readOccupancy(Uart_Reg *reg)
-{
-    return reg->STATUS >> 24;
-}
-
-static void uart_write(Uart_Reg *reg, uint32_t data)
-{
-    while (uart_writeAvailability(reg) == 0)
-        ;
-    reg->DATA = data;
-}
-
-static void uart_applyConfig(Uart_Reg *reg, Uart_Config *config)
-{
-    reg->CLOCK_DIVIDER = config->clockDivider;
-    reg->FRAME_CONFIG = ((config->dataLength - 1) << 0) | (config->parity << 8) | (config->stop << 16);
-}
-
-/*---------------------------------------------------------------new--------------------------------------------------------------*/
+#ifdef MURAX_USART
 
 /** @defgroup USART_Exported_Types
  * @{
@@ -335,4 +282,5 @@ ITStatus USART_GetITStatus(USART_TypeDef *USARTx, uint16_t USART_IT);
 void USART_ClearITPendingBit(USART_TypeDef *USARTx, uint16_t USART_IT);
 // extern int fputc(int ch, FILE *f);  // 重定向c库函数printf  
 
+#endif /* MURAX_USART */
 #endif /* __USART_H_ */

@@ -11,50 +11,12 @@ void demo_PWM(void);
 void main()
 {
     // demo_GPIO();
-    demo_USART();
+    // demo_USART();
     // demo_I2C();
     // demo_SPI();
     // demo_TIM();
     // demo_PWM();
     // demo_WDG();
-
-    /*!< old */
-    // GPIO
-    GPIO_A->OUTPUT_ENABLE = 0x000000FF;
-    GPIO_A->OUTPUT = 0x00000001;
-
-    // UART
-    Uart_Config uartConfig;
-    uartConfig.dataLength = 8;
-    uartConfig.parity = NONE;
-    uartConfig.stop = ONE;
-    uartConfig.clockDivider = CORE_HZ / UART_SAMPLE_PER_BAUD / 115200 - 1;
-    uart_applyConfig(UART, &uartConfig);
-    // UART->STATUS = 2; // Enable RX interrupts
-    UART->DATA = 'A';
-    UART->DATA = 'B';
-
-    // TIMER
-    // interruptCtrl_init(TIMER_INTERRUPT);
-    // prescaler_init(TIMER_PRESCALER);
-    // timer_init(TIMER_A);
-
-    // TIMER_PRESCALER->LIMIT = 12000 - 1; // 1 ms rate
-    // TIMER_A->LIMIT = 1000 - 1; // 1 second rate
-    // TIMER_A->CLEARS_TICKS = 0x00010002;
-    // TIMER_INTERRUPT->PENDINGS = 0xF;
-    // TIMER_INTERRUPT->MASKS = 0x1;
-
-    // volatile uint32_t a = 1, b = 2, c = 3;
-    // uint32_t result = 0;
-    // while (1)
-    // {
-    //     result += a;
-    //     result += b + c;
-    //     for (uint32_t idx = 0; idx < 50000; idx++)
-    //         asm volatile("");
-    //     GPIO_A->OUTPUT = (GPIO_A->OUTPUT & ~0x3F) | ((GPIO_A->OUTPUT + 1) & 0x3F); // Counter on LED[5:0]
-    // }
 }
 
 uint8_t Serial_RxData; // 定义串口接收的数据变量
@@ -84,17 +46,6 @@ void irqCallback()
                                                     // 否则中断将连续不断地触发，导致主程序卡死
     }
 #endif
-
-    /*!< old */
-    // if (TIMER_INTERRUPT->PENDINGS & 1)
-    // {                           // Timer A interrupt
-    //     GPIO_A->OUTPUT ^= 0x80; // Toogle led 7
-    //     TIMER_INTERRUPT->PENDINGS = 1;
-    // }
-    // while (UART->STATUS & (1 << 9))
-    // { // UART RX interrupt
-    //     UART->DATA = (UART->DATA) & 0xFF;
-    // }
 }
 
 

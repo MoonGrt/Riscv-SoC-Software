@@ -11,7 +11,7 @@ OUTPUT_ARCH(riscv)
 ENTRY(crtStart)
 
 MEMORY {
-  onChipRam : ORIGIN = 0x80000000, LENGTH = 32k
+  onChipRam : ORIGIN = 0x80000000, LENGTH = 256k
 }
 
 _stack_size = DEFINED(_stack_size) ? _stack_size : 512;

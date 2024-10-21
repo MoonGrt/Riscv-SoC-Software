@@ -1,6 +1,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "gpio.h"
+#ifdef MURAX_GPIO
 
 /** @defgroup GPIO_Private_Defines
  * @{
@@ -313,5 +314,7 @@ void GPIO_Write(GPIO_TypeDef *GPIOx, uint16_t PortVal)
 
     GPIOx->ODR = PortVal;
 }
+
+#endif /* MURAX_GPIO */
 
 /******************* END OF FILE *******************/
