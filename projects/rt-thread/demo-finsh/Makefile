@@ -1,6 +1,6 @@
 # make clean && make
 
-PROJ_NAME = rtthread
+PROJ_NAME = finsh
 DEBUG = no
 BENCH = no
 FUNC_OPT = yes

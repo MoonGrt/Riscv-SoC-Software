@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include "murax.h"
 
+#ifdef MURAX_USART
+
 extern char *malloc();
 extern void putchar(char c);
 extern int printf(const char *format, ...);
@@ -98,3 +100,5 @@ int puts(char *s)
     putchar('\n');
     return 0;
 }
+
+#endif /* MURAX_USART */

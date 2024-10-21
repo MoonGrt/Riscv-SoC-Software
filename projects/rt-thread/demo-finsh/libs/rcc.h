@@ -1,10 +1,12 @@
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F10x_RCC_H
-#define __STM32F10x_RCC_H
+#ifndef __RCC_H
+#define __RCC_H
 
 /* Includes ------------------------------------------------------------------*/
 #include "murax.h"
+
+#ifdef MURAX_RCC
 
 /** @addtogroup STM32F10x_StdPeriph_Driver
  * @{
@@ -680,4 +682,5 @@ void RCC_ClearFlag(void);
 ITStatus RCC_GetITStatus(uint8_t RCC_IT);
 void RCC_ClearITPendingBit(uint8_t RCC_IT);
 
-#endif /* __STM32F10x_RCC_H */
+#endif /* MURAX_RCC */
+#endif /* __RCC_H */

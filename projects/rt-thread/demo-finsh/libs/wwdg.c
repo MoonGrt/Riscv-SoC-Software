@@ -1,6 +1,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "wwdg.h"
+#ifdef MURAX_WWDG
 
 /** @defgroup WWDG_Private_Defines
  * @{
@@ -128,5 +129,7 @@ void WWDG_ClearFlag(void)
 {
     WWDG->SR = (uint32_t)RESET;
 }
+
+#endif /* MURAX_WWDG */
 
 /******************* END OF FILE *******************/

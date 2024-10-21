@@ -30,9 +30,8 @@ void thread_1_entry(void *p_arg)
 {
     for (;;)
     {
-        USART_SendData(USART1, '1');
-        // printf("Th1\n");
-        delay(1);
+        printf("Th1\n");
+        delay(1);  // 软件延时 被优化 (DEBUG = yes)
         rt_schedule();
     }
 }
@@ -42,8 +41,7 @@ void thread_2_entry(void *p_arg)
 {
     for (;;)
     {
-        USART_SendData(USART1, '2');
-        // printf("Th2\n");
+        printf("Th2\n");
         delay(1);
         rt_schedule();
     }

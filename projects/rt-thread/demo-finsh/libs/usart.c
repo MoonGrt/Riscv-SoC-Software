@@ -1,6 +1,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
+#ifdef MURAX_USART
 
 /** @defgroup USART_Private_Defines
  * @{
@@ -968,5 +969,7 @@ void USART_ClearITPendingBit(USART_TypeDef *USARTx, uint16_t USART_IT)
 //         ;
 //     return (ch);
 // }
+
+#endif /* MURAX_USART */
 
 /******************* END OF FILE *******************/

@@ -1,6 +1,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "spi.h"
+#ifdef MURAX_SPI
 
 /** @defgroup SPI_Private_Defines
  * @{
@@ -799,5 +800,7 @@ void SPI_I2S_ClearITPendingBit(SPI_TypeDef *SPIx, uint8_t SPI_I2S_IT)
     /* Clear the selected SPI CRC Error (CRCERR) interrupt pending bit */
     SPIx->SR = (uint16_t)~itpos;
 }
+
+#endif /* MURAX_SPI */
 
 /******************* END OF FILE *******************/

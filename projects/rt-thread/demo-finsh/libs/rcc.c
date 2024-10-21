@@ -2,6 +2,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "murax.h"
 
+#ifdef MURAX_RCC
+
 /** @addtogroup STM32F10x_StdPeriph_Driver
  * @{
  */
@@ -1466,3 +1468,5 @@ void RCC_ClearITPendingBit(uint8_t RCC_IT)
  */
 
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/
+
+#endif /* MURAX_RCC */

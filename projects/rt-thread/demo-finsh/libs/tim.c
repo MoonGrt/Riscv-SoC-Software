@@ -1,6 +1,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "tim.h"
+#ifdef MURAX_TIM
 
 /** @defgroup TIM_Private_Defines
  * @{
@@ -2996,5 +2997,7 @@ static void TI4_Config(TIM_TypeDef *TIMx, uint16_t TIM_ICPolarity, uint16_t TIM_
     TIMx->CCMR2 = tmpccmr2;
     TIMx->CCER = tmpccer;
 }
+
+#endif /* MURAX_TIM */
 
 /******************* END OF FILE *******************/
