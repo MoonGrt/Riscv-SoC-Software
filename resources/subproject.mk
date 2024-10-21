@@ -40,7 +40,7 @@ OBJS := $(OBJS:.S=.o)
 OBJS := $(addprefix $(OBJDIR)/,$(OBJS))
 
 all: $(OBJDIR)/$(PROJ_NAME).elf $(OBJDIR)/$(PROJ_NAME).hex $(OBJDIR)/$(PROJ_NAME).asm $(OBJDIR)/$(PROJ_NAME).v
-	@echo "\n$(OBJS)  $(SRCS)\n"
+	@echo "\n$(CFLAGS)\n$(LDFLAGS)\n"
 	@echo "\nBuild successful for project: $(PROJ_NAME)\n"  # Add success message
 
 %.bin: %.elf

@@ -45,14 +45,13 @@ void USART_init(void)
     USART_InitStructure.USART_StopBits = USART_StopBits_1;                          // 停止位，选择1位
     USART_InitStructure.USART_WordLength = USART_WordLength_8b;                     // 字长，选择8位
     USART_Init(USART1, &USART_InitStructure);                                       // 将结构体变量交给USART_Init，配置USART1
-    // /*中断输出配置*/
+    /*中断输出配置*/
     // USART_ITConfig(USART1, USART_IT_RXNE, ENABLE); // 开启串口接收数据的中断
 
     /*USART使能*/
     USART_Cmd(USART1, ENABLE); // 使能USART1，串口开始运行
     /*Send*/
     USART_SendData(USART1, 'A');
-    // printf("Th\n");
 }
 
 /* main 函数 */
@@ -104,6 +103,17 @@ int main(void)
     rt_system_scheduler_start();
 }
 
+void irqCallback()
+{
+}
+
+/* SysTick 中断处理函数 */
+void SysTick_Handler(void)
+{
+    /* 时基更新 */
+    rt_tick_increase();
+}
+
 /* 软件延时 */
 void delay(unsigned int count)
 {
@@ -116,8 +126,8 @@ void thread_1_entry(void *p_arg)
 {
     for ( ;; ) 
     {
-        //printf("Thread 1 running...\r\n");
-        //delay(100);
+        printf("Th1\r\n");
+        delay(1);
     }
 }
 
@@ -126,17 +136,7 @@ void thread_2_entry(void *p_arg)
 {
     for ( ;; ) 
     {
-        //printf("Thread 2 running...\r\n");
-        //delay(100);
+        printf("Th2\r\n");
+        delay(1);
     }
 }
-
-
-/* SysTick 中断处理函数 */
-void SysTick_Handler(void)
-{
-    /* 时基更新 */
-    rt_tick_increase();
-}
-
-

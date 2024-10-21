@@ -5,10 +5,13 @@
 
 #include "finsh.h"
 #include "shell.h"
+#include "murax.h"
 
 #ifdef FINSH_USING_MSH
 #include "msh.h"
 #endif
+
+#define NULL ((void *)0)
 
 #ifndef RT_USING_HEAP
 /* finsh 线程控制块 */
@@ -43,7 +46,8 @@ const char *finsh_get_prompt()
 
 static int finsh_getchar(void)
 {
-	int ch = uart_getc();
+	// int ch = uart_getc();
+    int ch = USART_ReceiveData(USART1);
     
     /* 如果未获取到字符，则让出处理器 */
     if (ch < 0)

@@ -23,4 +23,4 @@ ifeq ($(COMPRESSED),yes)
 endif
 
 CFLAGS += -march=$(MARCH) -mabi=$(MABI)
-LDFLAGS += -march=$(MARCH) -mabi=$(MABI)
+# LDFLAGS += -march=$(MARCH) -mabi=$(MABI)
