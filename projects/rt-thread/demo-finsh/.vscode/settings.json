@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "murax.h": "c",
-        "stdint.h": "c",
-        "config.h": "c",
-        "stddef.h": "c",
-        "finsh_config.h": "c"
-    }
-}

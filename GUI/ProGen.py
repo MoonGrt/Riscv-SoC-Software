@@ -58,37 +58,62 @@ class SocGen():
         self.Top_Connection_Gen()
 
         os.makedirs("output/Hardware", exist_ok=True)
-        output = os.path.join("output/Hardware", 'cyber_malou.v')
+        output = os.path.join("output/Hardware", 'Cyber.v')
         with open(output, 'w') as f:
+            # 基础组件
+            # TOP
             with open("demo/Hardware/Murax.v", 'r', encoding='utf-8') as infile:
                 f.write(infile.read()+"\n")
-            # print("Murax.v has been added to the SoC")
+            print("Murax.v has been added to the SoC")
+            # JTAG
+            with open("demo/Hardware/JtagBridge.v", 'r', encoding='utf-8') as infile:
+                f.write(infile.read()+"\n")
+            print("JtagBridge.v has been added to the SoC")
+            # VexRiscv
+            with open("demo/Hardware/VexRiscv.v", 'r', encoding='utf-8') as infile:
+                f.write(infile.read()+"\n")
+            print("VexRiscv.v has been added to the SoC")
+            # APB3 BUS
+            with open("demo/Hardware/APB3BUS.v", 'r', encoding='utf-8') as infile:
+                f.write(infile.read()+"\n")
+            print("APB3BUS.v has been added to the SoC")
+            # RAM
+            with open("demo/Hardware/RAM.v", 'r', encoding='utf-8') as infile:
+                f.write(infile.read()+"\n")
+            print("RAM.v has been added to the SoC")
 
-            # if self.DEVICES["UART"] != {}:
-            #     with open("demo/Hardware/APB3USART.v", 'r', encoding='utf-8') as infile:
-            #         f.write(infile.read()+"\n")
-            #         print("APB3USART.v has been added to the SoC")
-            # if self.DEVICES["SPI"] != {}:
-            #     with open("demo/Hardware/APB3SPI.v", 'r', encoding='utf-8') as infile:
-            #         f.write(infile.read()+"\n")
-            #         print("APB3SPI.v has been added to the SoC")
-            # if self.DEVICES["I2C"] != {}:
-            #     with open("demo/Hardware/APB3I2C.v", 'r', encoding='utf-8') as infile:
-            #         f.write(infile.read()+"\n")
-            #         print("APB3I2C.v has been added to the SoC")
-            # if self.DEVICES["TIM"] != {}:
-            #     with open("demo/Hardware/APB3TIM.v", 'r', encoding='utf-8') as infile:
-            #         f.write(infile.read()+"\n")
-            #         print("APB3TIM.v has been added to the SoC")
-            # if self.DEVICES["WDG"] != {}:
-            #     with open("demo/Hardware/APB3WDG.v", 'r', encoding='utf-8') as infile:
-            #         f.write(infile.read()+"\n")
-            #         print("APB3WDG.v has been added to the SoC")
+            # Device 生成
+            if self.DEVICES["GPIO"] != {}:
+                self.GPIO_Gen()
+                # with open("demo/Hardware/APB3GPIO.v", 'r', encoding='utf-8') as infile:
+                #     f.write(infile.read()+"\n")
+                #     print("APB3GPIO.v has been added to the SoC")
+
+                # GPIO 连接
+                # if self.DEVICES["UART"] != {}:
+                #     with open("demo/Hardware/APB3USART.v", 'r', encoding='utf-8') as infile:
+                #         f.write(infile.read()+"\n")
+                #         print("APB3USART.v has been added to the SoC")
+                # if self.DEVICES["SPI"] != {}:
+                #     with open("demo/Hardware/APB3SPI.v", 'r', encoding='utf-8') as infile:
+                #         f.write(infile.read()+"\n")
+                #         print("APB3SPI.v has been added to the SoC")
+                # if self.DEVICES["I2C"] != {}:
+                #     with open("demo/Hardware/APB3I2C.v", 'r', encoding='utf-8') as infile:
+                #         f.write(infile.read()+"\n")
+                #         print("APB3I2C.v has been added to the SoC")
+                # if self.DEVICES["TIM"] != {}:
+                #     with open("demo/Hardware/APB3TIM.v", 'r', encoding='utf-8') as infile:
+                #         f.write(infile.read()+"\n")
+                #         print("APB3TIM.v has been added to the SoC")
+                # if self.DEVICES["WDG"] != []:
+                #     with open("demo/Hardware/APB3WDG.v", 'r', encoding='utf-8') as infile:
+                #         f.write(infile.read()+"\n")
+                #         print("APB3WDG.v has been added to the SoC")
 
     def Generate_Software(self):
         if not self.DEVICES:
             return
-
         # 输出目录
         os.makedirs("output/Software", exist_ok=True)
 
@@ -102,9 +127,9 @@ class SocGen():
             # 如果是文件夹，递归复制整个文件夹
             elif os.path.isdir(src_path):
                 shutil.copytree(src_path, dst_path)
-        
+
         self.Generate_BSP()
-    
+
     def Generate_BSP(self):
         GPIO_STR = ""
         UART_STR = ""
@@ -159,10 +184,13 @@ class SocGen():
             WDG_STR += "/*!< WDG */\n"
             WDG_STR += '#include "wdg.h"\n'
             WDG_STR += f"#define WDG_BASE {WDG_BASE}\n"
-            for WDG_port, _ in self.DEVICES["WDG"].items():
-                if WDG_port == "IWDG" & self.DEVICES["WDG"]["IWDG"]:
+            for WDG_port, state in self.DEVICES["WDG"].items():
+                if (WDG_port == "IWDG") & state:
                     WDG_STR += f"#define {WDG_port}_BASE (WDG_BASE + 0x{UART_port}000)\n"
                     WDG_STR += f"#define {WDG_port} ((WDG_TypeDef *) {WDG_port}_BASE)\n"
+                elif (WDG_port == "WWDG") & state:
+                    WDG_STR += f"#define {WDG_port}_BASE (WDG_BASE + 0x{UART_port}000)\n"
+                    WDG_STR += f"#define {WDG_port} ((WWDG_TypeDef *) {WDG_port}_BASE)\n"
 
         print(GPIO_STR)
         print(UART_STR)
@@ -189,5 +217,5 @@ if __name__ == "__main__":
 
     # GPIO 配置
     Soc_Generate.GPIO_Config()
-    
+
     sys.exit()
