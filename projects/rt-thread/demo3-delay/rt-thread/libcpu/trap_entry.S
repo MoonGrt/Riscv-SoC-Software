@@ -1,4 +1,4 @@
-.section        .text.entry
+.section .text.entry
 .align 2
 .globl trap_entry
 trap_entry:

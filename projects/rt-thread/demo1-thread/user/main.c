@@ -19,8 +19,8 @@ rt_uint8_t rt_thread2_stack[512];
 /* 软件延时 */
 void delay(unsigned int count)
 {
-    // count *= 50000;
-    count *= 100;
+    count *= 10000;
+    // count *= 500;
     for (; count != 0; count--)
         ;
 }
@@ -31,7 +31,7 @@ void thread_1_entry(void *p_arg)
     for (;;)
     {
         printf("Th1\n");
-        delay(1);  // 软件延时 被优化 (DEBUG = yes)
+        delay(500);  // 软件延时 被优化 (DEBUG = yes)
         rt_schedule();
     }
 }
@@ -42,7 +42,7 @@ void thread_2_entry(void *p_arg)
     for (;;)
     {
         printf("Th2\n");
-        delay(1);
+        delay(500);
         rt_schedule();
     }
 }

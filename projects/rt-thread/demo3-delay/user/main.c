@@ -64,7 +64,6 @@ int main(void)
     rt_hw_interrupt_disable(); /* 关中断 */
     USART_init();
 
-
     /* 调度器初始化 */
     rt_system_scheduler_init();
 

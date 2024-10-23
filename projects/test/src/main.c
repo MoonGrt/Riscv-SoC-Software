@@ -20,19 +20,19 @@ void main()
 
     /*!< old */
     // GPIO
-    GPIO_A->OUTPUT_ENABLE = 0x000000FF;
-    GPIO_A->OUTPUT = 0x00000001;
+    // GPIO_A->OUTPUT_ENABLE = 0x000000FF;
+    // GPIO_A->OUTPUT = 0x00000001;
 
-    // UART
-    Uart_Config uartConfig;
-    uartConfig.dataLength = 8;
-    uartConfig.parity = NONE;
-    uartConfig.stop = ONE;
-    uartConfig.clockDivider = CORE_HZ / UART_SAMPLE_PER_BAUD / 115200 - 1;
-    uart_applyConfig(UART, &uartConfig);
-    // UART->STATUS = 2; // Enable RX interrupts
-    UART->DATA = 'A';
-    UART->DATA = 'B';
+    // // UART
+    // Uart_Config uartConfig;
+    // uartConfig.dataLength = 8;
+    // uartConfig.parity = NONE;
+    // uartConfig.stop = ONE;
+    // uartConfig.clockDivider = CORE_HZ / UART_SAMPLE_PER_BAUD / 115200 - 1;
+    // uart_applyConfig(UART, &uartConfig);
+    // // UART->STATUS = 2; // Enable RX interrupts
+    // UART->DATA = 'A';
+    // UART->DATA = 'B';
 
     // TIMER
     // interruptCtrl_init(TIMER_INTERRUPT);

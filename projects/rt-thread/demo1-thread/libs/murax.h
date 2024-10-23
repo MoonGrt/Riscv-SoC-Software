@@ -133,7 +133,7 @@ void assert_failed(uint8_t *file, uint32_t line); // customization
 #include "uart.h"
 
 // #define CORE_HZ 12000000
-#define CORE_HZ 1200000
+#define CORE_HZ 50000000
 
 #define GPIO_A ((Gpio_Reg *)(0xF0000000))
 #define GPIO_B ((Gpio_Reg *)(0xF0000010))

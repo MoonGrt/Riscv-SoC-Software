@@ -25,6 +25,7 @@
         "rtservice.h": "c",
         "printf.h": "c",
         "uart.h": "c",
-        "config.h": "c"
+        "config.h": "c",
+        "stm32f10x_rcc.h": "c"
     }
 }
