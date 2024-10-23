@@ -1,6 +1,6 @@
 # make clean && make
 
-PROJ_NAME = test
+PROJ_NAME = boot
 DEBUG = no
 BENCH = no
 FUNC_OPT = yes
