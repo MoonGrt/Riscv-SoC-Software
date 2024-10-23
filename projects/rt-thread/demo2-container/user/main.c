@@ -31,7 +31,6 @@ void USART_init(void)
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOB, &GPIO_InitStructure); // 将PB0引脚初始化为复用推挽输出
-
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -53,6 +52,7 @@ void USART_init(void)
     USART_Cmd(USART1, ENABLE); // 使能USART1，串口开始运行
     /*Send*/
     USART_SendData(USART1, 'A');
+    USART_SendData(USART1, '\n');
 }
 
 /* main 函数 */
@@ -66,7 +66,7 @@ int main(void)
 
     /* 初始化线程 */
     rt_thread_init(&rt_thread1,               /* 线程控制块 */
-                   "th1",                     /* 线程名称，唯一 */
+                   "thread1",                 /* 线程名称，唯一 */
                    thread_1_entry,            /* 线程入口地址 */
                    RT_NULL,                   /* 线程形参 */
                    &rt_thread1_stack[0],      /* 线程栈起始地址 */
@@ -76,7 +76,7 @@ int main(void)
 
     /* 初始化线程 */
     rt_thread_init(&rt_thread2,               /* 线程控制块 */
-                   "th2",                     /* 线程名称，唯一 */
+                   "thread2",                 /* 线程名称，唯一 */
                    thread_2_entry,            /* 线程入口地址 */
                    RT_NULL,                   /* 线程形参 */
                    &rt_thread2_stack[1],      /* 线程栈起始地址 */
@@ -92,8 +92,7 @@ int main(void)
 void delay(unsigned int count)
 {
     count *= 50000;
-    for (; count != 0; count--)
-        ;
+    for(; count != 0; count--);
 }
 
 /* 线程 1 入口函数 */
@@ -101,22 +100,23 @@ void thread_1_entry(void *p_arg)
 {
     struct rt_object_information *information;
 
-    for (;;)
+    for ( ;; ) 
     {
-        printf("Th1\n");
+        printf("Thread 1 running...\n");
         /* 获取线程对象容器 */
         information = rt_object_get_information(RT_Object_Class_Thread);
         struct rt_object *object = RT_NULL;
         struct rt_list_node *index = RT_NULL;
-        struct rt_list_node *head = &(information->object_list);
+	    struct rt_list_node *head = &(information->object_list);
         for (index = head->next; index != head; index = index->next)
         {
             object = rt_list_entry(index, struct rt_object, list);
-            printf("Th_name: %s\n", object->name);
-            printf("Th_type: %d\n", object->type);
-            printf("Th_flag: %d\n", object->flag);
+       
+            printf("th_name: %s\n", object->name);
+            printf("th_type: %d\n", object->type);
+            printf("th_flag: %d\n", object->flag);
         }
-        delay(1);
+        delay(100);
         /* 线程切换 */
         rt_schedule();
     }
@@ -125,10 +125,10 @@ void thread_1_entry(void *p_arg)
 /* 线程 2 入口函数 */
 void thread_2_entry(void *p_arg)
 {
-    for (;;)
+    for ( ;; ) 
     {
-        printf("Th2\n");
-        delay(1);
+        printf("Thread 2 running...\n");
+        delay(100);
         /* 线程切换 */
         rt_schedule();
     }

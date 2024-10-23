@@ -1,13 +1,14 @@
+OUTPUT_FORMAT("elf32-littleriscv", "elf32-littleriscv", "elf32-littleriscv")
 OUTPUT_ARCH( "riscv" )
-ENTRY(crtStart)
+ENTRY(_start)
 
 MEMORY {
-  onChipRam : ORIGIN = 0x80000000, LENGTH = 32k
+  onChipRam : ORIGIN = 0x80000000, LENGTH = 256k
 }
 
 SECTIONS
 {
-   __stack_size = DEFINED(__stack_size) ? __stack_size : 2K;
+  __stack_size = DEFINED(__stack_size) ? __stack_size : 2K;
 
   .init           :
   {
@@ -67,15 +68,6 @@ SECTIONS
 
   .ctors          :
   {
-    /* gcc uses crtbegin.o to find the start of
-       the constructors, so we make sure it is
-       first.  Because this is a wildcard, it
-       doesn't matter if the user does not
-       actually link against crtbegin.o; the
-       linker won't look for a file to match a
-       wildcard.  The wildcard also means that it
-       doesn't matter which directory crtbegin.o
-       is in.  */
     KEEP (*crtbegin.o(.ctors))
     KEEP (*crtbegin?.o(.ctors))
     /* We don't want to include the .ctor section from
@@ -147,10 +139,11 @@ SECTIONS
   PROVIDE( _end = . );
   PROVIDE( end = . );
 
-  .stack ORIGIN(onChipRam) + LENGTH(onChipRam) - __stack_size :
+  .stack         :
   {
     PROVIDE( _heap_end = . );
     . = __stack_size;
     PROVIDE( _sp = . );
   } > onChipRam
+
 }
