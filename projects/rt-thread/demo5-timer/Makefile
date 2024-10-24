@@ -1,6 +1,6 @@
 # make clean && make
 
-PROJ_NAME = finsh
+PROJ_NAME = timer
 DEBUG = yes
 BENCH = no
 FUNC_OPT = yes
@@ -11,10 +11,9 @@ SRCS = $(wildcard libs/*.c) \
        $(wildcard user/*.S) \
        $(wildcard rt-thread/libcpu/*.c) \
        $(wildcard rt-thread/libcpu/*.S) \
-       $(wildcard rt-thread/src/*.c) \
-       $(wildcard rt-thread/components/finsh/*.c)
+       $(wildcard rt-thread/src/*.c)
 
-INC += -I./libs -I./rt-thread/include -I./rt-thread/libcpu -I./user -I./rt-thread/components/finsh
+INC += -I./libs -I./rt-thread/include -I./rt-thread/libcpu -I./user
 LDSCRIPT = link.lds
 
 include ../../../resources/gcc.mk

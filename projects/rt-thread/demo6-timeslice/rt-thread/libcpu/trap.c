@@ -21,16 +21,6 @@ reg_t trap_handler(reg_t mcause, reg_t mepc)
                     hw_timer_irq_handler();
                 }
                 break;
-            case 11:
-                {
-                    printf("uart interrupt!\r\n");
-                }
-                break;
-            default: 
-                {
-                    printf("default interrupt\r\n");
-                }
-                break;
         }
     }
     else 
@@ -39,6 +29,7 @@ reg_t trap_handler(reg_t mcause, reg_t mepc)
         /* 目前不需要用到同步中断 */
         printf("Something wrong has happend\n");
     }
+    // hw_timer_irq_handler();
 
     return epc;
 }

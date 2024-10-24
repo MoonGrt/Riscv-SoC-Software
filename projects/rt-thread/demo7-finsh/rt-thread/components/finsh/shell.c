@@ -44,6 +44,21 @@ const char *finsh_get_prompt()
     return finsh_prompt;
 }
 
+// char uart_getc()
+// {
+// 	int ch = -1;
+
+// 	// wait RI to 1
+// 	if ((uart_read_reg(UART_CTRL) & (1 << 0)) != (1 << 0))
+// 		return -1;
+// 	// set RI to 0
+// 	uart_write_reg(UART_CTRL, (uart_read_reg(UART_CTRL) & ~(1 << 0)));
+// 	// read receive buf
+// 	ch = uart_read_reg(UART_RX_DATA_BUF);
+
+// 	return ch;
+// }
+
 static int finsh_getchar(void)
 {
 	// int ch = uart_getc();
