@@ -9,7 +9,7 @@ MULDIV = yes
 SRCS = $(wildcard libs/*.c) \
        $(wildcard libs/*.S) \
        $(wildcard src/*.c) \
-       $(wildcard src/*.S)
+       $(wildcard init*.S)
 
 INC += -I./libs -I./src
 LDSCRIPT = linker.ld

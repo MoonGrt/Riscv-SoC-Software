@@ -8,6 +8,10 @@ typedef enum { ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 #include <stdint.h>
 #include "config.h"
 
+/*!< Core clock frequency */
+// #define CORE_HZ 50000000
+// #define CORE_HZ 1000000
+
 /*!< Base memory map */
 #define SRAM_BASE ((uint32_t)0x00000000)   /*!< SRAM base address */
 #define FLASH_BASE ((uint32_t)0x80000000)  /*!< FLASH base address */
@@ -51,6 +55,7 @@ typedef enum { ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 // #define USART2 ((USART_TypeDef *) USART2_BASE)
 #define USART1 ((USART_TypeDef *)(0xF0050000))
 #define USART2 ((USART_TypeDef *)(0xF0051000))
+#define UART_SAMPLE_PER_BAUD 5
 #endif
 
 #ifdef MURAX_I2C
@@ -121,31 +126,5 @@ void assert_failed(uint8_t *file, uint32_t line); // customization
 #else
 #define assert_param(expr) ((void)0)
 #endif /* USE_FULL_ASSERT */
-
-
-
-
-
-/*!< old */
-#include "timer.h"
-#include "interrupt.h"
-#include "vga.h"
-#include "uart.h"
-
-// #define CORE_HZ 1000000
-#define CORE_HZ 50000000
-
-#define GPIO_A ((Gpio_Reg *)(0xF0000000))
-#define GPIO_B ((Gpio_Reg *)(0xF0000010))
-#define GPIO_C ((Gpio_Reg *)(0xF0000020))
-#define GPIO_D ((Gpio_Reg *)(0xF0000030))
-
-#define UART ((Uart_Reg *)(0xF0010000))
-#define UART_SAMPLE_PER_BAUD 5
-
-#define TIMER_A ((Timer_Reg *)0xF0020040)
-#define TIMER_B ((Timer_Reg *)0xF0020050)
-#define TIMER_PRESCALER ((Prescaler_Reg *)0xF0020000)
-#define TIMER_INTERRUPT ((InterruptCtrl_Reg *)0xF0020010)
 
 #endif /* __MURAX_H_ */

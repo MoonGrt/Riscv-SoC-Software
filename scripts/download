@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# 启动 OpenOCD
+/home/moon/openocd_riscv/src/openocd -f ./cyber.cfg &
+
+# 等待 OpenOCD 启动
+sleep 5
+

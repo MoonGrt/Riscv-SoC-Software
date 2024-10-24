@@ -1,0 +1,47 @@
+
+# 启动GDB并自动执行烧录命令
+/opt/riscv/bin/riscv64-unknown-elf-gdb ../projects/test/build/test.elf 
+target extended-remote :3333
+load
+monitor reset halt
+quit
+
+
+monitor reset halt
+file /mnt/hgfs/share/Riscv-SoC-Software/projects/rt-thread/demo3-delay/build/delay.elf
+load
+continue
+
+
+
+
+
+
+
+
+#!/bin/bash
+
+# 在 build 文件夹中查找所有 ELF 文件
+ELF_FILE=$(find ../build/ -maxdepth 1 -name "*.elf" | head -n 1)
+
+# GDB 命令文件
+GDB_COMMANDS=commands.gdb
+
+# 检查是否找到 ELF 文件
+if [ -z "$ELF_FILE" ]; then
+    echo "Error: No ELF file found in build/ folder!"
+    exit 1
+fi
+# 输出找到的 ELF 文件
+echo "Found ELF file: $ELF_FILE"
+
+# 检查 GDB 命令文件是否存在
+if [ ! -f "$GDB_COMMANDS" ]; then
+    echo "Error: GDB command file '$GDB_COMMANDS' not found!"
+    exit 1
+fi
+# 输出找到的 GDB 命令文件
+echo "Found GDB COMMANDS file: $GDB_COMMANDS"
+
+# 启动 GDB，执行命令文件
+/opt/riscv/bin/riscv64-unknown-elf-gdb -x $GDB_COMMANDS $ELF_FILE
