@@ -14,7 +14,7 @@ void main()
     demo_USART();
     // demo_I2C();
     // demo_SPI();
-    demo_TIM();
+    // demo_TIM();
     // demo_PWM();
     // demo_WDG();
 
@@ -117,6 +117,14 @@ void demo_GPIO(void)
     GPIO_Init(GPIOA, &GPIO_InitStructure);
     GPIO_SetBits(GPIOA, GPIO_Pin_1);
     GPIO_ResetBits(GPIOA, GPIO_Pin_1);
+
+    // GPIO_InitTypeDef GPIO_InitStructure;
+    // GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+    // GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    // GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    // GPIO_Init(GPIOA, &GPIO_InitStructure);
+    // // GPIO_SetBits(GPIOA, GPIO_Pin_2);
+    // GPIO_ResetBits(GPIOA, GPIO_Pin_2);
 }
 #endif
 
