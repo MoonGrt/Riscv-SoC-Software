@@ -102,7 +102,7 @@ void irqCallback()
 #ifdef MURAX_GPIO
 void demo_GPIO(void)
 {
-    // RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    // RCC_APBPeriphClockCmd(RCC_APBPeriph_GPIOA, ENABLE);
 
     GPIO_InitTypeDef GPIO_InitStructure;
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
