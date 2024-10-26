@@ -31,6 +31,8 @@
         "shell.h": "c",
         "finsh.h": "c",
         "finsh_config.h": "c",
-        "cyber.h": "c"
+        "cyber.h": "c",
+        "task.h": "c",
+        "freertos.h": "c"
     }
 }

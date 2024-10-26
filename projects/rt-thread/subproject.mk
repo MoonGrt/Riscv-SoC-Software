@@ -40,10 +40,8 @@ OBJS := $(OBJS:.S=.o)
 OBJS := $(addprefix $(OBJDIR)/,$(OBJS))
 
 all: $(OBJDIR)/$(PROJ_NAME).elf $(OBJDIR)/$(PROJ_NAME).hex $(OBJDIR)/$(PROJ_NAME).asm $(OBJDIR)/$(PROJ_NAME).v
-#	@echo "\n$(CFLAGS)\n$(LDFLAGS)\n"
 	@echo "\nBuild successful for project: $(PROJ_NAME)\n"  # Add success message
-
-# @echo "\n$(CFLAGS)\n$(LDFLAGS)\n"
+	@echo "Output: $(shell pwd)/$(OBJDIR)/$(PROJ_NAME).elf"
 
 %.bin: %.elf
 	$(RISCV_OBJCOPY) -O binary $^ $@
@@ -76,8 +74,6 @@ $(OBJDIR)/%.o: %.cpp
 $(OBJDIR)/%.o: %.S
 	mkdir -p $(dir $@)
 	$(RISCV_CC) -c $(CFLAGS) -o $@ $^ -D__ASSEMBLY__=1
-
-
 
 clean:
 	rm -rf $(OBJDIR)/*

@@ -1,6 +1,6 @@
 # make clean && make
 
-PROJ_NAME = led
+PROJ_NAME = blinky
 DEBUG = yes
 BENCH = no
 FUNC_OPT = yes

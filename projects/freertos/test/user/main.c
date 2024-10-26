@@ -154,7 +154,7 @@ static void prvSetupHardware( void )
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     USART_init();
-    printf("Led_Flow\r\n");
+    printf("FreeRTOS\r\n");
 }
 /*-----------------------------------------------------------*/
 

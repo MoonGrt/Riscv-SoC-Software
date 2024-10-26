@@ -29,7 +29,7 @@ void thread_1_entry(void *p_arg)
 {
     for (;;)
     {
-        printf("Th1\n");
+        printf("Th1\r\n");
         delay(500);  // 软件延时 被优化 (DEBUG = yes)
         rt_schedule();
     }
@@ -40,7 +40,7 @@ void thread_2_entry(void *p_arg)
 {
     for (;;)
     {
-        printf("Th2\n");
+        printf("Th2\r\n");
         delay(500);
         rt_schedule();
     }

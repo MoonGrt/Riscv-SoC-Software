@@ -1,4 +1,0 @@
-#!/bin/bash
-
-# 启动GDB并自动执行烧录命令
-/opt/riscv/bin/riscv64-unknown-elf-gdb ../projects/test/build/test.elf -ex "target extended-remote :3333" -ex "load" -ex "monitor reset halt" -ex "quit"

@@ -19,9 +19,6 @@ rt_uint8_t rt_thread2_stack[512];
 void thread_1_entry(void *p_arg);
 void thread_2_entry(void *p_arg);
 
-/* 函数声明 */
-void delay(unsigned int count);
-
 /* LED 初始化 */
 void GPIO_init(void)
 {
@@ -79,9 +76,6 @@ int main(void)
     /* 调度器初始化 */
     rt_system_scheduler_init();
 
-    /* 初始化空闲线程 */
-    rt_thread_idle_init();
-
     /* 初始化 finsh 线程 */
     finsh_system_init();
 
@@ -113,14 +107,6 @@ int main(void)
     rt_system_scheduler_start();
 }
 
-/* 软件延时 */
-void delay(unsigned int count)
-{
-    count *= 5000;
-    for (; count != 0; count--)
-        ;
-}
-
 /* 线程 1 入口函数 */
 void thread_1_entry(void *p_arg)
 {
@@ -130,19 +116,14 @@ void thread_1_entry(void *p_arg)
     {
         /*使用GPIO_Write，同时设置GPIOA所有引脚的高低电平，实现LED流水灯*/
         GPIO_Write(GPIOA, ~0x0001); // 0000 0000 0000 0001，PA0引脚为低电平，其他引脚均为高电平，注意数据有按位取反
-        // delay(100);                 // 延时100ms
         rt_thread_delay(500);        // 延时10tick
         GPIO_Write(GPIOA, ~0x0002); // 0000 0000 0000 0010，PA1引脚为低电平，其他引脚均为高电平
-        // delay(100);                 // 延时100ms
         rt_thread_delay(500);        // 延时10tick
         GPIO_Write(GPIOA, ~0x0004); // 0000 0000 0000 0100，PA2引脚为低电平，其他引脚均为高电平
-        // delay(100);                 // 延时100ms
         rt_thread_delay(500);        // 延时10tick
         GPIO_Write(GPIOA, ~0x0008); // 0000 0000 0000 1000，PA3引脚为低电平，其他引脚均为高电平
-        // delay(100);                 // 延时100ms
         rt_thread_delay(500);        // 延时10tick
         GPIO_Write(GPIOA, ~0x0010); // 0000 0000 0001 0000，PA4引脚为低电平，其他引脚均为高电平
-        // delay(100);                 // 延时100ms
         rt_thread_delay(500);        // 延时10tick
     }
 }
@@ -150,11 +131,10 @@ void thread_1_entry(void *p_arg)
 /* 线程 2 入口函数 */
 void thread_2_entry(void *p_arg)
 {
-    printf("Th1\r\n");
+    printf("Th2\r\n");
     for (;;)
     {
-        // printf("Thread 2 running...\r\n");
-        // delay(100);
+
     }
 }
 
