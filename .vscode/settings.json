@@ -28,6 +28,8 @@
         "config.h": "c",
         "stm32f10x_rcc.h": "c",
         "hw_timer.h": "c",
-        "shell.h": "c"
+        "shell.h": "c",
+        "finsh.h": "c",
+        "finsh_config.h": "c"
     }
 }

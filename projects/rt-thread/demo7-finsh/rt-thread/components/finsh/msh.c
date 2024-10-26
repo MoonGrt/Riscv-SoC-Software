@@ -1,5 +1,5 @@
 #include <rtthread.h>
-#include <finsh_config.h>
+#include "finsh_config.h"
 
 #ifdef FINSH_USING_MSH
 

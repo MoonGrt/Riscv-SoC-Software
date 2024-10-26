@@ -1,6 +1,6 @@
 #include <rthw.h>
 #include <rtthread.h>
-#include <finsh_config.h>
+#include "finsh_config.h"
 
 #ifdef RT_USING_FINSH
 
