@@ -1,10 +1,7 @@
 #include <stdint.h>
-
-#include "include/utils.h"
-
+#include "utils.h"
 
 extern void trap_entry();
-
 
 void _init()
 {

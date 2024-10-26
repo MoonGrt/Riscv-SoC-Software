@@ -4,7 +4,7 @@
 #define __SPI_H
 
 /* Includes ------------------------------------------------------------------*/
-#include "murax.h"
+#include "cyber.h"
 #ifdef MURAX_SPI
 
 /** @defgroup SPI_Exported_Types

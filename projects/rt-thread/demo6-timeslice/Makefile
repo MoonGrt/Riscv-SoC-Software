@@ -16,5 +16,5 @@ SRCS = $(wildcard libs/*.c) \
 INC += -I./libs -I./rt-thread/include -I./rt-thread/libcpu -I./user
 LDSCRIPT = link.lds
 
-include ../../../resources/gcc.mk
-include ../../../resources/subproject.mk
+include ../gcc.mk
+include ../subproject.mk

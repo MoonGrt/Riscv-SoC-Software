@@ -38,9 +38,9 @@ task.h is included from an application file. */
 #include "queue.h"
 #include "timers.h"
 
-#if ( INCLUDE_xTimerPendFunctionCall == 1 ) && ( configUSE_TIMERS == 0 )
-	#error configUSE_TIMERS must be set to 1 to make the xTimerPendFunctionCall() function available.
-#endif
+// #if ( INCLUDE_xTimerPendFunctionCall == 1 ) && ( configUSE_TIMERS == 0 )
+// 	#error configUSE_TIMERS must be set to 1 to make the xTimerPendFunctionCall() function available.
+// #endif
 
 /* Lint e9021, e961 and e750 are suppressed as a MISRA exception justified
 because the MPU ports require MPU_WRAPPERS_INCLUDED_FROM_API_FILE to be defined
