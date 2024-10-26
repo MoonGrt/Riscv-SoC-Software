@@ -1,7 +1,7 @@
 # make clean && make
 
-PROJ_NAME = demo
-DEBUG = no
+PROJ_NAME = led_flow
+DEBUG = yes
 BENCH = no
 FUNC_OPT = yes
 MULDIV = yes

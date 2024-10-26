@@ -4,7 +4,7 @@
 #define __RCC_H
 
 /* Includes ------------------------------------------------------------------*/
-#include "murax.h"
+#include "cyber.h"
 
 #ifdef MURAX_RCC
 

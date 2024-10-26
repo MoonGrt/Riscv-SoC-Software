@@ -4,7 +4,7 @@
 #define __WWDG_H
 
 /* Includes ------------------------------------------------------------------*/
-#include "murax.h"
+#include "cyber.h"
 #ifdef MURAX_WWDG
 
 /** @defgroup WWDG_Exported_Types

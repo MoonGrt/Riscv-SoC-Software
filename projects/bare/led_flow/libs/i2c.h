@@ -4,7 +4,7 @@
 #define __I2C_H
 
 /* Includes ------------------------------------------------------------------*/
-#include "murax.h"
+#include "cyber.h"
 #ifdef MURAX_I2C
 
 /** @defgroup I2C_Exported_Types
