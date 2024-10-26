@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "shell.h": "c",
-        "finsh.h": "c",
-        "rtthread.h": "c"
-    }
-}

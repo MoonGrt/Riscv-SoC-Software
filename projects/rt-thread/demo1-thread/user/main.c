@@ -2,7 +2,7 @@
 #include <rtthread.h>
 #include <rtconfig.h>
 #include <rthw.h>
-#include "murax.h"
+#include "cyber.h"
 
 /* 线程优先级链表 */
 extern rt_list_t rt_thread_priority_table[RT_THREAD_PRIORITY_MAX];
@@ -20,7 +20,6 @@ rt_uint8_t rt_thread2_stack[512];
 void delay(unsigned int count)
 {
     count *= 10000;
-    // count *= 500;
     for (; count != 0; count--)
         ;
 }
@@ -56,7 +55,6 @@ void USART_init(void)
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOB, &GPIO_InitStructure); // 将PB0引脚初始化为复用推挽输出
-
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -78,7 +76,7 @@ void USART_init(void)
     USART_Cmd(USART1, ENABLE); // 使能USART1，串口开始运行
     /*Send*/
     USART_SendData(USART1, 'A');
-    // printf("Th\n");
+    USART_SendData(USART1, '\n');
 }
 
 /* main 函数 */
@@ -112,8 +110,4 @@ int main(void)
 
     /* 启动系统调度器 */
     rt_system_scheduler_start();
-}
-
-void irqCallback()
-{
 }

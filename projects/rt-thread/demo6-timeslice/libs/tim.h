@@ -4,7 +4,7 @@
 #define __TIM_H
 
 /* Includes ------------------------------------------------------------------*/
-#include "murax.h"
+#include "cyber.h"
 #ifdef MURAX_TIM
 
 /** @defgroup TIM_Exported_Types

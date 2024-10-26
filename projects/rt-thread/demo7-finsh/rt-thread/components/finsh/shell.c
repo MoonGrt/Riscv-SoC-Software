@@ -5,7 +5,7 @@
 
 #include "finsh.h"
 #include "shell.h"
-#include "murax.h"
+#include "cyber.h"
 
 #ifdef FINSH_USING_MSH
 #include "msh.h"

@@ -1,4 +1,4 @@
-#include "murax.h"
+#include "cyber.h"
 #include "hw_timer.h"
 
 extern void SysTick_Handler(void) __attribute__((weak));
@@ -13,8 +13,8 @@ void hw_timer_init()
     TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;              // 定义结构体变量
     TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;     // 时钟分频，选择不分频，此参数用于配置滤波器时钟，不影响时基单元功能
     TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up; // 计数器模式，选择向上计数
-    TIM_TimeBaseInitStructure.TIM_Period = 27000 - 1;               // 计数周期，即ARR的值
-    TIM_TimeBaseInitStructure.TIM_Prescaler = 100 - 1;              // 预分频器，即PSC的值
+    TIM_TimeBaseInitStructure.TIM_Period = 50000 - 1;               // 计数周期，即ARR的值
+    TIM_TimeBaseInitStructure.TIM_Prescaler = 1 - 1;                // 预分频器，即PSC的值
     TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;            // 重复计数器，高级定时器才会用到
     TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructure);             // 将结构体变量交给TIM_TimeBaseInit，配置TIM2的时基单元
 

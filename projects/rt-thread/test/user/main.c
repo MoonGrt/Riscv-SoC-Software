@@ -3,7 +3,7 @@
 #include <rthw.h>
 #include <shell.h>
 #include "rtconfig.h"
-#include "murax.h"
+#include "cyber.h"
 #include "hw_timer.h"
 
 /* 线程控制块定义 */
@@ -130,20 +130,20 @@ void thread_1_entry(void *p_arg)
     {
         /*使用GPIO_Write，同时设置GPIOA所有引脚的高低电平，实现LED流水灯*/
         GPIO_Write(GPIOA, ~0x0001); // 0000 0000 0000 0001，PA0引脚为低电平，其他引脚均为高电平，注意数据有按位取反
-        delay(100);                 // 延时100ms
-        // rt_thread_delay(10);        // 延时10tick
+        // delay(100);                 // 延时100ms
+        rt_thread_delay(500);        // 延时10tick
         GPIO_Write(GPIOA, ~0x0002); // 0000 0000 0000 0010，PA1引脚为低电平，其他引脚均为高电平
-        delay(100);                 // 延时100ms
-        // rt_thread_delay(10);        // 延时10tick
+        // delay(100);                 // 延时100ms
+        rt_thread_delay(500);        // 延时10tick
         GPIO_Write(GPIOA, ~0x0004); // 0000 0000 0000 0100，PA2引脚为低电平，其他引脚均为高电平
-        delay(100);                 // 延时100ms
-        // rt_thread_delay(10);        // 延时10tick
+        // delay(100);                 // 延时100ms
+        rt_thread_delay(500);        // 延时10tick
         GPIO_Write(GPIOA, ~0x0008); // 0000 0000 0000 1000，PA3引脚为低电平，其他引脚均为高电平
-        delay(100);                 // 延时100ms
-        // rt_thread_delay(10);        // 延时10tick
+        // delay(100);                 // 延时100ms
+        rt_thread_delay(500);        // 延时10tick
         GPIO_Write(GPIOA, ~0x0010); // 0000 0000 0001 0000，PA4引脚为低电平，其他引脚均为高电平
-        delay(100);                 // 延时100ms
-        // rt_thread_delay(10);        // 延时10tick
+        // delay(100);                 // 延时100ms
+        rt_thread_delay(500);        // 延时10tick
     }
 }
 

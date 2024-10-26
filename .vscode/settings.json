@@ -30,6 +30,7 @@
         "hw_timer.h": "c",
         "shell.h": "c",
         "finsh.h": "c",
-        "finsh_config.h": "c"
+        "finsh_config.h": "c",
+        "cyber.h": "c"
     }
 }

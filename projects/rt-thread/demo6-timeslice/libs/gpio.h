@@ -4,7 +4,7 @@
 #define __GPIO_H
 
 /* Includes ------------------------------------------------------------------*/
-#include "murax.h"
+#include "cyber.h"
 
 #ifdef MURAX_GPIO
 

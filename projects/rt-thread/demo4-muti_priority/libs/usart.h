@@ -2,7 +2,7 @@
 #define __USART_H_
 
 /* Includes ------------------------------------------------------------------*/
-#include "murax.h"
+#include "cyber.h"
 #ifdef MURAX_USART
 
 /** @defgroup USART_Exported_Types

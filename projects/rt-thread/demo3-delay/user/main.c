@@ -2,7 +2,7 @@
 #include <rtthread.h>
 #include <rthw.h>
 #include "rtconfig.h"
-#include "murax.h"
+#include "cyber.h"
 #include "hw_timer.h"
 
 /* 线程优先级链表 */
@@ -106,7 +106,7 @@ void thread_1_entry(void *p_arg)
         printf("Th1\n");
         tick = rt_tick_get();
         printf("Tick_before: %d\n", tick);
-        rt_thread_delay(5);
+        rt_thread_delay(1000);
         tick = rt_tick_get();
         printf("Tick_after: %d\n", tick);
     }
@@ -121,7 +121,7 @@ void thread_2_entry(void *p_arg)
         printf("Th2\n");
         tick = rt_tick_get();
         printf("Tick_before: %d\n", tick);
-        rt_thread_delay(5);
+        rt_thread_delay(1000);
         tick = rt_tick_get();
         printf("Tick_after: %d\n", tick);
     }
