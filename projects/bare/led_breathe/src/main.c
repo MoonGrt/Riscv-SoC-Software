@@ -3,7 +3,7 @@
 /* 软件延时 */
 void delay(unsigned int count)
 {
-    count *= 50000;
+    count *= 10000;
     for (; count != 0; count--)
         ;
 }
@@ -53,9 +53,9 @@ void PWM_init(void)
     /*GPIO初始化*/
     GPIO_InitTypeDef GPIO_InitStructure;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOA, &GPIO_InitStructure); // 将PA8引脚初始化为复用推挽输出
+    GPIO_Init(GPIOA, &GPIO_InitStructure); // 将PA15引脚初始化为复用推挽输出
                                            // 受外设控制的引脚，均需要配置为复用模式
 
     /*配置时钟源*/
@@ -65,8 +65,8 @@ void PWM_init(void)
     TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;              // 定义结构体变量
     TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;     // 时钟分频，选择不分频，此参数用于配置滤波器时钟，不影响时基单元功能
     TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up; // 计数器模式，选择向上计数
-    TIM_TimeBaseInitStructure.TIM_Period = 50 - 1;                  // 计数周期，即ARR的值
-    TIM_TimeBaseInitStructure.TIM_Prescaler = 72 - 1;               // 预分频器，即PSC的值
+    TIM_TimeBaseInitStructure.TIM_Period = 100 - 1;                 // 计数周期，即ARR的值
+    TIM_TimeBaseInitStructure.TIM_Prescaler = 50 - 1;               // 预分频器，即PSC的值
     TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;            // 重复计数器，高级定时器才会用到
     TIM_TimeBaseInit(TIM3, &TIM_TimeBaseInitStructure);             // 将结构体变量交给TIM_TimeBaseInit，配置TIM3的时基单元
 
@@ -79,7 +79,7 @@ void PWM_init(void)
     TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;     // 输出极性，选择为高，若选择极性为低，则输出高低电平取反
     TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; // 输出使能
     TIM_OCInitStructure.TIM_Pulse = 0;                            // 初始的CCR值
-    TIM_OC1Init(TIM3, &TIM_OCInitStructure);                      // 将结构体变量交给TIM_OC1Init，配置TIM3的输出比较通道1
+    TIM_OC4Init(TIM3, &TIM_OCInitStructure);                      // 将结构体变量交给TIM_OC1Init，配置TIM3的输出比较通道1
 
     /*TIM使能*/
     TIM_Cmd(TIM3, ENABLE); // 使能TIM3，定时器开始运行
@@ -95,13 +95,13 @@ void main()
     {
         for (i = 0; i <= 100; i++)
         {
-            TIM_SetCompare1(TIM3, i); // 依次将定时器的CCR寄存器设置为0~100，PWM占空比逐渐增大，LED逐渐变亮
-            delay(10);          // 延时10ms
+            TIM_SetCompare4(TIM3, i); // 依次将定时器的CCR寄存器设置为0~100，PWM占空比逐渐增大，LED逐渐变亮
+            delay(5);                 // 延时5ms
         }
         for (i = 0; i <= 100; i++)
         {
-            TIM_SetCompare1(TIM3, 100 - i); // 依次将定时器的CCR寄存器设置为100~0，PWM占空比逐渐减小，LED逐渐变暗
-            delay(10);                // 延时10ms
+            TIM_SetCompare4(TIM3, 100 - i); // 依次将定时器的CCR寄存器设置为100~0，PWM占空比逐渐减小，LED逐渐变暗
+            delay(5);                       // 延时5ms
         }
     }
 }
