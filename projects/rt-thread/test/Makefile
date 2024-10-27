@@ -1,6 +1,6 @@
 # make clean && make
 
-PROJ_NAME = finsh
+PROJ_NAME = test
 DEBUG = yes
 BENCH = no
 FUNC_OPT = yes

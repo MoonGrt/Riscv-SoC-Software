@@ -1,12 +1,36 @@
 #include <rthw.h>
 #include <rtthread.h>
-#include <finsh_config.h>
-
+#include "finsh_config.h"
+#include "led.h"
 #ifdef RT_USING_FINSH
 
 #include "finsh.h"
 
 #define LIST_FIND_OBJ_NR 8
+
+typedef struct
+{
+    rt_list_t *list;
+    rt_list_t **array;
+    rt_uint8_t type;
+    int nr;             /* input: max nr, can't be 0 */
+    int nr_out;         /* out: got nr */
+} list_get_next_t;
+
+static void list_find_init(list_get_next_t *p, rt_uint8_t type, rt_list_t **array, int nr)
+{
+    struct rt_object_information *info;
+    rt_list_t *list;
+
+    info = rt_object_get_information((enum rt_object_class_type)type);
+    list = &info->object_list;
+
+    p->list = list;
+    p->type = type;
+    p->array = array;
+    p->nr = nr;
+    p->nr_out = 0;
+}
 
 long hello(void)
 {
@@ -68,7 +92,7 @@ long list_thread(void)
         ptr = (rt_uint8_t *)thread->stack_addr;
         while (*ptr == '#')ptr ++;
 
-        printf("  0x%x      %dB      %dB       %d        %d\r\n",
+        printf("  0x%x     %4dB     %4dB      %2d         %d\r\n",
                 thread->sp,
                 thread->stack_size,
                 (thread->stack_size - ((rt_ubase_t) ptr - (rt_ubase_t) thread->stack_addr)),
@@ -79,4 +103,24 @@ long list_thread(void)
     return 0;
 }
 MSH_CMD_EXPORT(list_thread, list all thread);
+
+// /* led 初始化 */
+// long led_init(void)
+// {
+//     /* 初始化线程 */
+//     rt_thread_init(&th_led,                /* 线程控制块 */
+//                    "th_led",               /* 线程名称，唯一 */
+//                    th_led_en,              /* 线程入口地址 */
+//                    RT_NULL,                /* 线程形参 */
+//                    &rt_thled_stack[0],     /* 线程栈起始地址 */
+//                    sizeof(rt_thled_stack), /* 线程栈大小 */
+//                    6,                      /* 线程优先级 */
+//                    1);                     /* 线程时间片 */
+//     /* 启动线程 */
+//     rt_thread_startup(&th_led);
+
+//     printf("led init success\n");
+// }
+// MSH_CMD_EXPORT(led_init, led init);
+
 #endif

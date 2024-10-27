@@ -18,8 +18,8 @@
 #define FINSH_THREAD_STACK_SIZE     1024
 
 #define FINSH_USING_SYMTAB
-//  </c>
-// </h>
+#define FINSH_USING_HISTORY
+#define FINSH_USING_AUTH
 
 // <<< end of configuration section >>>
 #endif

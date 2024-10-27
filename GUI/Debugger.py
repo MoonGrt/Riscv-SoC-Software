@@ -47,7 +47,7 @@ if __name__ == "__main__":
     # openocd_process = openocd_connect()
 
     # input("按 Enter 键继续以下载程序...")
-    program_path = "/mnt/hgfs/share/Riscv-SoC-Software/projects/rt-thread/demo7-finsh+/build/finsh.elf"  # 修改为你的程序文件路径
+    program_path = "/mnt/hgfs/share/Riscv-SoC-Software/projects/rt-thread/demo7-finsh++/build/test.elf"  # 修改为你的程序文件路径
     gdb_download(program_path)
 
     # 确保在程序下载后结束 OpenOCD

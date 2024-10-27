@@ -37,20 +37,58 @@ static void printf_s(char *p)
         putchar(*(p++));
 }
 
-static void printf_d(int val)
+static void printf_d(int val, int width)
 {
     char buffer[32];
     char *p = buffer;
+    int negative = 0;
+
     if (val < 0)
     {
+        negative = 1;
         printf_c('-');
         val = -val;
     }
+
     while (val || p == buffer)
     {
         *(p++) = '0' + val % 10;
         val = val / 10;
     }
+
+    int len = p - buffer;
+    int padding = width - len;
+    if (padding > 0)
+    {
+        for (int i = 0; i < padding; i++)
+            printf_c(' ');
+    }
+
+    while (p != buffer)
+        printf_c(*(--p));
+}
+
+static void printf_x(unsigned int val)
+{
+    char buffer[32];
+    char *p = buffer;
+
+    if (val == 0)
+    {
+        printf_c('0');
+        return;
+    }
+
+    while (val)
+    {
+        int digit = val % 16;
+        if (digit < 10)
+            *(p++) = '0' + digit;
+        else
+            *(p++) = 'a' + (digit - 10);
+        val /= 16;
+    }
+
     while (p != buffer)
         printf_c(*(--p));
 }
@@ -63,29 +101,41 @@ int printf(const char *format, ...)
     va_start(ap, format);
 
     for (i = 0; format[i]; i++)
+    {
         if (format[i] == '%')
         {
-            while (format[++i])
+            int width = 0;
+            while (format[++i] >= '0' && format[i] <= '9')
             {
-                if (format[i] == 'c')
-                {
-                    printf_c(va_arg(ap, int));
-                    break;
-                }
-                if (format[i] == 's')
-                {
-                    printf_s(va_arg(ap, char *));
-                    break;
-                }
-                if (format[i] == 'd')
-                {
-                    printf_d(va_arg(ap, int));
-                    break;
-                }
+                width = width * 10 + (format[i] - '0');
+            }
+
+            if (format[i] == 'c')
+            {
+                printf_c(va_arg(ap, int));
+                continue;
+            }
+            if (format[i] == 's')
+            {
+                printf_s(va_arg(ap, char *));
+                continue;
+            }
+            if (format[i] == 'd')
+            {
+                printf_d(va_arg(ap, int), width);
+                continue;
+            }
+            if (format[i] == 'x')
+            {
+                printf_x(va_arg(ap, unsigned int));
+                continue;
             }
         }
         else
+        {
             printf_c(format[i]);
+        }
+    }
 
     va_end(ap);
 }
