@@ -50,7 +50,7 @@ RISCV_OBJDUMP = $(RISCV_PATH)/bin/$(RISCV_NAME)-objdump
 RISCV_CC=$(RISCV_PATH)/bin/$(RISCV_NAME)-gcc
 
 CFLAGS += -MD -fstrict-volatile-bitfields
-LDFLAGS += -lgcc -mcmodel=medany -nostartfiles -ffreestanding -Wl,-Bstatic,-T,$(LDSCRIPT),-Map,$(OBJDIR)/$(PROJ_NAME).map,--print-memory-usage
+LDFLAGS += -nostdlib -lgcc -mcmodel=medany -nostartfiles -ffreestanding -Wl,-Bstatic,-T,$(LDSCRIPT),-Map,$(OBJDIR)/$(PROJ_NAME).map,--print-memory-usage
 
 OBJDIR = build
 OBJS := $(SRCS)

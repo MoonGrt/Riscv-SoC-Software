@@ -8,6 +8,30 @@
 
 #define LIST_FIND_OBJ_NR 8
 
+typedef struct
+{
+    rt_list_t *list;
+    rt_list_t **array;
+    rt_uint8_t type;
+    int nr;             /* input: max nr, can't be 0 */
+    int nr_out;         /* out: got nr */
+} list_get_next_t;
+
+static void list_find_init(list_get_next_t *p, rt_uint8_t type, rt_list_t **array, int nr)
+{
+    struct rt_object_information *info;
+    rt_list_t *list;
+
+    info = rt_object_get_information((enum rt_object_class_type)type);
+    list = &info->object_list;
+
+    p->list = list;
+    p->type = type;
+    p->array = array;
+    p->nr = nr;
+    p->nr_out = 0;
+}
+
 long hello(void)
 {
     printf("Hello RT-Thread!\r\n");
@@ -68,7 +92,7 @@ long list_thread(void)
         ptr = (rt_uint8_t *)thread->stack_addr;
         while (*ptr == '#')ptr ++;
 
-        printf("  0x%x      %dB      %dB       %d        %d\r\n",
+        printf("  0x%x     %4dB     %4dB      %2d         %d\r\n",
                 thread->sp,
                 thread->stack_size,
                 (thread->stack_size - ((rt_ubase_t) ptr - (rt_ubase_t) thread->stack_addr)),
@@ -79,4 +103,5 @@ long list_thread(void)
     return 0;
 }
 MSH_CMD_EXPORT(list_thread, list all thread);
+
 #endif

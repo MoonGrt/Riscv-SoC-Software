@@ -85,8 +85,12 @@ void rt_interrupt_leave(void);
  */
 rt_int32_t rt_strncmp(const char *cs, const char *ct, rt_ubase_t count);
 char *rt_strncpy(char *dest, const char *src, rt_ubase_t n);
+void *rt_memmove(void *dest, const void *src, rt_ubase_t n);
+rt_size_t rt_strlen(const char *src);
 int __rt_ffs(int value);
 void *rt_memset(void *src, int c, rt_ubase_t n);
 void *rt_memcpy(void *dst, const void *src, rt_ubase_t count);
+rt_int32_t rt_memcmp(const void *cs, const void *ct, rt_ubase_t count);
+void rt_show_version(void);
 
 #endif

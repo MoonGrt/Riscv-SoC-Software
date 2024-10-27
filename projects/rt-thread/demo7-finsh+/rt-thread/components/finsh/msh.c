@@ -209,7 +209,7 @@ void msh_auto_complete(char *prefix)
     {
         char *ptr;
 
-        ptr = prefix + rt_strlen(prefix);
+        ptr = prefix + rt_rt_strlen(prefix);
         while (ptr != prefix)
         {
             if (*ptr == ' ')
@@ -237,24 +237,24 @@ void msh_auto_complete(char *prefix)
         for (index = _syscall_table_begin; index < _syscall_table_end; FINSH_NEXT_SYSCALL(index))
         {
             /* skip finsh shell function */
-            if (strncmp(index->name, "__cmd_", 6) != 0) continue;
+            if (rt_strncmp(index->name, "__cmd_", 6) != 0) continue;
 
             cmd_name = (const char *) &index->name[6];
-            if (strncmp(prefix, cmd_name, strlen(prefix)) == 0)
+            if (rt_strncmp(prefix, cmd_name, rt_strlen(prefix)) == 0)
             {
                 if (min_length == 0)
                 {
                     /* set name_ptr */
                     name_ptr = cmd_name;
                     /* set initial length */
-                    min_length = strlen(name_ptr);
+                    min_length = rt_strlen(name_ptr);
                 }
 
                 length = str_common(name_ptr, cmd_name);
                 if (length < min_length)
                     min_length = length;
 
-                printf("%s\n", cmd_name);
+                printf("\r%s\n", cmd_name);
             }
         }
     }

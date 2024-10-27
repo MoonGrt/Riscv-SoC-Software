@@ -11,6 +11,12 @@
 #define FINSH_PROMPT        finsh_get_prompt()
 const char* finsh_get_prompt(void);
 
+#ifdef FINSH_USING_HISTORY
+#ifndef FINSH_HISTORY_LINES
+#define FINSH_HISTORY_LINES 5
+#endif
+#endif
+
 #ifndef FINSH_THREAD_NAME
 #define FINSH_THREAD_NAME   "tshell "
 #endif
@@ -26,8 +32,15 @@ struct finsh_shell
 {
     enum input_stat stat;
 
-    rt_uint8_t echo_mode:1;
-    rt_uint8_t prompt_mode:1;
+    rt_uint8_t echo_mode : 1;
+    rt_uint8_t prompt_mode : 1;
+
+#ifdef FINSH_USING_HISTORY
+    rt_uint16_t current_history;
+    rt_uint16_t history_count;
+
+    char cmd_history[FINSH_HISTORY_LINES][FINSH_CMD_SIZE];
+#endif
 
     char line[FINSH_CMD_SIZE];
     rt_uint16_t line_position;
