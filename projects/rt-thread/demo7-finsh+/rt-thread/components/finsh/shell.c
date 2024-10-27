@@ -58,6 +58,97 @@ static int finsh_getchar(void)
     return ch;
 }
 
+#ifdef FINSH_USING_AUTH
+/**
+ * set a new password for finsh
+ *
+ * @param password new password
+ *
+ * @return result, RT_EOK on OK, -RT_ERROR on the new password length is less than
+ *  FINSH_PASSWORD_MIN or greater than FINSH_PASSWORD_MAX
+ */
+rt_err_t finsh_set_password(const char *password) {
+    rt_ubase_t level;
+    rt_size_t pw_len = rt_strlen(password);
+
+    if (pw_len < FINSH_PASSWORD_MIN || pw_len > FINSH_PASSWORD_MAX)
+        return -RT_ERROR;
+
+    level = rt_hw_interrupt_disable();
+    rt_strncpy(shell->password, password, FINSH_PASSWORD_MAX);
+    rt_hw_interrupt_enable(level);
+
+    return RT_EOK;
+}
+
+/**
+ * get the finsh password
+ *
+ * @return password
+ */
+const char *finsh_get_password(void)
+{
+    return shell->password;
+}
+
+static void finsh_wait_auth(void)
+{
+    int ch;
+    rt_bool_t input_finish = RT_FALSE;
+    char password[FINSH_PASSWORD_MAX] = { 0 };
+    rt_size_t cur_pos = 0;
+    /* password not set */
+    if (rt_strlen(finsh_get_password()) == 0) return;
+
+    while (1)
+    {
+        printf("Password for login: ");
+        while (!input_finish)
+        {
+            while (1)
+            {
+                /* read one character from device */
+                ch = finsh_getchar();
+                if (ch < 0)
+                {
+                    continue;
+                }
+
+                if (ch >= ' ' && ch <= '~' && cur_pos < FINSH_PASSWORD_MAX)
+                {
+                    /* change the printable characters to '*' */
+                    printf("*");
+                    password[cur_pos++] = ch;
+                }
+                else if (ch == '\b' && cur_pos > 0)
+                {
+                    /* backspace */
+                    cur_pos--;
+                    password[cur_pos] = '\0';
+                    printf("\b \b");
+                }
+                else if (ch == '\r' || ch == '\n')
+                {
+                    printf("\r\n");
+                    input_finish = RT_TRUE;
+                    break;
+                }
+            }
+        }
+        if (!rt_strncmp(shell->password, password, FINSH_PASSWORD_MAX)) return;
+        else
+        {
+            /* authentication failed, delay 2S for retry */
+            rt_thread_delay(1 * RT_TICK_PER_SECOND);
+            printf("Sorry, try again.\r\n");
+            cur_pos = 0;
+            input_finish = RT_FALSE;
+            rt_memset(password, '\0', FINSH_PASSWORD_MAX);
+        }
+    }
+}
+#endif /* FINSH_USING_AUTH */
+
 static void shell_auto_complete(char *prefix)
 {
     printf("\n");
@@ -81,7 +172,7 @@ static void shell_auto_complete(char *prefix)
 #ifdef FINSH_USING_HISTORY
 static rt_bool_t shell_handle_history(struct finsh_shell *shell)
 {
-    printf("%s%s", FINSH_PROMPT, shell->line);
+    printf("\r%s%s", FINSH_PROMPT, shell->line);
     return RT_FALSE;
 }
 
@@ -143,7 +234,7 @@ void finsh_thread_entry(void *parameter)
     {
         if (finsh_set_password(FINSH_DEFAULT_PASSWORD) != RT_EOK)
         {
-            printf("Finsh password set failed.\n");
+            printf("Finsh password set failed.\r\n");
         }
     }
     /* waiting authenticate success */
@@ -156,8 +247,53 @@ void finsh_thread_entry(void *parameter)
     {
         ch = finsh_getchar();
 
-        if (ch < 0)
+        /* received null or error */
+        if (ch < 0 || ch == '\0' || ch == 0xFF) continue;
+        /* handle tab key */
+        else if (ch == '\t')
         {
+            int i;
+            /* move the cursor to the beginning of line */
+            for (i = 0; i < shell->line_curpos; i++)
+                printf("\b");
+
+            /* auto complete */
+            shell_auto_complete(&shell->line[0]);
+            /* re-calculate position */
+            shell->line_curpos = shell->line_position = rt_strlen(shell->line);
+
+            continue;
+        }
+        /* handle backspace key */
+        else if (ch == 0x7f || ch == 0x08)
+        {
+            /* note that shell->line_curpos >= 0 */
+            if (shell->line_curpos == 0)
+                continue;
+
+            shell->line_position--;
+            shell->line_curpos--;
+
+            if (shell->line_position > shell->line_curpos)
+            {
+                int i;
+
+                rt_memmove(&shell->line[shell->line_curpos],
+                           &shell->line[shell->line_curpos + 1],
+                           shell->line_position - shell->line_curpos);
+                shell->line[shell->line_position] = 0;
+
+                printf("\b%s  \b", &shell->line[shell->line_curpos]);
+
+                /* move the cursor to the origin position */
+                for (i = shell->line_curpos; i <= shell->line_position; i++)
+                    printf("\b");
+            }
+            else
+            {
+                printf("\b \b");
+                shell->line[shell->line_position] = 0;
+            }
             continue;
         }
 
@@ -197,8 +333,7 @@ void finsh_thread_entry(void *parameter)
                     continue;
                 }
                 /* copy the history command */
-                rt_memcpy(shell->line, &shell->cmd_history[shell->current_history][0],
-                       FINSH_CMD_SIZE);
+                rt_memcpy(shell->line, &shell->cmd_history[shell->current_history][0],FINSH_CMD_SIZE);
                 shell->line_curpos = shell->line_position = rt_strlen(shell->line);
                 shell_handle_history(shell);
 #endif
@@ -245,68 +380,6 @@ void finsh_thread_entry(void *parameter)
             }
         }
 
-        /* received null or error */
-        if (ch == '\0' || ch == 0xFF) continue;
-        /* handle tab key */
-        else if (ch == '\t')
-        {
-            int i;
-            /* move the cursor to the beginning of line */
-            for (i = 0; i < shell->line_curpos; i++)
-                printf("\b");
-
-            /* auto complete */
-            shell_auto_complete(&shell->line[0]);
-            /* re-calculate position */
-            shell->line_curpos = shell->line_position = rt_strlen(shell->line);
-
-            continue;
-        }
-        /* handle backspace key */
-        else if (ch == 0x7f || ch == 0x08)
-        {
-            // if (shell->line_curpos == 0)
-            //     continue;
-
-            // shell->line_position--;
-            // shell->line_curpos--;
-
-            // printf("\b \b");
-            // shell->line[shell->line_position] = 0;
-
-            // continue;
-
-            /* note that shell->line_curpos >= 0 */
-            if (shell->line_curpos == 0)
-                continue;
-
-            shell->line_position--;
-            shell->line_curpos--;
-
-            if (shell->line_position > shell->line_curpos)
-            {
-                int i;
-
-                rt_memmove(&shell->line[shell->line_curpos],
-                           &shell->line[shell->line_curpos + 1],
-                           shell->line_position - shell->line_curpos);
-                shell->line[shell->line_position] = 0;
-
-                printf("\b%s  \b", &shell->line[shell->line_curpos]);
-
-                /* move the cursor to the origin position */
-                for (i = shell->line_curpos; i <= shell->line_position; i++)
-                    printf("\b");
-            }
-            else
-            {
-                printf("\b \b");
-                shell->line[shell->line_position] = 0;
-            }
-
-            continue;
-        }
-
         /* handle end of line, break */
         if (ch == '\r' || ch == '\n')
         {
@@ -321,18 +394,7 @@ void finsh_thread_entry(void *parameter)
                     printf("\r\n");
                 msh_exec(shell->line, shell->line_position);
             }
-            else
 #endif
-            {
-#ifndef FINSH_USING_MSH_ONLY
-                /* add ';' and run the command line */
-                shell->line[shell->line_position] = ';';
-
-                if (shell->line_position != 0) finsh_run_line(&shell->parser, shell->line);
-                else
-                    if (shell->echo_mode) printf("\n");
-#endif
-            }
 
             printf(FINSH_PROMPT);
             rt_memset(shell->line, 0, sizeof(shell->line));
@@ -345,30 +407,27 @@ void finsh_thread_entry(void *parameter)
             shell->line_position = 0;
 
         /* normal character */
-        // if (shell->line_curpos < shell->line_position)
-        // {
-        //     int i;
+        if (shell->line_curpos < shell->line_position)
+        {
+            int i;
 
-        //     rt_memmove(&shell->line[shell->line_curpos + 1],
-        //                &shell->line[shell->line_curpos],
-        //                shell->line_position - shell->line_curpos);
-        //     shell->line[shell->line_curpos] = ch;
-        //     if (shell->echo_mode)
-        //         printf("%s", &shell->line[shell->line_curpos]);
+            rt_memmove(&shell->line[shell->line_curpos + 1],
+                       &shell->line[shell->line_curpos],
+                       shell->line_position - shell->line_curpos);
+            shell->line[shell->line_curpos] = ch;
+            if (shell->echo_mode)
+                printf("%s", &shell->line[shell->line_curpos]);
 
-        //     /* move the cursor to new position */
-        //     for (i = shell->line_curpos; i < shell->line_position; i++)
-        //         printf("\b");
-        // }
-        // else
-        // {
-        //     shell->line[shell->line_position] = ch;
-        //     if (shell->echo_mode)
-        //         printf("%c", ch);
-        // }
-        shell->line[shell->line_curpos] = ch;
-        if (shell->echo_mode)
-            printf("%c", ch);
+            /* move the cursor to new position */
+            for (i = shell->line_curpos; i < shell->line_position; i++)
+                printf("\b");
+        }
+        else
+        {
+            shell->line[shell->line_position] = ch;
+            if (shell->echo_mode)
+                printf("%c", ch);
+        }
 
         ch = 0;
         shell->line_position++;

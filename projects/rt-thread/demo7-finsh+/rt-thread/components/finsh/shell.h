@@ -5,7 +5,7 @@
 #include "finsh.h"
 
 #ifndef FINSH_CMD_SIZE
-#define FINSH_CMD_SIZE      80
+#define FINSH_CMD_SIZE      32
 #endif
 
 #define FINSH_PROMPT        finsh_get_prompt()
@@ -20,6 +20,18 @@ const char* finsh_get_prompt(void);
 #ifndef FINSH_THREAD_NAME
 #define FINSH_THREAD_NAME   "tshell "
 #endif
+
+#ifdef FINSH_USING_AUTH
+#ifndef FINSH_PASSWORD_MAX
+#define FINSH_PASSWORD_MAX RT_NAME_MAX
+#endif
+#ifndef FINSH_PASSWORD_MIN
+#define FINSH_PASSWORD_MIN 5
+#endif
+#ifndef FINSH_DEFAULT_PASSWORD
+#define FINSH_DEFAULT_PASSWORD "cyber"
+#endif
+#endif /* FINSH_USING_AUTH */
 
 enum input_stat
 {
@@ -45,6 +57,10 @@ struct finsh_shell
     char line[FINSH_CMD_SIZE];
     rt_uint16_t line_position;
     rt_uint16_t line_curpos;
+
+#ifdef FINSH_USING_AUTH
+    char password[FINSH_PASSWORD_MAX];
+#endif
 };
 
 int finsh_system_init(void);

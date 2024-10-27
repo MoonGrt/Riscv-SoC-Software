@@ -19,5 +19,7 @@
 
 #define FINSH_USING_SYMTAB
 #define FINSH_USING_HISTORY
+#define FINSH_USING_AUTH
+
 // <<< end of configuration section >>>
 #endif
