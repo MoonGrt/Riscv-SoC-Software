@@ -64,7 +64,6 @@ void th_led_en(void *p_arg)
 
     GPIO_init();
     PWM_init();
-    printf("Th_led\r\n");
 
     for (;;)
     {
