@@ -98,8 +98,8 @@ class GPIOConf(QDialog):
         # 设置应用图标
         self.setWindowIcon(QIcon("icons/GPIO.svg"))
         # 设置窗口标题和尺寸
-        self.setWindowTitle("GPIO Table")
-        self.resize(950, 675)  # 窗口大小
+        self.setWindowTitle("GPIO Config")
+        self.resize(950, 500)  # 窗口大小
 
         # 创建表格
         self.table = GPIOConfTable()

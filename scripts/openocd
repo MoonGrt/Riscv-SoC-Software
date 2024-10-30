@@ -2,3 +2,6 @@
 
 # OpenOCD configuration file for cyber board
 /home/moon/openocd_riscv/src/openocd -f ./cyber.cfg
+
+
+
