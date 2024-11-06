@@ -62,9 +62,9 @@ class SocGen():
         with open(output, 'w') as f:
             # 基础组件
             # TOP
-            with open("demo/Hardware/Murax.v", 'r', encoding='utf-8') as infile:
+            with open("demo/Hardware/CYBER.v", 'r', encoding='utf-8') as infile:
                 f.write(infile.read()+"\n")
-            print("Murax.v has been added to the SoC")
+            print("CYBER.v has been added to the SoC")
             # JTAG
             with open("demo/Hardware/JtagBridge.v", 'r', encoding='utf-8') as infile:
                 f.write(infile.read()+"\n")
@@ -200,7 +200,7 @@ class SocGen():
         print(WDG_STR)
 
         # 读取模板BSP文件内容
-        # with open("output/Software/libs/murax.h", 'r', encoding='utf-8') as file:
+        # with open("output/Software/libs/CYBER.h", 'r', encoding='utf-8') as file:
         #     file_data = file.read()
 
 

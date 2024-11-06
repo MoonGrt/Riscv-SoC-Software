@@ -6,7 +6,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "cyber.h"
 
-#ifdef MURAX_GPIO
+#ifdef CYBER_GPIO
 
 /** @defgroup GPIO_Exported_Types
  * @{
@@ -162,5 +162,5 @@ void GPIO_ResetBits(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin);
 void GPIO_WriteBit(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, BitAction BitVal);
 void GPIO_Write(GPIO_TypeDef *GPIOx, uint16_t PortVal);
 
-#endif /* MURAX_GPIO */
+#endif /* CYBER_GPIO */
 #endif /* __GPIO_H */

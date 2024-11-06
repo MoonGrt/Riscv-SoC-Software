@@ -5,7 +5,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "cyber.h"
-#ifdef MURAX_IWDG
+#ifdef CYBER_IWDG
 
 /** @defgroup IWDG_Exported_Types
  * @{
@@ -62,5 +62,5 @@ void IWDG_ReloadCounter(void);
 void IWDG_Enable(void);
 FlagStatus IWDG_GetFlagStatus(uint16_t IWDG_FLAG);
 
-#endif /* MURAX_IWDG */
+#endif /* CYBER_IWDG */
 #endif /* __IWDG_H */

@@ -2,7 +2,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "cyber.h"
 
-#ifdef MURAX_RCC
+#ifdef CYBER_RCC
 
 /** @defgroup RCC_Private_Defines
  * @{
@@ -681,4 +681,4 @@ void RCC_ClearFlag(void)
     RCC->CSR |= CSR_RMVF_Set;
 }
 
-#endif /* MURAX_RCC */
+#endif /* CYBER_RCC */

@@ -1,5 +1,5 @@
-#ifndef __MURAX_H_
-#define __MURAX_H_
+#ifndef __CYBER_H_
+#define __CYBER_H_
 
 typedef enum
 {
@@ -29,14 +29,14 @@ typedef enum
 #define APBPERIPH_BASE PERIPH_BASE
 #define AHBPERIPH_BASE (PERIPH_BASE + 0x1000000)
 
-#ifdef MURAX_RCC
+#ifdef CYBER_RCC
 /*!< RCC */
 #include "rcc.h"
 #define RCC_BASE (AHBPERIPH_BASE + 0x00000)
 #define RCC ((RCC_TypeDef *)RCC_BASE) // 0xF1000000
 #endif
 
-#ifdef MURAX_GPIO
+#ifdef CYBER_GPIO
 /*!< GPIO */
 #include "gpio.h"
 // #define AFIO_BASE (APB2PERIPH_BASE + 0x0000)
@@ -48,7 +48,7 @@ typedef enum
 #define GPIOB ((GPIO_TypeDef *)GPIOB_BASE) // 0xF0001000
 #endif
 
-#ifdef MURAX_USART
+#ifdef CYBER_USART
 /*!< USART */
 #include "usart.h"
 #define USART1_BASE (APBPERIPH_BASE + 0x10000)
@@ -57,7 +57,7 @@ typedef enum
 #define USART2 ((USART_TypeDef *)USART2_BASE) // 0xF0011000
 #endif
 
-#ifdef MURAX_I2C
+#ifdef CYBER_I2C
 /*!< I2C */
 #include "i2c.h"
 #define I2C1_BASE (APBPERIPH_BASE + 0x20000)
@@ -66,7 +66,7 @@ typedef enum
 #define I2C2 ((I2C_TypeDef *)I2C2_BASE) // 0xF0021000
 #endif
 
-#ifdef MURAX_SPI
+#ifdef CYBER_SPI
 /*!< SPI */
 #include "spi.h"
 #define SPI1_BASE (APBPERIPH_BASE + 0x30000)
@@ -75,7 +75,7 @@ typedef enum
 #define SPI2 ((SPI_TypeDef *)SPI2_BASE) // 0xF0031000
 #endif
 
-#ifdef MURAX_TIM
+#ifdef CYBER_TIM
 /*!< TIM */
 #include "tim.h"
 #define TIM1_BASE (APBPERIPH_BASE + 0x40000)
@@ -86,14 +86,14 @@ typedef enum
 #define TIM3 ((TIM_TypeDef *)TIM3_BASE) // 0xF0042000
 #endif
 
-#ifdef MURAX_IWDG
+#ifdef CYBER_IWDG
 /*!< IWDG */
 #include "iwdg.h"
 #define IWDG_BASE (APBPERIPH_BASE + 0x50000)
 #define IWDG ((IWDG_TypeDef *)IWDG_BASE)
 #endif
 
-#ifdef MURAX_WWDG
+#ifdef CYBER_WWDG
 /*!< WWDG */
 #include "wwdg.h"
 #define WWDG_BASE (APBPERIPH_BASE + 0x51000)
@@ -139,4 +139,4 @@ void assert_failed(uint8_t *file, uint32_t line); // customization
 #define TIMER_PRESCALER ((Prescaler_Reg *)0xF0020000)
 #define TIMER_INTERRUPT ((InterruptCtrl_Reg *)0xF0020010)
 
-#endif /* __MURAX_H_ */
+#endif /* __CYBER_H_ */

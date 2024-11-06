@@ -5,7 +5,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "cyber.h"
-#ifdef MURAX_TIM
+#ifdef CYBER_TIM
 
 /** @defgroup TIM_Exported_Types
  * @{
@@ -926,5 +926,5 @@ void TIM_ClearFlag(TIM_TypeDef *TIMx, uint16_t TIM_FLAG);
 ITStatus TIM_GetITStatus(TIM_TypeDef *TIMx, uint16_t TIM_IT);
 void TIM_ClearITPendingBit(TIM_TypeDef *TIMx, uint16_t TIM_IT);
 
-#endif /* MURAX_TIM */
+#endif /* CYBER_TIM */
 #endif /* __TIM_H */

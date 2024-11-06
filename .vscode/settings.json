@@ -1,6 +1,6 @@
 {
     "files.associations": {
-        "murax.h": "c",
+        "CYBER.h": "c",
         "iic.h": "c",
         "spi.h": "c",
         "gpio.h": "c",
@@ -36,6 +36,7 @@
         "freertos.h": "c",
         "finsh_api.h": "c",
         "msh.h": "c",
-        "led.h": "c"
+        "led.h": "c",
+        "dvp.h": "c"
     }
 }

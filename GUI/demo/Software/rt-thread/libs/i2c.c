@@ -1,7 +1,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "i2c.h"
-#ifdef MURAX_I2C
+#ifdef CYBER_I2C
 
 /** @defgroup I2C_Private_Defines
  * @{
@@ -1230,6 +1230,6 @@ void I2C_ClearITPendingBit(I2C_TypeDef *I2Cx, uint32_t I2C_IT)
     I2Cx->SR1 = (uint16_t)~flagpos;
 }
 
-#endif /* MURAX_I2C */
+#endif /* CYBER_I2C */
 
 /******************* END OF FILE *******************/

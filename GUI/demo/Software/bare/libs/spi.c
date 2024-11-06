@@ -1,7 +1,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "spi.h"
-#ifdef MURAX_SPI
+#ifdef CYBER_SPI
 
 /** @defgroup SPI_Private_Defines
  * @{
@@ -801,6 +801,6 @@ void SPI_I2S_ClearITPendingBit(SPI_TypeDef *SPIx, uint8_t SPI_I2S_IT)
     SPIx->SR = (uint16_t)~itpos;
 }
 
-#endif /* MURAX_SPI */
+#endif /* CYBER_SPI */
 
 /******************* END OF FILE *******************/

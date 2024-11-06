@@ -61,7 +61,7 @@ uint8_t Serial_RxData; // 定义串口接收的数据变量
 uint8_t Serial_RxFlag; // 定义串口接收的标志位变量
 void irqCallback()
 {
-#ifdef MURAX_USART
+#ifdef CYBER_USART
     /*!< USART */
     if (USART_GetITStatus(USART1, USART_IT_RXNE) == SET) // 判断是否是USART1的接收事件触发的中断
     {
@@ -75,7 +75,7 @@ void irqCallback()
     }
 #endif
 
-#ifdef MURAX_TIM
+#ifdef CYBER_TIM
     /*!< TIM */
     if (TIM_GetITStatus(TIM2, TIM_IT_Update) == SET) // 判断是否是TIM2的更新事件触发的中断
     {
@@ -99,7 +99,7 @@ void irqCallback()
 }
 
 
-#ifdef MURAX_GPIO
+#ifdef CYBER_GPIO
 void demo_GPIO(void)
 {
     // RCC_APBPeriphClockCmd(RCC_APBPeriph_GPIOA, ENABLE);
@@ -128,7 +128,7 @@ void demo_GPIO(void)
 }
 #endif
 
-#ifdef MURAX_WDG
+#ifdef CYBER_WDG
 void demo_WDG(void)
 {
     /*IWDG初始化*/
@@ -149,7 +149,7 @@ void demo_WDG(void)
 }
 #endif
 
-#ifdef MURAX_USART
+#ifdef CYBER_USART
 void demo_USART(void)
 {
     /*GPIO初始化*/
@@ -195,7 +195,7 @@ void demo_USART(void)
 }
 #endif
 
-#ifdef MURAX_I2C
+#ifdef CYBER_I2C
 /**
  * 函    数：I2C等待事件
  * 参    数：同I2C_CheckEvent
@@ -298,7 +298,7 @@ void demo_I2C(void)
 }
 #endif
 
-#ifdef MURAX_SPI
+#ifdef CYBER_SPI
 /**
  * 函    数：SPI交换传输一个字节，使用SPI模式0
  * 参    数：ByteSend 要发送的一个字节
@@ -352,7 +352,7 @@ void demo_SPI(void)
 }
 #endif
 
-#ifdef MURAX_TIM
+#ifdef CYBER_TIM
 void demo_TIM(void)
 {
     /*配置时钟源*/

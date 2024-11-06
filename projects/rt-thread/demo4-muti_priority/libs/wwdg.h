@@ -5,7 +5,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "cyber.h"
-#ifdef MURAX_WWDG
+#ifdef CYBER_WWDG
 
 /** @defgroup WWDG_Exported_Types
  * @{
@@ -42,5 +42,5 @@ void WWDG_Enable(uint8_t Counter);
 FlagStatus WWDG_GetFlagStatus(void);
 void WWDG_ClearFlag(void);
 
-#endif /* MURAX_WWDG */
+#endif /* CYBER_WWDG */
 #endif /* __WWDG_H */

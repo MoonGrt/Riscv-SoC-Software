@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include "cyber.h"
 
-#ifdef MURAX_USART
+#ifdef CYBER_USART
 
 extern char *malloc();
 extern void putchar(char c);
@@ -151,4 +151,4 @@ int puts(char *s)
     return 0;
 }
 
-#endif /* MURAX_USART */
+#endif /* CYBER_USART */

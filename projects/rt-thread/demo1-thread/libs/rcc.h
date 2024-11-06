@@ -6,7 +6,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "cyber.h"
 
-#ifdef MURAX_RCC
+#ifdef CYBER_RCC
 
 typedef struct
 {
@@ -179,5 +179,5 @@ void RCC_APBPeriphResetCmd(uint32_t RCC_APBPeriph, FunctionalState NewState);
 FlagStatus RCC_GetFlagStatus(uint8_t RCC_FLAG);
 void RCC_ClearFlag(void);
 
-#endif /* MURAX_RCC */
+#endif /* CYBER_RCC */
 #endif /* __RCC_H */

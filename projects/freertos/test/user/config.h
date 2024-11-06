@@ -4,13 +4,13 @@
 #define CORE_HZ 50000000
 // #define CORE_HZ 1000000
 
-#define MURAX_GPIO
-#define MURAX_USART
-#define MURAX_TIM
-// #define MURAX_PWM
-// #define MURAX_I2C
-// #define MURAX_SPI
-// #define MURAX_WWDT
-// #define MURAX_IWDT
+#define CYBER_GPIO
+#define CYBER_USART
+#define CYBER_TIM
+// #define CYBER_PWM
+// #define CYBER_I2C
+// #define CYBER_SPI
+// #define CYBER_WWDT
+// #define CYBER_IWDT
 
 #endif /* __CONFIG_H_ */

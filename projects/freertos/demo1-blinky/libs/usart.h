@@ -3,7 +3,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "cyber.h"
-#ifdef MURAX_USART
+#ifdef CYBER_USART
 
 /** @defgroup USART_Exported_Types
  * @{
@@ -282,5 +282,5 @@ ITStatus USART_GetITStatus(USART_TypeDef *USARTx, uint16_t USART_IT);
 void USART_ClearITPendingBit(USART_TypeDef *USARTx, uint16_t USART_IT);
 // extern int fputc(int ch, FILE *f);  // 重定向c库函数printf  
 
-#endif /* MURAX_USART */
+#endif /* CYBER_USART */
 #endif /* __USART_H_ */

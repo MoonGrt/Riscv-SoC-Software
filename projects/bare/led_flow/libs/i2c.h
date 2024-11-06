@@ -5,7 +5,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "cyber.h"
-#ifdef MURAX_I2C
+#ifdef CYBER_I2C
 
 /** @defgroup I2C_Exported_Types
  * @{
@@ -559,5 +559,5 @@ void I2C_ClearFlag(I2C_TypeDef *I2Cx, uint32_t I2C_FLAG);
 ITStatus I2C_GetITStatus(I2C_TypeDef *I2Cx, uint32_t I2C_IT);
 void I2C_ClearITPendingBit(I2C_TypeDef *I2Cx, uint32_t I2C_IT);
 
-#endif /* MURAX_I2C */
+#endif /* CYBER_I2C */
 #endif /*__I2C_H */
