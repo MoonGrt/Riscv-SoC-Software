@@ -11,7 +11,7 @@
   * @{
   */
 // 初始化 VP 模块
-void VP_Init(DVP_TypeDef *DVPx, VP_InitTypeDef *VP_InitStruct)
+void VP_Conf(DVP_TypeDef *DVPx, VP_InitTypeDef *VP_InitStruct)
 {
     DVPx->VP_CR = ((VP_InitStruct->Mode & 0x7) << 0) |           // 1位使能 + 2位模式 [2:1]
                   ((VP_InitStruct->CutterMode & 0x7) << 3) |     // 1位使能 + 2位模式 [5:3]
@@ -27,18 +27,22 @@ void VP_Init(DVP_TypeDef *DVPx, VP_InitTypeDef *VP_InitStruct)
 void DVP_Init(DVP_TypeDef *DVPx, DVP_InitTypeDef *DVP_InitStruct)
 {
     // 配置 VI_CR
-    DVPx->VI_CR = (DVP_InitStruct->VIMode & 0x7); // 1位使能 + 2位模式 [2:1]
+    DVPx->VI_CR = (DVP_InitStruct->VIMode & 0x3); // 1位使能 + 2位模式 [2:1]
     // 配置 VP_CR
     VP_Init(DVPx, &DVP_InitStruct->VPMode);
     // 配置 VO_CR
-    DVPx->VO_CR = (DVP_InitStruct->VOMode & 0x7); // 1位使能 + 2位模式 [2:1]
+    DVPx->VO_CR = (DVP_InitStruct->VOMode & 0x3); // 1位使能 + 2位模式 [2:1]
 }
 
 // VP_THRESHOLD 设置函数
-void DVP_VP_SetThreshold(DVP_TypeDef *DVPx, uint8_t edger_threshold, uint8_t binarizer_threshold)
+void DVP_VP_SetEdgerThreshold(DVP_TypeDef *DVPx, uint8_t threshold)
 {
-    DVPx->VP_THRESHOLD = ((edger_threshold & 0xFF) << 0) | 
-                         ((binarizer_threshold & 0xFF) << 8);
+    DVPx->VP_THRESHOLD = threshold & 0xFF; // 直接写入edger_th阈值到位[7:0]
+}
+
+void DVP_VP_SetBinarizerThreshold(DVP_TypeDef *DVPx, uint8_t threshold)
+{
+    DVPx->VP_THRESHOLD = (threshold & 0xFF) << 8; // 直接写入binarizer_th阈值到位[15:8]
 }
 
 // 设置VP_START

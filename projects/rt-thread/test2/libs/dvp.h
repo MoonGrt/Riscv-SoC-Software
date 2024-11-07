@@ -30,11 +30,11 @@ typedef struct
     uint8_t Mode;
     uint8_t CutterMode;    // Cutter 模式 (2位模式: | 1位使能: 0: 禁用, 1: 使能)
     uint8_t FilterMode;    // Filter 模式 (2位模式: 01: gaussian, 10: mean, 11: median | 1位使能: 0: 禁用, 1: 使能)
-    uint8_t ScalerMode;    // Scaler 模式 (2位模式: 01: neighbor, 10: bilinear, 11: bicubic | 1位使能: 0: 禁用, 1: 使能)
-    uint8_t ColorMode;     // Color 模式 (2位模式: 01: YUV422, 10: YUV222, 11: | 1位使能: 0: 禁用, 1: 使能)
+    uint8_t ScalerMode;    // Scaler 模式 (2位模式: 01: neighbor, 10: bilinear, 11:  | 1位使能: 0: 禁用, 1: 使能)
+    uint8_t ColorMode;     // Color 模式 (2位模式: 01: YUV422, 10: YUV222, 11:  | 1位使能: 0: 禁用, 1: 使能)
     uint8_t EdgerMode;     // Edger 模式 (2位模式: 01: sobel, 10: prewitt, 11: | 1位使能: 0: 禁用, 1: 使能)
-    uint8_t BinarizerMode; // Binarizer 模式 (2位模式: 01: 正向模式, 10: 反相模式, 11: | 1位使能: 0: 禁用, 1: 使能)
-    uint8_t FillMode;      // Fill 模式 (2位模式: 01: 黑色, 10: 白色, 11: 自定义 | 1位使能: 0: 禁用, 1: 使能)
+    uint8_t BinarizerMode; // Binarizer 模式 (2位模式: 01: 反相模式, 10: 镜像模式, 11: 反镜像模式 | 1位使能: 0: 禁用, 1: 使能)
+    uint8_t FillMode;      // Fill 模式 (2位模式: 01: 黑色, 10: 白色, 11: | 1位使能: 0: 禁用, 1: 使能)
 } VP_InitTypeDef;
 
 typedef struct
@@ -64,7 +64,7 @@ typedef struct
 #define VO_LCD 0x06  // LCD 输出模式
 
 // Cutter 模式宏
-#define VP_Cutter 0x02 // Cutter 模式
+
 // Filter 模式宏
 #define VP_Gaussian 0x02 // Gaussian 模式
 #define VP_Mean 0x04     // Mean 模式
@@ -80,8 +80,9 @@ typedef struct
 #define VP_Sobel 0x02   // Sobel 模式
 #define VP_Prewitt 0x04 // Prewitt 模式
 // Binarizer 模式宏
-#define VP_Normal 0x02  // Normal 模式
-#define VP_Inverse 0x02 // Inverse 模式
+#define VP_Inverse 0x02   // Inverse 模式
+#define VP_Mirror 0x04    // Mirror 模式
+#define VP_InvMirror 0x06 // InvMirror 模式
 // Fill 模式宏
 #define VP_Black 0x02  // 黑色
 #define VP_White 0x04  // 白色
@@ -91,10 +92,11 @@ typedef struct
  */
 void VP_Init(DVP_TypeDef *DVPx, VP_InitTypeDef *VP_InitStruct);
 void DVP_Init(DVP_TypeDef *DVPx, DVP_InitTypeDef *DVP_InitStruct);
+void DVP_VP_SetEdgerThreshold(DVP_TypeDef *DVPx, uint8_t threshold);
+void DVP_VP_SetBinarizerThreshold(DVP_TypeDef *DVPx, uint8_t threshold);
 void DVP_VP_SetStart(DVP_TypeDef *DVPx, uint16_t startX, uint16_t startY);
 void DVP_VP_SetEnd(DVP_TypeDef *DVPx, uint16_t endX, uint16_t endY);
 void DVP_VP_SetOutRes(DVP_TypeDef *DVPx, uint16_t outputXRes, uint16_t outputYRes);
-void DVP_VP_SetThreshold(DVP_TypeDef *DVPx, uint8_t edger_threshold, uint8_t binarizer_threshold);
 
 #endif /* CYBER_DVP */
 #endif /* __DVP_H */
