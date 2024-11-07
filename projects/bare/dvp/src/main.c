@@ -2,27 +2,19 @@
 
 int main()
 {
-    // GPIO
-    GPIO_InitTypeDef GPIO_InitStructure;
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-    GPIO_ResetBits(GPIOA, GPIO_Pin_0);
-
     // 创建并配置 DVP 初始化结构体
     DVP_InitTypeDef DVP_InitStructure;
     // 配置 VI 模式
     DVP_InitStructure.VIMode = VI_CAMERA | ENABLE; // 启用 CAMERA 模式
     // 配置 VP 模式
-    DVP_InitStructure.VPMode.Mode = VP_Scaler | ENABLE;          // 启用 Scaler 模式
-    DVP_InitStructure.VPMode.CutterMode = ENABLE;                // 启用 Cutter 模式
-    DVP_InitStructure.VPMode.FilterMode = VP_Gaussian | ENABLE;  // 启用 Gaussian 模式
-    DVP_InitStructure.VPMode.ScalerMode = VP_Bilinear | ENABLE;  // 启用 Bilinear 模式
-    DVP_InitStructure.VPMode.ColorMode = VP_YUV422 | ENABLE;     // 启用 YUV422 模式
-    DVP_InitStructure.VPMode.EdgerMode = VP_Sobel | ENABLE;      // 启用 Sobel 模式
+    DVP_InitStructure.VPMode.Mode = VP_Scaler | ENABLE;           // 启用 Scaler 模式
+    DVP_InitStructure.VPMode.CutterMode = ENABLE;                 // 启用 Cutter 模式
+    DVP_InitStructure.VPMode.FilterMode = VP_Gaussian | ENABLE;   // 启用 Gaussian 模式
+    DVP_InitStructure.VPMode.ScalerMode = VP_Bilinear | ENABLE;   // 启用 Bilinear 模式
+    DVP_InitStructure.VPMode.ColorMode = VP_YUV422 | ENABLE;      // 启用 YUV422 模式
+    DVP_InitStructure.VPMode.EdgerMode = VP_Sobel | ENABLE;       // 启用 Sobel 模式
     DVP_InitStructure.VPMode.BinarizerMode = VP_Inverse | ENABLE; // 启用 Normal 模式
-    DVP_InitStructure.VPMode.FillMode = VP_White | ENABLE;       // 启用 Black填充 模式
+    DVP_InitStructure.VPMode.FillMode = VP_White | ENABLE;        // 启用 Black填充 模式
     // 配置 VO 模式
     DVP_InitStructure.VOMode = VO_HDMI | ENABLE;  // 启用 HDMI 输出模式
     // 初始化 DVP 模块

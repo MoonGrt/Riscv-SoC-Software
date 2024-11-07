@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "cyber.h": "c",
+        "rtconfig.h": "c"
+    }
+}

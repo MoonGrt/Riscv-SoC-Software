@@ -3,9 +3,10 @@
 #include "dvp.h"
 #ifdef CYBER_DVP
 
-/** @defgroup DVP_Private_Defines
+/** @defgroup DVP_Private_Variables
  * @{
  */
+
 
 /** @defgroup DVP_Private_Functions
   * @{
