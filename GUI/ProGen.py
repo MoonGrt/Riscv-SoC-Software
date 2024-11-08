@@ -62,23 +62,23 @@ class SocGen():
         with open(output, 'w') as f:
             # 基础组件
             # TOP
-            with open("demo/Hardware/CYBER.v", 'r', encoding='utf-8') as infile:
+            with open("GUI/demo/Hardware/Cyber.v", 'r', encoding='utf-8') as infile:
                 f.write(infile.read()+"\n")
-            print("CYBER.v has been added to the SoC")
+            print("Murax.v has been added to the SoC")
             # JTAG
-            with open("demo/Hardware/JtagBridge.v", 'r', encoding='utf-8') as infile:
+            with open("GUI/demo/Hardware/Cyber.v", 'r', encoding='utf-8') as infile:
                 f.write(infile.read()+"\n")
             print("JtagBridge.v has been added to the SoC")
             # VexRiscv
-            with open("demo/Hardware/VexRiscv.v", 'r', encoding='utf-8') as infile:
+            with open("GUI/demo/Hardware/VexRiscv.v", 'r', encoding='utf-8') as infile:
                 f.write(infile.read()+"\n")
             print("VexRiscv.v has been added to the SoC")
             # APB3 BUS
-            with open("demo/Hardware/APB3BUS.v", 'r', encoding='utf-8') as infile:
+            with open("GUI/demo/Hardware/APB3BUS.v", 'r', encoding='utf-8') as infile:
                 f.write(infile.read()+"\n")
             print("APB3BUS.v has been added to the SoC")
             # RAM
-            with open("demo/Hardware/RAM.v", 'r', encoding='utf-8') as infile:
+            with open("GUI/demo/Hardware/APB3RAM.v", 'r', encoding='utf-8') as infile:
                 f.write(infile.read()+"\n")
             print("RAM.v has been added to the SoC")
 
@@ -115,12 +115,12 @@ class SocGen():
         if not self.DEVICES:
             return
         # 输出目录
-        os.makedirs("output/Software", exist_ok=True)
+        os.makedirs("GUI/output/Software", exist_ok=True)
 
         # 复制软件工程模板
-        for item in os.listdir("demo/Software"):
-            src_path = os.path.join("demo/Software", item)
-            dst_path = os.path.join("output/Software", item)
+        for item in os.listdir("GUI/demo/Software"):
+            src_path = os.path.join("GUI/demo/Software", item)
+            dst_path = os.path.join("GUI/output/Software", item)
             # 如果是文件，复制文件
             if os.path.isfile(src_path):
                 shutil.copy(src_path, dst_path)
@@ -200,7 +200,7 @@ class SocGen():
         print(WDG_STR)
 
         # 读取模板BSP文件内容
-        # with open("output/Software/libs/CYBER.h", 'r', encoding='utf-8') as file:
+        # with open("output/Software/libs/murax.h", 'r', encoding='utf-8') as file:
         #     file_data = file.read()
 
 

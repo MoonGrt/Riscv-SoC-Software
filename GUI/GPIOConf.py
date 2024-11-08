@@ -4,10 +4,27 @@ from PyQt5.QtGui import QIcon, QColor, QFont, QPainter, QLinearGradient
 from PyQt5.QtCore import Qt
 
 class GPIOConfTable(QTableWidget):
+    # def __init__(self):
+    #     super().__init__(0, 0)
+    #     self.setStyleSheet("background-color: #C18E93;")
+       
+    #     self.current_row = None
+    #     self.current_column = None
+        
+    #     self.setWindowIcon(QIcon('D:/Riscv-SoC-Software-master/Riscv-SoC-Software-master/GUI/icons/app.svg'))
+    #     # 要设置渐变色的单元格
+    #     self.gradient_cells = []
+
+    #     # 删除行列标题
+    #     self.verticalHeader().hide()
+    #     self.horizontalHeader().hide()
     def __init__(self):
         super().__init__(0, 0)
+        self.setStyleSheet("background-color: #D1A7A4;")
         self.current_row = None
         self.current_column = None
+    
+        
 
         # 要设置渐变色的单元格
         self.gradient_cells = []
@@ -15,6 +32,7 @@ class GPIOConfTable(QTableWidget):
         # 删除行列标题
         self.verticalHeader().hide()
         self.horizontalHeader().hide()
+
 
     # 重写 paintEvent 函数，实现单元格背景的渐变色
     # def paintEvent(self, event):
@@ -53,10 +71,10 @@ class GPIOConfTable(QTableWidget):
                 # 判断当前单元格背景是否是淡绿色
                 if current_color == QColor('red'):
                     pass
-                elif current_color == QColor('lightgreen'):
+                elif current_color == QColor("#B7D9A9"):
                     item.setBackground(QColor('white'))  # 如果是淡绿色，则恢复为默认的白色
                 else:
-                    item.setBackground(QColor('lightgreen'))  # 否则，将其设置为淡绿色
+                    item.setBackground(QColor("#B7D9A9"))  # 否则，将其设置为淡绿色
         else:
             # 调用父类的默认行为
             super().mousePressEvent(event)
@@ -88,7 +106,8 @@ class GPIOConf(QDialog):
         super().__init__()
 
         self.DEVICES = {}  # 设备
-        self.dev_rows = {}  # 用于存储每个设备对应的行索引
+        self.gpio_config = {}  # 用于存储GPIO配置
+        self.row_indexes = {}  # 用于存储每个设备对应的行索引
         self.row = 0
         self.col = 0
 
@@ -96,10 +115,10 @@ class GPIOConf(QDialog):
 
     def init_ui(self):
         # 设置应用图标
-        self.setWindowIcon(QIcon("icons/GPIO.svg"))
+        self.setWindowIcon(QIcon("D:\Riscv-SoC-Software-master\Riscv-SoC-Software-master\GUI\icons\GPIO.svg"))
         # 设置窗口标题和尺寸
-        self.setWindowTitle("GPIO Config")
-        self.resize(950, 500)  # 窗口大小
+        self.setWindowTitle("GPIO Table")
+        self.resize(1400, 480)  # 窗口大小
 
         # 创建表格
         self.table = GPIOConfTable()
@@ -111,16 +130,36 @@ class GPIOConf(QDialog):
         self.table.customContextMenuRequested.connect(self.menu)
 
         # 水平布局用于按钮
+        # button = QHBoxLayout()
+        # clear_button = QPushButton("Clear")
+        # clear_button.clicked.connect(self.clear_table)
+        # button.addWidget(clear_button)
+        # reset_button = QPushButton("Reset")
+        # reset_button.clicked.connect(self.reset_table)
+        # button.addWidget(reset_button)
+        # generate_button = QPushButton("Gen")
+        # generate_button.clicked.connect(self.Gen)
+        # button.addWidget(generate_button)
         button = QHBoxLayout()
+
+        # 设置莫兰迪绿色
+        morandi_green = "#8CBAB7"  # 你可以根据需要调整颜色代码
+
         clear_button = QPushButton("Clear")
+        clear_button.setStyleSheet(f"background-color: {morandi_green}; color: black;")
         clear_button.clicked.connect(self.clear_table)
         button.addWidget(clear_button)
+
         reset_button = QPushButton("Reset")
+        reset_button.setStyleSheet(f"background-color: {morandi_green}; color: black;")
         reset_button.clicked.connect(self.reset_table)
         button.addWidget(reset_button)
+
         generate_button = QPushButton("Gen")
+        generate_button.setStyleSheet(f"background-color: {morandi_green}; color: black;")
         generate_button.clicked.connect(self.Gen)
         button.addWidget(generate_button)
+
 
         # 创建布局并将表格加入
         layout = QVBoxLayout()
@@ -153,16 +192,18 @@ class GPIOConf(QDialog):
 
     # 生成配置
     def Gen(self):
+        # 读取表格内容
+        self.gpio_config = {}
         for i, gpio in enumerate(self.DEVICES["GPIO"]):
-            self.DEVICES["GPIO"][gpio] = []
+            self.gpio_config[gpio] = []
             for j in range(1, 17):
                 port = self.table.item(2, i*16+j).text()
                 if port == "":
-                    self.DEVICES["GPIO"][gpio].append(port)
+                    self.gpio_config[gpio].append(port)
                     continue
                 device_type, device_num, port_name = self.get_device_type(port)
                 port = device_type + device_num + "_" + port_name
-                self.DEVICES["GPIO"][gpio].append(port)
+                self.gpio_config[gpio].append(port)
         # 退出窗口
         self.accept()
 
@@ -221,33 +262,33 @@ class GPIOConf(QDialog):
             for index, (name, port) in enumerate(self.DEVICES[component].items()):
                 # 判断字典的状态
                 if all(not value for value in port.values()):
-                    self.table.item(self.dev_rows[component][index+1], 0).setBackground(QColor("white"))
+                    self.table.item(self.row_indexes[component][index+1], 0).setBackground(QColor("#D1A7A4"))
                 elif all(value for value in port.values()):
-                    self.table.item(self.dev_rows[component][index+1], 0).setBackground(QColor("lightgreen"))
+                    self.table.item(self.row_indexes[component][index+1], 0).setBackground(QColor("#8CBAB7"))
                 else:
-                    self.table.item(self.dev_rows[component][index+1], 0).setBackground(QColor("yellow"))
+                    self.table.item(self.row_indexes[component][index+1], 0).setBackground(QColor("yellow"))
 
         for index, (name, state) in enumerate(self.DEVICES["WDG"].items()):
             if state:
-                self.table.item(self.dev_rows["WDG"][index+1], 0).setBackground(QColor("lightgreen"))
+                self.table.item(self.row_indexes["WDG"][index+1], 0).setBackground(QColor("#8CBAB7"))
             else:
-                self.table.item(self.dev_rows["WDG"][index+1], 0).setBackground(QColor("white"))
+                self.table.item(self.row_indexes["WDG"][index+1], 0).setBackground(QColor("#D1A7A4"))
 
     def update_AFIO_state(self):
         for j in range(self.table.columnCount() - 1):
             col_list = []
-            for _, rows in self.dev_rows.items():
+            for _, rows in self.row_indexes.items():
                 try:
                     text = self.table.item(rows[0], j + 1).text()
                     color = self.table.item(rows[0], j + 1).background().color()
-                    if color == QColor('lightgreen'):
+                    if color == QColor("#8CBAB7"):
                         col_list += [text]
                 except:
                     pass
             if len(col_list) == 0:
-                self.table.set_item(2, j + 1, "", False, "white")
+                self.table.set_item(2, j + 1, "", False, "#D1A7A4")
             elif len(col_list) == 1:
-                self.table.set_item(2, j + 1, col_list[0], False, "lightgreen")
+                self.table.set_item(2, j + 1, col_list[0], False, "#8CBAB7")
             else:
                 self.table.set_item(2, j + 1, "", False, "red")
 
@@ -260,8 +301,8 @@ class GPIOConf(QDialog):
         current_row = self.table.rowCount()
 
         # 记录当前设备的行索引
-        self.dev_rows[dev] = []
-        self.dev_rows[dev].append(current_row)
+        self.row_indexes[dev] = []
+        self.row_indexes[dev].append(current_row)
 
         # 添加新行
         self.table.insertRow(current_row)
@@ -298,28 +339,28 @@ class GPIOConf(QDialog):
                             else:
                                 text = key+name
                     if text:
-                        self.table.set_item(self.dev_rows[dev][0], j+1, text, False, "lightgreen")  # 设置不可编辑的单元格
-                        self.table.set_item(current_row, j+1, text, False, "lightgreen")  # 设置不可编辑的单元格
+                        self.table.set_item(self.row_indexes[dev][0], j+1, text, False, "#8CBAB7")  # 设置不可编辑的单元格
+                        self.table.set_item(current_row, j+1, text, False, "#8CBAB7")  # 设置不可编辑的单元格
                     else:
                         self.table.set_item(current_row, j+1, "", False)  # 设置不可编辑的空白单元格
-            self.dev_rows[dev].append(current_row)  # 记录行索引
+            self.row_indexes[dev].append(current_row)  # 记录行索引
             current_row += 1
 
         self.fold_row(dev, fold_button.isChecked())
 
     def fold_row(self, dev, checked):
         # 获取当前设备的项目行索引
-        if dev not in self.dev_rows:
+        if dev not in self.row_indexes:
             return
         if checked:  # 如果按钮被检查（展开）
             # 显示项目行
-            for index, row in enumerate(self.dev_rows[dev]):
+            for index, row in enumerate(self.row_indexes[dev]):
                 if index == 0:
                     continue  # 跳过第一个元素
                 self.table.setRowHidden(row, False)
         else:  # 如果按钮未被检查（折叠）
             # 隐藏项目行
-            for index, row in enumerate(self.dev_rows[dev]):
+            for index, row in enumerate(self.row_indexes[dev]):
                 if index == 0:
                     continue  # 跳过第一个元素
                 self.table.setRowHidden(row, True)
@@ -386,7 +427,7 @@ class GPIOConf(QDialog):
 
     # 检查列是否合法
     def chech_col(self):
-        for dev, rows in self.dev_rows.items():
+        for dev, rows in self.row_indexes.items():
             if self.row in rows:
                 col_list = []
                 for index, row in enumerate(rows):
@@ -398,13 +439,13 @@ class GPIOConf(QDialog):
                     except:
                         pass
                 if len(col_list) == 0:
-                    self.table.set_item(self.dev_rows[dev][0], self.col, "", False, "white")
+                    self.table.set_item(self.row_indexes[dev][0], self.col, "", False, "#D1A7A4")
                 elif len(col_list) == 1:
                     text = self.table.item(col_list[0][0], self.col).text()
-                    self.table.item(col_list[0][0], self.col).setBackground(QColor('lightgreen'))
-                    self.table.set_item(self.dev_rows[dev][0], self.col, text, False, "lightgreen")
+                    self.table.item(col_list[0][0], self.col).setBackground(QColor("#8CBAB7"))
+                    self.table.set_item(self.row_indexes[dev][0], self.col, text, False, "#8CBAB7")
                 else:
-                    self.table.set_item(self.dev_rows[dev][0], self.col, "", False, "red")
+                    self.table.set_item(self.row_indexes[dev][0], self.col, "", False, "red")
                     for item in col_list:
                         self.table.item(item[0], self.col).setBackground(QColor('red'))
                 break
@@ -451,7 +492,26 @@ class GPIOConf(QDialog):
         self.update_device_state()
         self.update_AFIO_state()
 
+class GPIOConfigDialog(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("GPIO Configuration")
+        self.setGeometry(100, 100, 600, 400)
+        self.setStyleSheet("background-color: #D1A7A4;")  # 将这里的颜色设置为你想要的颜色
+        # 创建 GPIOConfTable 实例
+        self.gpio_table = GPIOConf()
 
+        # 创建布局并添加表格
+        layout = QVBoxLayout()
+        layout.addWidget(self.gpio_table)
+
+        # 添加关闭按钮
+        close_button = QPushButton("Close")
+        close_button.setStyleSheet("background-color: #8CBAB7; color: black;")
+        close_button.clicked.connect(self.close)
+        layout.addWidget(close_button)
+
+        self.setLayout(layout)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

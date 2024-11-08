@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # OpenOCD configuration file for cyber board
-/home/moon/openocd_riscv/src/openocd -f ./cyber.cfg
+/home/moon/openocd_riscv/src/openocd -f /mnt/hgfs/share/Riscv-SoC-Software/scripts/cyber.cfg
 
 
 

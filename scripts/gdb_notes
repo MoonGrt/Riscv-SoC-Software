@@ -1,7 +1,7 @@
 
 # 启动GDB并自动执行烧录命令
 /opt/riscv/bin/riscv64-unknown-elf-gdb
-file /mnt/hgfs/share/Riscv-SoC-Software/projects/rt-thread/demo7-finsh/build/finsh.elf
+file /mnt/hgfs/share/Riscv-SoC-Software/projects/rt-thread/test/build/test.elf
 target extended-remote :3333
 monitor reset halt
 load

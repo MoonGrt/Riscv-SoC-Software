@@ -10,13 +10,13 @@ void demo_PWM(void);
 
 void main()
 {
-    demo_GPIO();
-    demo_USART();
+    // demo_GPIO();
+    // demo_USART();
     // demo_I2C();
     // demo_SPI();
     // demo_TIM();
     // demo_PWM();
-    // demo_WDG();
+    demo_WDG();
 
     /*!< old */
     // GPIO
@@ -134,7 +134,7 @@ void demo_WDG(void)
     /*IWDG初始化*/
     IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable); // 独立看门狗写使能
     IWDG_SetPrescaler(IWDG_Prescaler_16);         // 设置预分频为16
-    IWDG_SetReload(100);                          // 设置重装值为2499，独立看门狗的超时时间为1000ms
+    IWDG_SetReload(30);                          // 设置重装值为2499，独立看门狗的超时时间为1000ms
     IWDG_ReloadCounter();                         // 重装计数器，喂狗
     IWDG_Enable();                                // 独立看门狗使能
     /*IWDG喂狗*/
@@ -410,7 +410,7 @@ void demo_PWM(void)
     TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;     // 时钟分频，选择不分频，此参数用于配置滤波器时钟，不影响时基单元功能
     TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up; // 计数器模式，选择向上计数
     TIM_TimeBaseInitStructure.TIM_Period = 50 - 1;                  // 计数周期，即ARR的值
-    TIM_TimeBaseInitStructure.TIM_Prescaler = 72 - 1;               // 预分频器，即PSC的值
+    TIM_TimeBaseInitStructure.TIM_Prescaler = 10 - 1;               // 预分频器，即PSC的值
     TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;            // 重复计数器，高级定时器才会用到
     TIM_TimeBaseInit(TIM3, &TIM_TimeBaseInitStructure);             // 将结构体变量交给TIM_TimeBaseInit，配置TIM3的时基单元
 
