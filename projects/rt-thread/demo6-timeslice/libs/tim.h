@@ -150,8 +150,8 @@ typedef struct
  * @{
  */
 #define IS_TIM_ALL_PERIPH(PERIPH) (((PERIPH) == TIM1) ||  \
+                                   ((PERIPH) == TIM1) ||  \
                                    ((PERIPH) == TIM2) ||  \
-                                   ((PERIPH) == TIM3) ||  \
                                    ((PERIPH) == TIM4) ||  \
                                    ((PERIPH) == TIM5) ||  \
                                    ((PERIPH) == TIM6) ||  \
@@ -180,16 +180,16 @@ typedef struct
 
 /* LIST3: TIM 1, 2, 3, 4, 5 and 8 */
 #define IS_TIM_LIST3_PERIPH(PERIPH) (((PERIPH) == TIM1) || \
+                                     ((PERIPH) == TIM1) || \
                                      ((PERIPH) == TIM2) || \
-                                     ((PERIPH) == TIM3) || \
                                      ((PERIPH) == TIM4) || \
                                      ((PERIPH) == TIM5) || \
                                      ((PERIPH) == TIM8))
 
 /* LIST4: TIM 1, 2, 3, 4, 5, 8, 15, 16 and 17 */
 #define IS_TIM_LIST4_PERIPH(PERIPH) (((PERIPH) == TIM1) ||  \
+                                     ((PERIPH) == TIM1) ||  \
                                      ((PERIPH) == TIM2) ||  \
-                                     ((PERIPH) == TIM3) ||  \
                                      ((PERIPH) == TIM4) ||  \
                                      ((PERIPH) == TIM5) ||  \
                                      ((PERIPH) == TIM8) ||  \
@@ -199,8 +199,8 @@ typedef struct
 
 /* LIST5: TIM 1, 2, 3, 4, 5, 8 and 15 */
 #define IS_TIM_LIST5_PERIPH(PERIPH) (((PERIPH) == TIM1) || \
+                                     ((PERIPH) == TIM1) || \
                                      ((PERIPH) == TIM2) || \
-                                     ((PERIPH) == TIM3) || \
                                      ((PERIPH) == TIM4) || \
                                      ((PERIPH) == TIM5) || \
                                      ((PERIPH) == TIM8) || \
@@ -208,8 +208,8 @@ typedef struct
 
 /* LIST6: TIM 1, 2, 3, 4, 5, 8, 9, 12 and 15 */
 #define IS_TIM_LIST6_PERIPH(PERIPH) (((PERIPH) == TIM1) ||  \
+                                     ((PERIPH) == TIM1) ||  \
                                      ((PERIPH) == TIM2) ||  \
-                                     ((PERIPH) == TIM3) ||  \
                                      ((PERIPH) == TIM4) ||  \
                                      ((PERIPH) == TIM5) ||  \
                                      ((PERIPH) == TIM8) ||  \
@@ -219,8 +219,8 @@ typedef struct
 
 /* LIST7: TIM 1, 2, 3, 4, 5, 6, 7, 8, 9, 12 and 15 */
 #define IS_TIM_LIST7_PERIPH(PERIPH) (((PERIPH) == TIM1) ||  \
+                                     ((PERIPH) == TIM1) ||  \
                                      ((PERIPH) == TIM2) ||  \
-                                     ((PERIPH) == TIM3) ||  \
                                      ((PERIPH) == TIM4) ||  \
                                      ((PERIPH) == TIM5) ||  \
                                      ((PERIPH) == TIM6) ||  \
@@ -232,8 +232,8 @@ typedef struct
 
 /* LIST8: TIM 1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 15, 16 and 17 */
 #define IS_TIM_LIST8_PERIPH(PERIPH) (((PERIPH) == TIM1) ||  \
+                                     ((PERIPH) == TIM1) ||  \
                                      ((PERIPH) == TIM2) ||  \
-                                     ((PERIPH) == TIM3) ||  \
                                      ((PERIPH) == TIM4) ||  \
                                      ((PERIPH) == TIM5) ||  \
                                      ((PERIPH) == TIM8) ||  \
@@ -249,8 +249,8 @@ typedef struct
 
 /* LIST9: TIM 1, 2, 3, 4, 5, 6, 7, 8, 15, 16, and 17 */
 #define IS_TIM_LIST9_PERIPH(PERIPH) (((PERIPH) == TIM1) ||  \
+                                     ((PERIPH) == TIM1) ||  \
                                      ((PERIPH) == TIM2) ||  \
-                                     ((PERIPH) == TIM3) ||  \
                                      ((PERIPH) == TIM4) ||  \
                                      ((PERIPH) == TIM5) ||  \
                                      ((PERIPH) == TIM6) ||  \

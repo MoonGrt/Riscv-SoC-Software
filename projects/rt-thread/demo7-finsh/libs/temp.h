@@ -207,8 +207,8 @@ typedef enum IRQn
   TIM1_UP_IRQn                = 25,     /*!< TIM1 Update Interrupt                                */
   TIM1_TRG_COM_IRQn           = 26,     /*!< TIM1 Trigger and Commutation Interrupt               */
   TIM1_CC_IRQn                = 27,     /*!< TIM1 Capture Compare Interrupt                       */
-  TIM2_IRQn                   = 28,     /*!< TIM2 global Interrupt                                */
-  TIM3_IRQn                   = 29,     /*!< TIM3 global Interrupt                                */
+  TIM2_IRQn                   = 28,     /*!< TIM1 global Interrupt                                */
+  TIM3_IRQn                   = 29,     /*!< TIM2 global Interrupt                                */
   I2C1_EV_IRQn                = 31,     /*!< I2C1 Event Interrupt                                 */
   I2C1_ER_IRQn                = 32,     /*!< I2C1 Error Interrupt                                 */
   SPI1_IRQn                   = 35,     /*!< SPI1 global Interrupt                                */
@@ -226,8 +226,8 @@ typedef enum IRQn
   TIM1_UP_TIM16_IRQn          = 25,     /*!< TIM1 Update and TIM16 Interrupts                     */
   TIM1_TRG_COM_TIM17_IRQn     = 26,     /*!< TIM1 Trigger and Commutation and TIM17 Interrupt     */
   TIM1_CC_IRQn                = 27,     /*!< TIM1 Capture Compare Interrupt                       */
-  TIM2_IRQn                   = 28,     /*!< TIM2 global Interrupt                                */
-  TIM3_IRQn                   = 29,     /*!< TIM3 global Interrupt                                */
+  TIM2_IRQn                   = 28,     /*!< TIM1 global Interrupt                                */
+  TIM3_IRQn                   = 29,     /*!< TIM2 global Interrupt                                */
   I2C1_EV_IRQn                = 31,     /*!< I2C1 Event Interrupt                                 */
   I2C1_ER_IRQn                = 32,     /*!< I2C1 Error Interrupt                                 */
   SPI1_IRQn                   = 35,     /*!< SPI1 global Interrupt                                */
@@ -251,8 +251,8 @@ typedef enum IRQn
   TIM1_UP_IRQn                = 25,     /*!< TIM1 Update Interrupt                                */
   TIM1_TRG_COM_IRQn           = 26,     /*!< TIM1 Trigger and Commutation Interrupt               */
   TIM1_CC_IRQn                = 27,     /*!< TIM1 Capture Compare Interrupt                       */
-  TIM2_IRQn                   = 28,     /*!< TIM2 global Interrupt                                */
-  TIM3_IRQn                   = 29,     /*!< TIM3 global Interrupt                                */
+  TIM2_IRQn                   = 28,     /*!< TIM1 global Interrupt                                */
+  TIM3_IRQn                   = 29,     /*!< TIM2 global Interrupt                                */
   TIM4_IRQn                   = 30,     /*!< TIM4 global Interrupt                                */
   I2C1_EV_IRQn                = 31,     /*!< I2C1 Event Interrupt                                 */
   I2C1_ER_IRQn                = 32,     /*!< I2C1 Error Interrupt                                 */
@@ -275,8 +275,8 @@ typedef enum IRQn
   TIM1_UP_TIM16_IRQn          = 25,     /*!< TIM1 Update and TIM16 Interrupts                     */
   TIM1_TRG_COM_TIM17_IRQn     = 26,     /*!< TIM1 Trigger and Commutation and TIM17 Interrupt     */
   TIM1_CC_IRQn                = 27,     /*!< TIM1 Capture Compare Interrupt                       */
-  TIM2_IRQn                   = 28,     /*!< TIM2 global Interrupt                                */
-  TIM3_IRQn                   = 29,     /*!< TIM3 global Interrupt                                */
+  TIM2_IRQn                   = 28,     /*!< TIM1 global Interrupt                                */
+  TIM3_IRQn                   = 29,     /*!< TIM2 global Interrupt                                */
   TIM4_IRQn                   = 30,     /*!< TIM4 global Interrupt                                */
   I2C1_EV_IRQn                = 31,     /*!< I2C1 Event Interrupt                                 */
   I2C1_ER_IRQn                = 32,     /*!< I2C1 Error Interrupt                                 */
@@ -305,8 +305,8 @@ typedef enum IRQn
   TIM1_UP_IRQn                = 25,     /*!< TIM1 Update Interrupt                                */
   TIM1_TRG_COM_IRQn           = 26,     /*!< TIM1 Trigger and Commutation Interrupt               */
   TIM1_CC_IRQn                = 27,     /*!< TIM1 Capture Compare Interrupt                       */
-  TIM2_IRQn                   = 28,     /*!< TIM2 global Interrupt                                */
-  TIM3_IRQn                   = 29,     /*!< TIM3 global Interrupt                                */
+  TIM2_IRQn                   = 28,     /*!< TIM1 global Interrupt                                */
+  TIM3_IRQn                   = 29,     /*!< TIM2 global Interrupt                                */
   TIM4_IRQn                   = 30,     /*!< TIM4 global Interrupt                                */
   I2C1_EV_IRQn                = 31,     /*!< I2C1 Event Interrupt                                 */
   I2C1_ER_IRQn                = 32,     /*!< I2C1 Error Interrupt                                 */
@@ -346,8 +346,8 @@ typedef enum IRQn
   TIM1_UP_TIM16_IRQn          = 25,     /*!< TIM1 Update and TIM16 Interrupts                     */
   TIM1_TRG_COM_TIM17_IRQn     = 26,     /*!< TIM1 Trigger and Commutation and TIM17 Interrupt     */
   TIM1_CC_IRQn                = 27,     /*!< TIM1 Capture Compare Interrupt                       */
-  TIM2_IRQn                   = 28,     /*!< TIM2 global Interrupt                                */
-  TIM3_IRQn                   = 29,     /*!< TIM3 global Interrupt                                */
+  TIM2_IRQn                   = 28,     /*!< TIM1 global Interrupt                                */
+  TIM3_IRQn                   = 29,     /*!< TIM2 global Interrupt                                */
   TIM4_IRQn                   = 30,     /*!< TIM4 global Interrupt                                */
   I2C1_EV_IRQn                = 31,     /*!< I2C1 Event Interrupt                                 */
   I2C1_ER_IRQn                = 32,     /*!< I2C1 Error Interrupt                                 */
@@ -390,8 +390,8 @@ typedef enum IRQn
   TIM1_UP_TIM10_IRQn          = 25,     /*!< TIM1 Update Interrupt and TIM10 global Interrupt     */
   TIM1_TRG_COM_TIM11_IRQn     = 26,     /*!< TIM1 Trigger and Commutation Interrupt and TIM11 global interrupt */
   TIM1_CC_IRQn                = 27,     /*!< TIM1 Capture Compare Interrupt                       */
-  TIM2_IRQn                   = 28,     /*!< TIM2 global Interrupt                                */
-  TIM3_IRQn                   = 29,     /*!< TIM3 global Interrupt                                */
+  TIM2_IRQn                   = 28,     /*!< TIM1 global Interrupt                                */
+  TIM3_IRQn                   = 29,     /*!< TIM2 global Interrupt                                */
   TIM4_IRQn                   = 30,     /*!< TIM4 global Interrupt                                */
   I2C1_EV_IRQn                = 31,     /*!< I2C1 Event Interrupt                                 */
   I2C1_ER_IRQn                = 32,     /*!< I2C1 Error Interrupt                                 */
@@ -435,8 +435,8 @@ typedef enum IRQn
   TIM1_UP_IRQn                = 25,     /*!< TIM1 Update Interrupt                                */
   TIM1_TRG_COM_IRQn           = 26,     /*!< TIM1 Trigger and Commutation Interrupt               */
   TIM1_CC_IRQn                = 27,     /*!< TIM1 Capture Compare Interrupt                       */
-  TIM2_IRQn                   = 28,     /*!< TIM2 global Interrupt                                */
-  TIM3_IRQn                   = 29,     /*!< TIM3 global Interrupt                                */
+  TIM2_IRQn                   = 28,     /*!< TIM1 global Interrupt                                */
+  TIM3_IRQn                   = 29,     /*!< TIM2 global Interrupt                                */
   TIM4_IRQn                   = 30,     /*!< TIM4 global Interrupt                                */
   I2C1_EV_IRQn                = 31,     /*!< I2C1 Event Interrupt                                 */
   I2C1_ER_IRQn                = 32,     /*!< I2C1 Error Interrupt                                 */
@@ -1377,8 +1377,8 @@ typedef struct
   * @{
   */  
 
-#define TIM2                ((TIM_TypeDef *) TIM2_BASE)
-#define TIM3                ((TIM_TypeDef *) TIM3_BASE)
+#define TIM1                ((TIM_TypeDef *) TIM2_BASE)
+#define TIM2                ((TIM_TypeDef *) TIM3_BASE)
 #define TIM4                ((TIM_TypeDef *) TIM4_BASE)
 #define TIM5                ((TIM_TypeDef *) TIM5_BASE)
 #define TIM6                ((TIM_TypeDef *) TIM6_BASE)
@@ -2615,7 +2615,7 @@ typedef struct
 #define AFIO_MAPR_TIM1_REMAP_PARTIALREMAP    ((uint32_t)0x00000040)        /*!< Partial remap (ETR/PA12, CH1/PA8, CH2/PA9, CH3/PA10, CH4/PA11, BKIN/PA6, CH1N/PA7, CH2N/PB0, CH3N/PB1) */
 #define AFIO_MAPR_TIM1_REMAP_FULLREMAP       ((uint32_t)0x000000C0)        /*!< Full remap (ETR/PE7, CH1/PE9, CH2/PE11, CH3/PE13, CH4/PE14, BKIN/PE15, CH1N/PE8, CH2N/PE10, CH3N/PE12) */
 
-#define AFIO_MAPR_TIM2_REMAP                 ((uint32_t)0x00000300)        /*!< TIM2_REMAP[1:0] bits (TIM2 remapping) */
+#define AFIO_MAPR_TIM2_REMAP                 ((uint32_t)0x00000300)        /*!< TIM2_REMAP[1:0] bits (TIM1 remapping) */
 #define AFIO_MAPR_TIM2_REMAP_0               ((uint32_t)0x00000100)        /*!< Bit 0 */
 #define AFIO_MAPR_TIM2_REMAP_1               ((uint32_t)0x00000200)        /*!< Bit 1 */
 
@@ -2625,7 +2625,7 @@ typedef struct
 #define AFIO_MAPR_TIM2_REMAP_PARTIALREMAP2   ((uint32_t)0x00000200)        /*!< Partial remap (CH1/ETR/PA0, CH2/PA1, CH3/PB10, CH4/PB11) */
 #define AFIO_MAPR_TIM2_REMAP_FULLREMAP       ((uint32_t)0x00000300)        /*!< Full remap (CH1/ETR/PA15, CH2/PB3, CH3/PB10, CH4/PB11) */
 
-#define AFIO_MAPR_TIM3_REMAP                 ((uint32_t)0x00000C00)        /*!< TIM3_REMAP[1:0] bits (TIM3 remapping) */
+#define AFIO_MAPR_TIM3_REMAP                 ((uint32_t)0x00000C00)        /*!< TIM3_REMAP[1:0] bits (TIM2 remapping) */
 #define AFIO_MAPR_TIM3_REMAP_0               ((uint32_t)0x00000400)        /*!< Bit 0 */
 #define AFIO_MAPR_TIM3_REMAP_1               ((uint32_t)0x00000800)        /*!< Bit 1 */
 
@@ -2677,7 +2677,7 @@ typedef struct
  #define AFIO_MAPR_SPI3_REMAP                 ((uint32_t)0x10000000)        /*!< SPI3_REMAP bit (SPI3 remapping) */
 
 /*!< TIM2ITR1_IREMAP configuration */
- #define AFIO_MAPR_TIM2ITR1_IREMAP            ((uint32_t)0x20000000)        /*!< TIM2ITR1_IREMAP bit (TIM2 internal trigger 1 remapping) */
+ #define AFIO_MAPR_TIM2ITR1_IREMAP            ((uint32_t)0x20000000)        /*!< TIM2ITR1_IREMAP bit (TIM1 internal trigger 1 remapping) */
 
 /*!< PTP_PPS_REMAP configuration */
  #define AFIO_MAPR_PTP_PPS_REMAP              ((uint32_t)0x40000000)        /*!< PTP_PPS_REMAP bit (Ethernet PTP PPS remapping) */
@@ -7760,8 +7760,8 @@ typedef struct
 #define  DBGMCU_CR_DBG_IWDG_STOP             ((uint32_t)0x00000100)        /*!< Debug Independent Watchdog stopped when Core is halted */
 #define  DBGMCU_CR_DBG_WWDG_STOP             ((uint32_t)0x00000200)        /*!< Debug Window Watchdog stopped when Core is halted */
 #define  DBGMCU_CR_DBG_TIM1_STOP             ((uint32_t)0x00000400)        /*!< TIM1 counter stopped when core is halted */
-#define  DBGMCU_CR_DBG_TIM2_STOP             ((uint32_t)0x00000800)        /*!< TIM2 counter stopped when core is halted */
-#define  DBGMCU_CR_DBG_TIM3_STOP             ((uint32_t)0x00001000)        /*!< TIM3 counter stopped when core is halted */
+#define  DBGMCU_CR_DBG_TIM2_STOP             ((uint32_t)0x00000800)        /*!< TIM1 counter stopped when core is halted */
+#define  DBGMCU_CR_DBG_TIM3_STOP             ((uint32_t)0x00001000)        /*!< TIM2 counter stopped when core is halted */
 #define  DBGMCU_CR_DBG_TIM4_STOP             ((uint32_t)0x00002000)        /*!< TIM4 counter stopped when core is halted */
 #define  DBGMCU_CR_DBG_CAN1_STOP             ((uint32_t)0x00004000)        /*!< Debug CAN1 stopped when Core is halted */
 #define  DBGMCU_CR_DBG_I2C1_SMBUS_TIMEOUT    ((uint32_t)0x00008000)        /*!< SMBUS timeout mode stopped when Core is halted */

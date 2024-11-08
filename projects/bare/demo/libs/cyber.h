@@ -1,22 +1,9 @@
 #ifndef __CYBER_H_
 #define __CYBER_H_
 
-typedef enum
-{
-    RESET = 0,
-    SET = !RESET
-} FlagStatus,
-    ITStatus;
-typedef enum
-{
-    DISABLE = 0,
-    ENABLE = !DISABLE
-} FunctionalState;
-typedef enum
-{
-    ERROR = 0,
-    SUCCESS = !ERROR
-} ErrorStatus;
+typedef enum{RESET = 0, SET = !RESET} FlagStatus, ITStatus;
+typedef enum{DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
+typedef enum{ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 
 #include <stdint.h>
 #include "config.h"
@@ -82,8 +69,8 @@ typedef enum
 #define TIM2_BASE (APBPERIPH_BASE + 0x41000)
 #define TIM3_BASE (APBPERIPH_BASE + 0x42000)
 #define TIM1 ((TIM_TypeDef *)TIM1_BASE) // 0xF0040000
-#define TIM2 ((TIM_TypeDef *)TIM2_BASE) // 0xF0041000
-#define TIM3 ((TIM_TypeDef *)TIM3_BASE) // 0xF0042000
+#define TIM1 ((TIM_TypeDef *)TIM2_BASE) // 0xF0041000
+#define TIM2 ((TIM_TypeDef *)TIM3_BASE) // 0xF0042000
 #endif
 
 #ifdef CYBER_IWDG

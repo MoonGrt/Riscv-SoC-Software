@@ -12,6 +12,8 @@ class Serial(QDialog):
         super().__init__()
         # self.serial_com = serial.Serial()
         self.init_ui()
+        self.project_name = ''
+        self.project_path = ''
 
     def init_ui(self):
         # 设置主窗口属性
@@ -239,9 +241,6 @@ class IDE(QMainWindow):
         container = QWidget()
         container.setLayout(button_layout)
         messages_pane.tabBar().setTabButton(1, QTabBar.RightSide, container)
-
-
-
 
 
         # 设置上下窗格
@@ -586,14 +585,19 @@ class IDE(QMainWindow):
             text_edit.file_path = filePath  # 设置文件路径属性
             self.edit_area.addTab(text_edit, filePath.split("/")[-1])
             # 读取文件内容并显示在文本编辑器中
-            with open(filePath, 'r') as file:
-                text_edit.setPlainText(file.read())
+            try:
+                with open(filePath, 'r', encoding='utf-8') as file:
+                    text_edit.setPlainText(file.read())
+            except UnicodeDecodeError:
+                print("文件不是 UTF-8 编码，请尝试其他编码格式。")
+            # 切换到新创建的选项卡
+            index = self.edit_area.indexOf(text_edit)
+            self.edit_area.setCurrentIndex(index)
 
     def newFile(self):
         # 创建新的文本编辑器选项卡
         text_edit = QTextEdit(self)
         self.edit_area.addTab(text_edit, "Untitled*")
-
         # 切换到新创建的选项卡
         index = self.edit_area.indexOf(text_edit)
         self.edit_area.setCurrentIndex(index)
@@ -602,8 +606,9 @@ class IDE(QMainWindow):
         # 打开新建项目对话框
         new_project = NewPro()
         if new_project.exec_() == QDialog.Accepted:  # QDialog.Accepted 若用户点击了确定按钮
-            self.fileTree.setRootIndex(self.model.index(new_project.project_path))
-            pass
+            self.project_path = new_project.project_path
+            self.project_name = self.project_path.split('/')[-1]
+            self.fileTree.setRootIndex(self.model.index(self.project_path))
 
     def openFile(self):
         # 打开文件对话框
@@ -626,7 +631,9 @@ class IDE(QMainWindow):
     def openFolder(self):
         dirName = QFileDialog.getExistingDirectory(self, 'Open Folder', '')
         if dirName:
-            self.fileTree.setRootIndex(self.model.index(dirName))
+            self.project_path = dirName
+            self.project_name = self.project_path.split('/')[-1]
+            self.fileTree.setRootIndex(self.model.index(self.project_path))
 
     def addFileToEditArea(self, filePath):
         # 创建新的标签页
@@ -641,14 +648,6 @@ class IDE(QMainWindow):
         # 将新标签页添加到 edit_area
         self.edit_area.addTab(new_tab, os.path.basename(filePath))
         self.edit_area.setCurrentWidget(new_tab)  # 切换到新标签页
-
-    def createActions(self):
-        self.openAction = QAction('Open Folder', self)
-        self.openAction.triggered.connect(self.openFolder)
-
-        menuBar = self.menuBar()
-        fileMenu = menuBar.addMenu('File')
-        fileMenu.addAction(self.openAction)
 
     def closeFile(self):
         # 获取当前活动的选项卡索引
@@ -734,46 +733,78 @@ class IDE(QMainWindow):
 
     def run(self):
         # 运行程序
-        self.Simulator.run()
-        self.fillRegister(self.Simulator.registers)
-        self.fillData(self.Simulator.data_mem)
-        self.setRowBackgroundColor(self.code_table, self.findCodetablerow(self.Simulator.next_pc), None)
+        pass
 
     def run_step(self):
         # 单步运行程序
-        self.Simulator.run_step()
-        self.fillRegister(self.Simulator.registers)
-        self.fillData(self.Simulator.data_mem)
-
-        # 将运行到的行标红
-        self.setRowBackgroundColor(self.code_table, self.findCodetablerow(self.Simulator.next_pc), QColor(255, 0, 0))
-        self.setRowBackgroundColor(self.code_table, self.findCodetablerow(self.Simulator.last_pc), None)
+        pass
 
     def run_undo(self):
         # 单步返回程序
-        self.Simulator.run_undo()
-        self.fillRegister(self.Simulator.registers)
-        self.fillData(self.Simulator.data_mem)
-        # 将运行到的行标红
-        self.setRowBackgroundColor(self.code_table, self.findCodetablerow(self.Simulator.next_pc), QColor(255, 0, 0))
-        self.setRowBackgroundColor(self.code_table, self.findCodetablerow(self.Simulator.last_pc), None)
+        pass
 
     def reset(self):
         # 将表格颜色恢复到初值
-        self.setRowBackgroundColor(self.code_table, self.findCodetablerow(self.Simulator.next_pc), None)
-        self.setRowBackgroundColor(self.code_table, self.findCodetablerow(self.Simulator.next_pc), QColor(255, 0, 0))
-        # 清空寄存器
-        self.fillRegister([0, 0, 0, 0, 0, 0, 0, 0])
-        # 清空数据表
-        data_mem_temp = self.Simulator.data_mem
-        for key in data_mem_temp:
-            data_mem_temp[key] = 0
-        self.fillData(data_mem_temp)
-        # 模拟器初始化
-        self.Simulator.reset()
+        pass
+
+    # Python程序从Intel HEX文件中读取RISC-V指令并列出a
+    def parse_hex_line(self, line):
+        """
+        解析一行Intel HEX文件 ， 返回一个元组 (数据长度, 地址, 记录类型, 数据)。，，，，，，，，，，，，
+        """
+        line = line.strip()
+        if line[0] != ':':
+            raise ValueError("Invalid HEX line")
+
+        byte_count = int(line[1:3], 16)
+        address = int(line[3:7], 16)
+        record_type = int(line[7:9], 16)
+        data = line[9:9 + byte_count * 2]
+        checksum = int(line[9 + byte_count * 2:], 16)
+
+        return address, record_type, data
+
+    def extract_code(self, file_path):
+        """
+        从Intel HEX文件中读取数据，并返回包含RISC-V程序指令的列表。
+        """
+        instructions = []
+
+        with open(file_path, 'r') as file:
+            for line in file:
+                try:
+                    address, record_type, data = self.parse_hex_line(line)
+                    # 我们只关心数据记录类型（通常为0）
+                    if record_type == 0:
+                        # 将16进制数据分成4字节的RISC-V指令
+                        for i in range(0, len(data), 8):  # 8个字符是4字节（32位）的指令
+                            instruction = data[i:i+8]
+                            instructions.append(instruction)
+                            address += 4  # RISC-V指令是32位(4字节)，地址每次增加4
+
+                except ValueError as e:
+                    print(f"Skipping invalid line: {line}")
+
+        return "\n".join(instructions)
 
     def assemble(self):
-        pass
+        try:
+            # 使用 "make clean && make" 命令
+            subprocess.run(
+                "make clean && make",   # 要执行的命令
+                cwd=self.project_path,  # 指定执行命令的目录
+                text=True,              # 捕获文本输出
+                capture_output=True,    # 捕获输出
+                shell=True,             # 使用 shell 执行组合命令
+                check=True              # 返回非零状态码时抛出异常
+            )
+            assemble_path = self.project_path + f"/build/{self.project_name}.asm"
+            with open(assemble_path, 'r', encoding='utf-8') as file:
+                self.assemble_code_area.setPlainText(file.read())
+            machine_path = self.project_path + f"/build/{self.project_name}.hex"
+            self.machine_code_area.setPlainText(self.extract_code(machine_path))
+        except subprocess.CalledProcessError as e:
+            print(e)
 
     def stop(self):
         # 停止运行程序
@@ -813,20 +844,11 @@ class IDE(QMainWindow):
         # 打开串口配置窗口
         if self.Serial.exec_() == QDialog.Accepted:
             # 配置串口
-            self.Downloader.serial_init(self.Serial.get_config())
-            self.serial_connect()
+            pass
 
     def serial_connect(self):
         # 连接串口
-        if self.Downloader.serial_open():
-            # self.Downloader.start_receiving()
-            if self.machine_code_area.toPlainText():
-                self.download_Action.setEnabled(True)
-            self.serial_connect_bottom.setEnabled(False)
-            self.serial_disconnect_bottom.setEnabled(True)
-            self.message_showmessage("Port open successful\n")
-        else:
-            self.message_showmessage("Port occupied\n")
+        pass
 
     def serial_disconnect(self):
         self.download_Action.setEnabled(False)
@@ -843,10 +865,8 @@ class IDE(QMainWindow):
         lines_assembly = list(filter(lambda line: line.strip() != "", assembly_code.split('\n'))) # 去除空行
         lines_machine = machine_code.split('\n')
         lines_basic = basic_code.split('\n')
-
         # 设置表格的行数
         self.code_table.setRowCount(len(lines_assembly))
-
         # 填入数据
         line_index = 0
         for row_index in range(len(lines_assembly)):

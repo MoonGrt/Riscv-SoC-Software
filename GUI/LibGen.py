@@ -2,7 +2,7 @@ import sys, os, shutil
 from PyQt5.QtWidgets import QApplication, QDialog
 from GPIOConf import GPIOConf
 
-class SocGen():
+class LibGen():
     def __init__(self):
         self.DEVICES = {}
         self.GPIOConf = GPIOConf()
@@ -213,9 +213,9 @@ if __name__ == "__main__":
 
     # 启动 Qt 应用
     app = QApplication(sys.argv)
-    Soc_Generate = SocGen()
+    Lib_Generate = LibGen()
 
     # GPIO 配置
-    Soc_Generate.GPIO_Config()
+    Lib_Generate.GPIO_Config()
 
     sys.exit()

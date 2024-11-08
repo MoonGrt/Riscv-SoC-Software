@@ -140,7 +140,7 @@ volatile uint32_t ulHartId;
 //     TIMER0_REG(TIMER0_CTRL) = 0x07;     // enable interrupt and start timer
 
 	/*配置时钟源*/
-    TIM_InternalClockConfig(TIM2); // 选择TIM2为内部时钟，若不调用此函数，TIM默认也为内部时钟
+    TIM_InternalClockConfig(TIM1); // 选择TIM2为内部时钟，若不调用此函数，TIM默认也为内部时钟
 
     /*时基单元初始化*/
     TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;              // 定义结构体变量
@@ -149,23 +149,23 @@ volatile uint32_t ulHartId;
     TIM_TimeBaseInitStructure.TIM_Period = uxTimerIncrementsForOneTick;               // 计数周期，即ARR的值
     TIM_TimeBaseInitStructure.TIM_Prescaler = 1 - 1;                // 预分频器，即PSC的值
     TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;            // 重复计数器，高级定时器才会用到
-    TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructure);             // 将结构体变量交给TIM_TimeBaseInit，配置TIM2的时基单元
+    TIM_TimeBaseInit(TIM1, &TIM_TimeBaseInitStructure);             // 将结构体变量交给TIM_TimeBaseInit，配置TIM2的时基单元
 
     /*中断输出配置*/
-    TIM_ClearFlag(TIM2, TIM_FLAG_Update);      // 清除定时器更新标志位
+    TIM_ClearFlag(TIM1, TIM_FLAG_Update);      // 清除定时器更新标志位
                                                // TIM_TimeBaseInit函数末尾，手动产生了更新事件
                                                // 若不清除此标志位，则开启中断后，会立刻进入一次中断
                                                // 如果不介意此问题，则不清除此标志位也可
-    TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE); // 开启TIM2的更新中断
+    TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE); // 开启TIM2的更新中断
 
     /*TIM使能*/
-    TIM_Cmd(TIM2, ENABLE); // 使能TIM2，定时器开始运行
+    TIM_Cmd(TIM1, ENABLE); // 使能TIM2，定时器开始运行
 }
 /*-----------------------------------------------------------*/
 
 void xPortClearTimerIntPending()
 {
-    TIM_ClearITPendingBit(TIM2, TIM_IT_Update);   // clear int pending
+    TIM_ClearITPendingBit(TIM1, TIM_IT_Update);   // clear int pending
 }
 
 BaseType_t xPortStartScheduler( void )

@@ -105,7 +105,16 @@ class GPIOConf(QDialog):
     def __init__(self):
         super().__init__()
 
-        self.DEVICES = {}  # 设备
+        self.DEVICES = {"GPIO": {"A": [], "B": []},
+                        "UART": {"1": {"TX": ["A8"], "RX": ["A9"]},
+                                 "2": {"TX": ["A10"], "RX": ["A11"]}},
+                        "I2C": {"1": {"SCL": ["A12"], "SDA": ["A13"]},
+                                "2": {"SCL": ["A14"], "SDA": ["A15"]}},
+                        "SPI": {"1": {"SCK": ["B0"], "MOSI": ["B1"], "MISO": ["B2"], "CS": ["B3"]},
+                                "2": {"SCK": ["B4"], "MOSI": ["B5"], "MISO": ["B6"], "CS": ["B7"]}},
+                        "TIM": {"1": {"CH1": ["B8"], "CH2": ["B9"], "CH3": ["B10"], "CH4": ["B11"]},
+                                "2": {"CH1": ["B12"], "CH2": ["B13"], "CH3": ["B14"], "CH4": ["B15"]}},
+                        "WDG": {"IWDG": True, "WWDG": True}}  # 设备
         self.gpio_config = {}  # 用于存储GPIO配置
         self.row_indexes = {}  # 用于存储每个设备对应的行索引
         self.row = 0
@@ -115,10 +124,11 @@ class GPIOConf(QDialog):
 
     def init_ui(self):
         # 设置应用图标
-        self.setWindowIcon(QIcon("D:\Riscv-SoC-Software-master\Riscv-SoC-Software-master\GUI\icons\GPIO.svg"))
+        self.setWindowIcon(QIcon("icons\GPIO.svg"))
         # 设置窗口标题和尺寸
         self.setWindowTitle("GPIO Table")
-        self.resize(1400, 480)  # 窗口大小
+        self.resize(927, 485)  # 窗口大小
+        self.setStyleSheet("background-color: #D1A7A4;")  # 将这里的颜色设置为你想要的颜色
 
         # 创建表格
         self.table = GPIOConfTable()
@@ -130,31 +140,18 @@ class GPIOConf(QDialog):
         self.table.customContextMenuRequested.connect(self.menu)
 
         # 水平布局用于按钮
-        # button = QHBoxLayout()
-        # clear_button = QPushButton("Clear")
-        # clear_button.clicked.connect(self.clear_table)
-        # button.addWidget(clear_button)
-        # reset_button = QPushButton("Reset")
-        # reset_button.clicked.connect(self.reset_table)
-        # button.addWidget(reset_button)
-        # generate_button = QPushButton("Gen")
-        # generate_button.clicked.connect(self.Gen)
-        # button.addWidget(generate_button)
         button = QHBoxLayout()
 
         # 设置莫兰迪绿色
         morandi_green = "#8CBAB7"  # 你可以根据需要调整颜色代码
-
         clear_button = QPushButton("Clear")
         clear_button.setStyleSheet(f"background-color: {morandi_green}; color: black;")
         clear_button.clicked.connect(self.clear_table)
         button.addWidget(clear_button)
-
         reset_button = QPushButton("Reset")
         reset_button.setStyleSheet(f"background-color: {morandi_green}; color: black;")
         reset_button.clicked.connect(self.reset_table)
         button.addWidget(reset_button)
-
         generate_button = QPushButton("Gen")
         generate_button.setStyleSheet(f"background-color: {morandi_green}; color: black;")
         generate_button.clicked.connect(self.Gen)
@@ -491,27 +488,6 @@ class GPIOConf(QDialog):
         # 更新设备状态、AFIO状态
         self.update_device_state()
         self.update_AFIO_state()
-
-class GPIOConfigDialog(QDialog):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("GPIO Configuration")
-        self.setGeometry(100, 100, 600, 400)
-        self.setStyleSheet("background-color: #D1A7A4;")  # 将这里的颜色设置为你想要的颜色
-        # 创建 GPIOConfTable 实例
-        self.gpio_table = GPIOConf()
-
-        # 创建布局并添加表格
-        layout = QVBoxLayout()
-        layout.addWidget(self.gpio_table)
-
-        # 添加关闭按钮
-        close_button = QPushButton("Close")
-        close_button.setStyleSheet("background-color: #8CBAB7; color: black;")
-        close_button.clicked.connect(self.close)
-        layout.addWidget(close_button)
-
-        self.setLayout(layout)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
