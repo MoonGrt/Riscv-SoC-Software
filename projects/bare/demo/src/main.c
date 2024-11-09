@@ -191,7 +191,7 @@ void demo_USART(void)
     /*USART发送*/
     USART_SendData(USART1, 'A');
     USART_SendData(USART1, '\n');
-    printf("Cyber USART Test\n");
+    printf("Cyber USART Test\r\n");
 }
 #endif
 

@@ -1,8 +1,8 @@
 #ifndef __CONFIG_H_
 #define __CONFIG_H_
 
-#define CORE_HZ 1000000
-// #define CORE_HZ 50000000
+// #define CORE_HZ 1000000
+#define CORE_HZ 50000000
 
 #define CYBER_GPIO
 #define CYBER_USART

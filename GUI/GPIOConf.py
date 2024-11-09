@@ -7,10 +7,10 @@ class GPIOConfTable(QTableWidget):
     # def __init__(self):
     #     super().__init__(0, 0)
     #     self.setStyleSheet("background-color: #C18E93;")
-       
+
     #     self.current_row = None
     #     self.current_column = None
-        
+
     #     self.setWindowIcon(QIcon('D:/Riscv-SoC-Software-master/Riscv-SoC-Software-master/GUI/icons/app.svg'))
     #     # 要设置渐变色的单元格
     #     self.gradient_cells = []
@@ -23,8 +23,6 @@ class GPIOConfTable(QTableWidget):
         self.setStyleSheet("background-color: #D1A7A4;")
         self.current_row = None
         self.current_column = None
-    
-        
 
         # 要设置渐变色的单元格
         self.gradient_cells = []
@@ -71,10 +69,10 @@ class GPIOConfTable(QTableWidget):
                 # 判断当前单元格背景是否是淡绿色
                 if current_color == QColor('red'):
                     pass
-                elif current_color == QColor("#B7D9A9"):
-                    item.setBackground(QColor('white'))  # 如果是淡绿色，则恢复为默认的白色
+                elif current_color == QColor("#8CBAB7"):
+                    item.setBackground(QColor('#D1A7A4'))  # 如果是淡绿色，则恢复为默认
                 else:
-                    item.setBackground(QColor("#B7D9A9"))  # 否则，将其设置为淡绿色
+                    item.setBackground(QColor("#8CBAB7"))  # 否则，将其设置为淡绿色
         else:
             # 调用父类的默认行为
             super().mousePressEvent(event)
@@ -124,7 +122,7 @@ class GPIOConf(QDialog):
 
     def init_ui(self):
         # 设置应用图标
-        self.setWindowIcon(QIcon("icons\GPIO.svg"))
+        self.setWindowIcon(QIcon("icons/GPIO.svg"))
         # 设置窗口标题和尺寸
         self.setWindowTitle("GPIO Table")
         self.resize(927, 485)  # 窗口大小

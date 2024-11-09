@@ -12,6 +12,7 @@ class NewPro(QDialog):
         self.setWindowTitle("New Project")
         self.setWindowIcon(QIcon('icons/app.svg'))
         self.resize(400, 250)  # 增加窗口宽度
+        self.setStyleSheet("background-color: #D1A7A4;")  # 将这里的颜色设置为你想要的颜色
         self.initUI()
 
     def initUI(self):
@@ -45,7 +46,6 @@ class NewPro(QDialog):
         location_layout = QHBoxLayout()
         location_layout.addWidget(self.project_path_label)
         location_layout.addWidget(self.project_path_input)
-        # location_layout.addWidget(self.browse_button)
         main_layout.addLayout(location_layout)
 
         # 横条：分隔线
@@ -56,9 +56,15 @@ class NewPro(QDialog):
 
         # 硬件部分
         self.hardware_label = QLabel("Hardware")
-        main_layout.addWidget(self.hardware_label)
+        self.cyber_checkbox = QCheckBox("Cyber")
+        self.cyber_checkbox.setChecked(True)
+        hardware_layout = QHBoxLayout()
+        hardware_layout.addWidget(self.hardware_label)
+        hardware_layout.addStretch()  # 添加弹性空格
+        hardware_layout.addWidget(self.cyber_checkbox)
+        main_layout.addLayout(hardware_layout)
         # AHB 配置
-        self.ahb_label = QLabel("AHB")
+        self.ahb_label = QLabel("AHB Device")
         self.ahb_checkbox = QCheckBox("Enable")
         self.ahb_checkbox.setChecked(True)
         self.ahb_checkbox.toggled.connect(self.toggle_ahb_config)
@@ -70,7 +76,7 @@ class NewPro(QDialog):
         ahb_layout.addWidget(self.ahb_button)
         main_layout.addLayout(ahb_layout)
         # APB 配置
-        self.apb_label = QLabel("APB")
+        self.apb_label = QLabel("APB Device")
         self.apb_checkbox = QCheckBox("Enable")
         self.apb_checkbox.setChecked(True)
         self.apb_checkbox.toggled.connect(self.toggle_apb_config)
@@ -92,8 +98,8 @@ class NewPro(QDialog):
         self.software_label = QLabel("Software")
         main_layout.addWidget(self.software_label)
         # 工程模板，子模板标签
-        template_label = QLabel("Project Template:")
-        sub_template_label = QLabel("Sub-Template:")
+        template_label = QLabel("Template:")
+        sub_template_label = QLabel("Sub-Temp:")
         template_layout = QHBoxLayout()
         template_layout.addWidget(template_label)
         template_layout.addWidget(sub_template_label)
@@ -174,9 +180,9 @@ class NewPro(QDialog):
     def Generate_BSP(self):
         if not self.DEVICES:
             return
-
         # 生成 cyber.h 配置文件
         cyber_start = ""
+        DVP_STR = ""
         GPIO_STR = ""
         UART_STR = ""
         SPI_STR = ""
@@ -196,90 +202,98 @@ class NewPro(QDialog):
         cyber_start += "/*!< Peripheral memory map */\n"
         cyber_start += "#define APBPERIPH_BASE PERIPH_BASE\n"
         cyber_start += "#define AHBPERIPH_BASE (PERIPH_BASE + 0x1000000)\n\n"
-        if self.DEVICES["GPIO"] != {}:
-            GPIO_BASE = "APBPERIPH_BASE + 0x00000"
-            GPIO_STR += "#ifdef CYBER_GPIO\n/*!< GPIO */\n"
-            GPIO_STR += '#include "gpio.h"\n'
-            GPIO_STR += f"#define GPIO_BASE {GPIO_BASE}\n"
-            for GPIO_port, _ in self.DEVICES["GPIO"].items():
-                index = ''.join(str(ord(char) - ord('A')) for char in GPIO_port if 'A' <= char <= 'Z')
-                GPIO_STR += f"#define GPIO{GPIO_port}_BASE (GPIO_BASE + 0x{index}000)\n"
-                GPIO_STR += f"#define GPIO{GPIO_port} ((GPIO_TypeDef *) GPIO{GPIO_port}_BASE)\n"
-            GPIO_STR += "#endif\n\n"
-        if self.DEVICES["UART"] != {}:
-            UART_BASE = "APBPERIPH_BASE + 0x10000"
-            UART_STR += "#ifdef CYBER_USART\n/*!< USART */\n"
-            UART_STR += '#include "usart.h"\n'
-            UART_STR += "#define UART_SAMPLE_PER_BAUD 5\n"
-            UART_STR += f"#define USART_BASE {UART_BASE}\n"
-            for UART_port, _ in self.DEVICES["UART"].items():
-                UART_STR += f"#define USART{UART_port}_BASE (USART_BASE + 0x{UART_port}000)\n"
-                UART_STR += f"#define USART{UART_port} ((USART_TypeDef *) USART{UART_port}_BASE)\n"
-            UART_STR += "#endif\n\n"
-        if self.DEVICES["SPI"] != {}:
-            SPI_BASE = "APBPERIPH_BASE + 0x20000"
-            SPI_STR += "#ifdef CYBER_SPI\n/*!< SPI */\n"
-            SPI_STR += '#include "spi.h"\n'
-            SPI_STR += f"#define SPI_BASE {SPI_BASE}\n"
-            for SPI_port, _ in self.DEVICES["SPI"].items():
-                SPI_STR += f"#define SPI{SPI_port}_BASE (SPI_BASE + 0x{SPI_port}000)\n"
-                SPI_STR += f"#define SPI{SPI_port} ((SPI_TypeDef *) SPI{SPI_port}_BASE)\n"
-            SPI_STR += "#endif\n\n"
-        if self.DEVICES["I2C"] != {}:
-            I2C_BASE = "APBPERIPH_BASE + 0x30000"
-            I2C_STR += "#ifdef CYBER_I2C\n/*!< I2C */\n"
-            I2C_STR += '#include "i2c.h"\n'
-            I2C_STR += f"#define I2C_BASE {I2C_BASE}\n"
-            for I2C_port, _ in self.DEVICES["I2C"].items():
-                I2C_STR += f"#define I2C{I2C_port}_BASE (I2C_BASE + 0x{I2C_port}000)\n"
-                I2C_STR += f"#define I2C{I2C_port} ((I2C_TypeDef *) I2C{I2C_port}_BASE)\n"
-            I2C_STR += "#endif\n\n"
-        if self.DEVICES["TIM"] != {}:
-            TIM_BASE = "APBPERIPH_BASE + 0x40000"
-            TIM_STR += "#ifdef CYBER_TIM\n/*!< TIM */\n"
-            TIM_STR += '#include "tim.h"\n'
-            TIM_STR += f"#define TIM_BASE {TIM_BASE}\n"
-            for TIM_port, _ in self.DEVICES["TIM"].items():
-                TIM_STR += f"#define TIM{TIM_port}_BASE (TIM_BASE + 0x{TIM_port}000)\n"
-                TIM_STR += f"#define TIM{TIM_port} ((TIM_TypeDef *) TIM{TIM_port}_BASE)\n"
-            TIM_STR += "#endif\n\n"
-        for WDG_port, state in self.DEVICES["WDG"].items():
-            if (WDG_port == "IWDG") & state:
-                WDG_STR += '#ifdef CYBER_IWDG\n/*!< IWDG */\n#include "iwdg.h"\n'
-                WDG_STR += f"#define {WDG_port}_BASE (0x50000 + 0x0000)\n"
-                WDG_STR += f"#define {WDG_port} ((IWDG_TypeDef *) {WDG_port}_BASE)\n"
-                WDG_STR += "#endif\n\n"
-            elif (WDG_port == "WWDG") & state:
-                WDG_STR += '#ifdef CYBER_WWDG\n/*!< WWDG */\n#include "wwdg.h"\n'
-                WDG_STR += f"#define {WDG_port}_BASE (0x50000 + 0x1000)\n"
-                WDG_STR += f"#define {WDG_port} ((WWDG_TypeDef *) {WDG_port}_BASE)\n"
-                WDG_STR += "#endif\n\n"
+        if self.ahb_checkbox.isChecked():
+            DVP_STR += '#ifdef CYBER_DVP\n/*!< DVP */\n#include "dvp.h"\n'
+            DVP_STR += "#define DVP_BASE (AHBPERIPH_BASE + 0x20000)\n"
+            DVP_STR += "#define DVP ((DVP_TypeDef *)DVP_BASE) // 0xF1020000\n"
+            DVP_STR += "#endif\n\n"
+        if self.apb_checkbox.isChecked():
+            if self.DEVICES["GPIO"] != {}:
+                GPIO_BASE = "APBPERIPH_BASE + 0x00000"
+                GPIO_STR += "#ifdef CYBER_GPIO\n/*!< GPIO */\n"
+                GPIO_STR += '#include "gpio.h"\n'
+                GPIO_STR += f"#define GPIO_BASE {GPIO_BASE}\n"
+                for GPIO_port, _ in self.DEVICES["GPIO"].items():
+                    index = ''.join(str(ord(char) - ord('A')) for char in GPIO_port if 'A' <= char <= 'Z')
+                    GPIO_STR += f"#define GPIO{GPIO_port}_BASE (GPIO_BASE + 0x{index}000)\n"
+                    GPIO_STR += f"#define GPIO{GPIO_port} ((GPIO_TypeDef *) GPIO{GPIO_port}_BASE)\n"
+                GPIO_STR += "#endif\n\n"
+            if self.DEVICES["UART"] != {}:
+                UART_BASE = "APBPERIPH_BASE + 0x10000"
+                UART_STR += "#ifdef CYBER_USART\n/*!< USART */\n"
+                UART_STR += '#include "usart.h"\n'
+                UART_STR += "#define UART_SAMPLE_PER_BAUD 5\n"
+                UART_STR += f"#define USART_BASE {UART_BASE}\n"
+                for UART_port, _ in self.DEVICES["UART"].items():
+                    UART_STR += f"#define USART{UART_port}_BASE (USART_BASE + 0x{int(UART_port)-1}000)\n"
+                    UART_STR += f"#define USART{UART_port} ((USART_TypeDef *) USART{UART_port}_BASE)\n"
+                UART_STR += "#endif\n\n"
+            if self.DEVICES["SPI"] != {}:
+                SPI_BASE = "APBPERIPH_BASE + 0x20000"
+                SPI_STR += "#ifdef CYBER_SPI\n/*!< SPI */\n"
+                SPI_STR += '#include "spi.h"\n'
+                SPI_STR += f"#define SPI_BASE {SPI_BASE}\n"
+                for SPI_port, _ in self.DEVICES["SPI"].items():
+                    SPI_STR += f"#define SPI{SPI_port}_BASE (SPI_BASE + 0x{int(SPI_port)-1}000)\n"
+                    SPI_STR += f"#define SPI{SPI_port} ((SPI_TypeDef *) SPI{SPI_port}_BASE)\n"
+                SPI_STR += "#endif\n\n"
+            if self.DEVICES["I2C"] != {}:
+                I2C_BASE = "APBPERIPH_BASE + 0x30000"
+                I2C_STR += "#ifdef CYBER_I2C\n/*!< I2C */\n"
+                I2C_STR += '#include "i2c.h"\n'
+                I2C_STR += f"#define I2C_BASE {I2C_BASE}\n"
+                for I2C_port, _ in self.DEVICES["I2C"].items():
+                    I2C_STR += f"#define I2C{I2C_port}_BASE (I2C_BASE + 0x{int(I2C_port)-1}000)\n"
+                    I2C_STR += f"#define I2C{I2C_port} ((I2C_TypeDef *) I2C{I2C_port}_BASE)\n"
+                I2C_STR += "#endif\n\n"
+            if self.DEVICES["TIM"] != {}:
+                TIM_BASE = "APBPERIPH_BASE + 0x40000"
+                TIM_STR += "#ifdef CYBER_TIM\n/*!< TIM */\n"
+                TIM_STR += '#include "tim.h"\n'
+                TIM_STR += f"#define TIM_BASE {TIM_BASE}\n"
+                for TIM_port, _ in self.DEVICES["TIM"].items():
+                    TIM_STR += f"#define TIM{TIM_port}_BASE (TIM_BASE + 0x{int(TIM_port)-1}000)\n"
+                    TIM_STR += f"#define TIM{TIM_port} ((TIM_TypeDef *) TIM{TIM_port}_BASE)\n"
+                TIM_STR += "#endif\n\n"
+            for WDG_port, state in self.DEVICES["WDG"].items():
+                if (WDG_port == "IWDG") & state:
+                    WDG_STR += '#ifdef CYBER_IWDG\n/*!< IWDG */\n#include "iwdg.h"\n'
+                    WDG_STR += f"#define {WDG_port}_BASE (0x50000 + 0x0000)\n"
+                    WDG_STR += f"#define {WDG_port} ((IWDG_TypeDef *) {WDG_port}_BASE)\n"
+                    WDG_STR += "#endif\n\n"
+                elif (WDG_port == "WWDG") & state:
+                    WDG_STR += '#ifdef CYBER_WWDG\n/*!< WWDG */\n#include "wwdg.h"\n'
+                    WDG_STR += f"#define {WDG_port}_BASE (0x50000 + 0x1000)\n"
+                    WDG_STR += f"#define {WDG_port} ((WWDG_TypeDef *) {WDG_port}_BASE)\n"
+                    WDG_STR += "#endif\n\n"
         cyber_end += "#define assert_param(expr) ((void)0)\n\n#endif /* __CYBER_H_ */\n"
 
-        return f"{cyber_start}{GPIO_STR}{UART_STR}{SPI_STR}{I2C_STR}{TIM_STR}{WDG_STR}{cyber_end}"
+        return f"{cyber_start}{DVP_STR}{GPIO_STR}{UART_STR}{SPI_STR}{I2C_STR}{TIM_STR}{WDG_STR}{cyber_end}"
 
     def Generate_config(self):
         if not self.DEVICES:
             return
-
         # 生成 config.h 配置文件
         config = ""
         config += "#ifndef __CONFIG_H_\n#define __CONFIG_H_\n\n#define CORE_HZ 50000000\n\n"
-        if self.DEVICES["GPIO"] != {}:
-            config += "#define CYBER_GPIO\n"
-        if self.DEVICES["UART"] != {}:
-            config += "#define CYBER_USART\n"
-        if self.DEVICES["SPI"] != {}:
-            config += "#define CYBER_SPI\n"
-        if self.DEVICES["I2C"] != {}:
-            config += "#define CYBER_I2C\n"
-        if self.DEVICES["TIM"] != {}:
-            config += "#define CYBER_TIM\n"
-        for WDG_port, state in self.DEVICES["WDG"].items():
-            if (WDG_port == "IWDG") & state:
-                config += "#define CYBER_IWDG\n"
-            elif (WDG_port == "WWDG") & state:
-                config += "#define CYBER_WWDG\n"
+        if self.apb_checkbox.isChecked():
+            if self.DEVICES["GPIO"] != {}:
+                config += "#define CYBER_GPIO\n"
+            if self.DEVICES["UART"] != {}:
+                config += "#define CYBER_USART\n"
+            if self.DEVICES["SPI"] != {}:
+                config += "#define CYBER_SPI\n"
+            if self.DEVICES["I2C"] != {}:
+                config += "#define CYBER_I2C\n"
+            if self.DEVICES["TIM"] != {}:
+                config += "#define CYBER_TIM\n"
+            for WDG_port, state in self.DEVICES["WDG"].items():
+                if (WDG_port == "IWDG") & state:
+                    config += "#define CYBER_IWDG\n"
+                elif (WDG_port == "WWDG") & state:
+                    config += "#define CYBER_WWDG\n"
+        if self.ahb_checkbox.isChecked():
+            config += "#define CYBER_DVP\n"
         config += "\n#endif /* __CONFIG_H_ */\n"
 
         return config
@@ -364,6 +378,26 @@ class NewPro(QDialog):
         new_makefile = "\n".join(lines)
         with open(self.project_path + "/Makefile", 'w', encoding='utf-8') as file:
             file.write(new_makefile)
+
+    # 生成顶层连接
+    def Top_Connection_Gen(self):
+        Connection = ""
+        for GPIO_port, AFIO in self.GPIOS.items():
+            AFIO_connection = ""
+            for i, pin in enumerate(AFIO):
+                if pin:
+                    _, type = pin.split("_", 1)
+                    if type in ["RX", "MISO"]:
+                        AFIO_connection += "1'bz, "
+                        Connection += f"wire {pin} = AFIO{GPIO_port}[{16-i}];\n"
+                    else:
+                        AFIO_connection += f"{pin}, "
+                        Connection += f"wire {pin};\n"
+                else:
+                    AFIO_connection += "1'bz, "
+            AFIO_connection = AFIO_connection[:-2]
+            Connection += f"wire [15:0] AFIO{GPIO_port} = " + "{" + AFIO_connection + "};\n"
+        print(Connection)
 
     def GPIO_Gen(self):
         pass

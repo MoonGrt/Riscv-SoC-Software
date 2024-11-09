@@ -1,19 +1,15 @@
-import sys, serial, serial.tools.list_ports, os, subprocess
+import sys, serial, serial.tools.list_ports, os, subprocess, shutil, signal
 from PyQt5.QtWidgets import QVBoxLayout, QSplitter, QGridLayout, QTableWidget, QLabel, QTableWidgetItem, QHBoxLayout, QMessageBox, QFormLayout
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QAction, QFileDialog, QTabWidget, QWidget, QPushButton, QTabBar, QComboBox
-from PyQt5.QtWidgets import QTreeView, QFileSystemModel, QLineEdit, QDialog,  QFrame
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QTreeView, QFileSystemModel, QDialog
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QIcon, QTransform, QColor
 from NewPro import NewPro
-from Debugger import run_debugger
 
 class Serial(QDialog):
     def __init__(self):
         super().__init__()
-        # self.serial_com = serial.Serial()
         self.init_ui()
-        self.project_name = ''
-        self.project_path = ''
 
     def init_ui(self):
         # 设置主窗口属性
@@ -94,6 +90,10 @@ class IDE(QMainWindow):
         super().__init__()
         self.Serial = Serial()
         self.init_ui()
+        
+        # self.project_name = ''
+        # self.project_path = ''
+        self.openocd_process = None  # 用于保存 openocd 进程
 
     def init_ui(self):
         # 设置应用图标
@@ -109,11 +109,13 @@ class IDE(QMainWindow):
         self.menu()
 
         # 创建文件目录
+        self.project_path = "../Workspace/test"
+        self.project_name = self.project_path.split('/')[-1]
         self.model = QFileSystemModel()
         self.model.setRootPath('')  # Set the root path to be empty
         self.fileTree = QTreeView(self)
         self.fileTree.setModel(self.model)
-        self.fileTree.setRootIndex(self.model.index(os.path.expanduser("..")))  # Set initial folder to home
+        self.fileTree.setRootIndex(self.model.index(os.path.expanduser(self.project_path)))  # Set initial folder to home
         self.fileTree.setHeaderHidden(True)
         self.fileTree.setColumnHidden(1, True)  # Hide the size column
         self.fileTree.setColumnHidden(2, True)  # Hide the type column
@@ -148,12 +150,13 @@ class IDE(QMainWindow):
         self.machine_code_area.setStyleSheet("background-color: #CEA69B")  # 设置为指定的背景色
         self.machine_code_area.setReadOnly(True)
         machine_layout.addWidget(self.machine_code_area)  # 添加文本编辑区域
+        self.fillfile()
 
         # 创建水平布局
         file_tab_layout = QHBoxLayout(file_tab)
         file_tab_layout.addWidget(self.edit_area, stretch=6)  # 添加编辑区域
-        file_tab_layout.addLayout(assemble_layout, stretch=2)
-        file_tab_layout.addLayout(machine_layout, stretch=2)
+        file_tab_layout.addLayout(assemble_layout, stretch=3)
+        file_tab_layout.addLayout(machine_layout, stretch=1)
 
 
         # 在 execute_tab 中创建一个 QGridLayout
@@ -308,7 +311,7 @@ class IDE(QMainWindow):
 
         save_Action = QAction(QIcon('icons/save.svg'), 'Save', self) # 保存动作
         save_Action.setToolTip('Save')
-        # save_Action.setShortcut('Ctrl+S')  # 设置快捷键
+        save_Action.setShortcut('Ctrl+S')  # 设置快捷键
         save_Action.triggered.connect(self.saveFile)
         file_Menu.addAction(save_Action)
 
@@ -368,48 +371,75 @@ class IDE(QMainWindow):
         # 运行菜单
         run_Menu = self.menuBar().addMenu('Run')
 
-        # self.assembled = False
         assemble_Action = QAction(QIcon('icons/assemble.svg'), 'Assemble', self) # 编译
         assemble_Action.setToolTip('Assemble')
         # assemble_Action.setShortcut('Ctrl+R')  # 设置快捷键
         assemble_Action.triggered.connect(self.assemble)
         run_Menu.addAction(assemble_Action)
 
-        self.run_Action = QAction(QIcon('icons/run.svg'), 'Run', self) # 运行代码
-        self.run_Action.setToolTip('Run')
-        self.run_Action.triggered.connect(self.run)
-        # self.run_Action.setEnabled(False)
-        run_Menu.addAction(self.run_Action)
+        clean_Action = QAction(QIcon('icons/clean.svg'), 'Clean', self) # 编译
+        clean_Action.setToolTip('Assemble')
+        # clean_Action.setShortcut('Ctrl+R')  # 设置快捷键
+        clean_Action.triggered.connect(self.clean)
+        run_Menu.addAction(clean_Action)
 
-        self.run_step_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22)), 'Run step', self) # 单步运行
-        self.run_step_Action.setToolTip('Run step')
-        self.run_step_Action.triggered.connect(self.run_step)
-        # self.run_step_Action.setEnabled(False)
-        run_Menu.addAction(self.run_step_Action)
+        self.connect_Action = QAction(QIcon("icons/connect.svg"), 'Connect', self) # 连接
+        self.connect_Action.setToolTip('Connect')
+        self.connect_Action.triggered.connect(self.connect)
+        # self.connect_Action.setEnabled(False)
+        run_Menu.addAction(self.connect_Action)
 
-        self.run_undo_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22).transformed(QTransform().scale(-1, 1))), 'Run undo', self) # 单步退回
-        self.run_undo_Action.setToolTip('Run undo')
-        self.run_undo_Action.triggered.connect(self.run_undo)
-        # self.run_undo_Action.setEnabled(False)
-        run_Menu.addAction(self.run_undo_Action)
-
-        self.reset_Action = QAction(QIcon('icons/reset.svg'), 'Reset', self) # 重启
-        self.reset_Action.setToolTip('Reset')
-        self.reset_Action.triggered.connect(self.reset)
-        # self.reset_Action.setEnabled(False)
-        run_Menu.addAction(self.reset_Action)
-
-        self.stop_Action = QAction(QIcon('icons/stop.svg'), 'Stop', self) # 停止运行
-        self.stop_Action.setToolTip('Stop')
-        self.stop_Action.triggered.connect(self.stop)
-        # self.stop_Action.setEnabled(False)
-        run_Menu.addAction(self.stop_Action)
+        self.disconnect_Action = QAction(QIcon("icons/disconnect.svg"), 'Disconnect', self) # 断开连接
+        self.disconnect_Action.setToolTip('Disconnect')
+        self.disconnect_Action.triggered.connect(self.disconnect)
+        self.disconnect_Action.setEnabled(False)
+        run_Menu.addAction(self.disconnect_Action)
 
         self.download_Action = QAction(QIcon("icons/download.svg"), 'Download', self) # 烧录
         self.download_Action.setToolTip('Download')
         self.download_Action.triggered.connect(self.download)
-        # self.download_Action.setEnabled(False)
+        self.download_Action.setEnabled(False)
         run_Menu.addAction(self.download_Action)
+
+        self.run_Action = QAction(QIcon("icons/run.svg"), 'Run', self) # 烧录
+        self.run_Action.setToolTip('Run')
+        self.run_Action.triggered.connect(self.run)
+        self.run_Action.setEnabled(False)
+        run_Menu.addAction(self.run_Action)
+
+        # 调试菜单
+        debug_Menu = self.menuBar().addMenu('Debug')
+
+        self.debug_run_Action = QAction(QIcon('icons/run.svg'), 'Run', self) # 运行代码
+        self.debug_run_Action.setToolTip('Run')
+        self.debug_run_Action.triggered.connect(self.debug_run)
+        # self.run_Action.setEnabled(False)
+        debug_Menu.addAction(self.debug_run_Action)
+
+        self.debug_run_step_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22)), 'Run step', self) # 单步运行
+        self.debug_run_step_Action.setToolTip('Run step')
+        self.debug_run_step_Action.triggered.connect(self.debug_run_step)
+        # self.run_step_Action.setEnabled(False)
+        debug_Menu.addAction(self.debug_run_step_Action)
+
+        self.debug_run_undo_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22).transformed(QTransform().scale(-1, 1))), 'Run undo', self) # 单步退回
+        self.debug_run_undo_Action.setToolTip('Run undo')
+        self.debug_run_undo_Action.triggered.connect(self.debug_run_undo)
+        # self.run_undo_Action.setEnabled(False)
+        debug_Menu.addAction(self.debug_run_undo_Action)
+
+        self.debug_reset_Action = QAction(QIcon('icons/reset.svg'), 'Reset', self) # 重启
+        self.debug_reset_Action.setToolTip('Reset')
+        self.debug_reset_Action.triggered.connect(self.debug_reset)
+        # self.reset_Action.setEnabled(False)
+        debug_Menu.addAction(self.debug_reset_Action)
+
+        self.debug_stop_Action = QAction(QIcon('icons/stop.svg'), 'Stop', self) # 停止运行
+        self.debug_stop_Action.setToolTip('Stop')
+        self.debug_stop_Action.triggered.connect(self.debug_stop)
+        # self.stop_Action.setEnabled(False)
+        debug_Menu.addAction(self.debug_stop_Action)
+
 
         # 帮助菜单
         help_Menu = self.menuBar().addMenu('Help')
@@ -437,12 +467,19 @@ class IDE(QMainWindow):
 
         toolbar3 = self.addToolBar('Toolbar3')
         toolbar3.addAction(assemble_Action)
-        toolbar3.addAction(self.run_Action)
-        toolbar3.addAction(self.run_step_Action)
-        toolbar3.addAction(self.run_undo_Action)
-        toolbar3.addAction(self.reset_Action)
-        toolbar3.addAction(self.stop_Action)
+        toolbar3.addAction(clean_Action)
+        toolbar3.addAction(self.connect_Action)
+        toolbar3.addAction(self.disconnect_Action)
         toolbar3.addAction(self.download_Action)
+        toolbar3.addAction(self.run_Action)
+
+        toolbar4 = self.addToolBar('Toolbar4')
+        toolbar4.addAction(self.debug_run_Action)
+        toolbar4.addAction(self.debug_run_step_Action)
+        toolbar4.addAction(self.debug_run_undo_Action)
+        toolbar4.addAction(self.debug_reset_Action)
+        toolbar4.addAction(self.debug_stop_Action)
+
         # 添加其他工具栏项...
 
     def table_init(self):
@@ -731,22 +768,6 @@ class IDE(QMainWindow):
         if current_tab:
             current_tab.paste()
 
-    def run(self):
-        # 运行程序
-        pass
-
-    def run_step(self):
-        # 单步运行程序
-        pass
-
-    def run_undo(self):
-        # 单步返回程序
-        pass
-
-    def reset(self):
-        # 将表格颜色恢复到初值
-        pass
-
     # Python程序从Intel HEX文件中读取RISC-V指令并列出a
     def parse_hex_line(self, line):
         """
@@ -764,12 +785,11 @@ class IDE(QMainWindow):
 
         return address, record_type, data
 
-    def extract_code(self, file_path):
+    def extract_machinecode(self, file_path):
         """
         从Intel HEX文件中读取数据，并返回包含RISC-V程序指令的列表。
         """
         instructions = []
-
         with open(file_path, 'r') as file:
             for line in file:
                 try:
@@ -787,37 +807,131 @@ class IDE(QMainWindow):
 
         return "\n".join(instructions)
 
+    def extract_assemblecode(self, file_path):
+        assemble_code = ""
+        with open(file_path, 'r', encoding='utf-8') as file:
+            for line in file:
+                # 判断当前行是否以"80"开头
+                if line.startswith("80"):
+                    # 将符合条件的行追加到结果字符串中
+                    assemble_code += line.replace("          	", "    ")
+            return assemble_code
+
+    def fillfile(self):
+        try:
+            assemble_path = self.project_path + f"/build/{self.project_name}.asm"
+            self.assemble_code_area.setPlainText(self.extract_assemblecode(assemble_path))
+            machine_path = self.project_path + f"/build/{self.project_name}.hex"
+            self.machine_code_area.setPlainText(self.extract_machinecode(machine_path))
+        except:
+            pass
+
     def assemble(self):
         try:
             # 使用 "make clean && make" 命令
-            subprocess.run(
-                "make clean && make",   # 要执行的命令
-                cwd=self.project_path,  # 指定执行命令的目录
-                text=True,              # 捕获文本输出
-                capture_output=True,    # 捕获输出
-                shell=True,             # 使用 shell 执行组合命令
-                check=True              # 返回非零状态码时抛出异常
-            )
-            assemble_path = self.project_path + f"/build/{self.project_name}.asm"
-            with open(assemble_path, 'r', encoding='utf-8') as file:
-                self.assemble_code_area.setPlainText(file.read())
-            machine_path = self.project_path + f"/build/{self.project_name}.hex"
-            self.machine_code_area.setPlainText(self.extract_code(machine_path))
+            make = subprocess.Popen("make clean && make", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self.project_path)
+            stdout, stderr = make.communicate()
+            if stdout:
+                stdout_lines = stdout.decode('utf-8').splitlines()  # 将输出按行分割
+                last_three_lines = "\n".join(stdout_lines[-3:])  # 取最后三行
+                self.message_showmessage(last_three_lines + "\n")
+                self.fillfile()
         except subprocess.CalledProcessError as e:
             print(e)
 
-    def stop(self):
-        # 停止运行程序
-        pass
+    def clean(self):
+        try:
+            shutil.rmtree(self.project_path + "/build")
+            self.message_showmessage("rm -rf ./build\nClear Project...")
+            self.assemble_code_area.clear()
+            self.machine_code_area.clear()
+        except Exception as e:
+            print(e)
+
+    def connect(self):
+        if self.openocd_process is None:
+            self.message_showmessage('Openocd connecting...')
+            QTimer.singleShot(3000, self.start_openocd)
+        else:
+            self.message_showmessage('openocd already running in the background')
+
+    def start_openocd(self):
+        try:
+            # 运行 openocd 并将其放入后台
+            self.openocd_process = subprocess.Popen(
+                ['/home/moon/openocd_riscv/src/openocd', '-f', '/mnt/hgfs/share/Riscv-SoC-Software/scripts/cyber.cfg'],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp
+            )
+            self.message_showmessage('Openocd: connected successed.')
+            self.connect_Action.setEnabled(False)
+            self.disconnect_Action.setEnabled(True)
+            self.download_Action.setEnabled(True)
+            self.run_Action.setEnabled(True)
+        except Exception as e:
+            self.message_showmessage(f'Openocd: connected failed - {str(e)}')
+
+    def disconnect(self):
+        if self.openocd_process is not None:
+            try:
+                # 结束 openocd 进程
+                os.killpg(os.getpgid(self.openocd_process.pid), signal.SIGTERM)
+                self.openocd_process = None
+                self.message_showmessage('Openocd: disconnected.')
+                self.connect_Action.setEnabled(True)
+                self.disconnect_Action.setEnabled(False)
+                self.download_Action.setEnabled(False)
+                self.run_Action.setEnabled(False)
+            except Exception as e:
+                self.message_showmessage(e)
+        else:
+            self.message_showmessage('Openocd not running.')
 
     def download(self):
         # 下载/烧录
-        openocd_path = "/home/moon/openocd_riscv/src/openocd"  # 设置 OpenOCD 的路径
-        config_path = "/mnt/hgfs/share/Riscv-SoC-Software/scripts/cyber.cfg"  # 配置文件路径
-        gdb_path = "/opt/riscv/bin/riscv64-unknown-elf-gdb"  # GDB 路径
-        program_path = self.machine_code_area.toPlainText()  # 从界面中获取程序路径
-        # 调用下载函数
-        run_debugger(openocd_path, config_path, gdb_path, program_path)
+        try:
+            # 启动 GDB
+            program = f"{self.project_path}/build/{self.project_name}.elf"
+            gdb_cmd = ["/opt/riscv/bin/riscv64-unknown-elf-gdb", program]  # 修改为你的 GDB 路径和程序文件
+            self.gdb_process = subprocess.Popen(gdb_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            
+            # 发送 GDB 命令
+            self.gdb_process.stdin.write(b"target extended-remote :3333\n")  # 连接到 OpenOCD 的 GDB 服务器
+            self.gdb_process.stdin.write(b"load\n")
+            self.gdb_process.stdin.write(b"monitor reset halt\n")
+            # self.gdb_process.stdin.write(b"continue\n")
+            self.gdb_process.stdin.flush()
+
+            # 获取输出
+            stdout, stderr = self.gdb_process.communicate()
+            self.message_showmessage(stdout.decode())
+        except Exception as e:
+            print(e)
+            sys.exit(1)
+
+    def run(self):
+        self.gdb_process.stdin.write(b"continue\n")  # 连接到 OpenOCD 的 GDB 服务器
+        self.gdb_process.stdin.flush()
+        self.message_showmessage("Connect to Openocd\n")
+
+    def debug_run(self):
+        # 运行程序
+        pass
+
+    def debug_run_step(self):
+        # 单步运行程序
+        pass
+
+    def debug_run_undo(self):
+        # 单步返回程序
+        pass
+
+    def debug_reset(self):
+        # 将表格颜色恢复到初值
+        pass
+
+    def debug_stop(self):
+        # 停止运行程序
+        pass
 
     def about(self):
         # 关于
@@ -826,9 +940,10 @@ class IDE(QMainWindow):
 
     def message_showmessage(self, message):
         # 将内容添加到messages
-        current_content = self.message_tab.toPlainText()
-        updated_content = current_content + message
-        self.message_tab.setPlainText(updated_content)
+        # current_content = self.message_tab.toPlainText()
+        # updated_content = current_content + message
+        # self.message_tab.setPlainText(updated_content)
+        self.message_tab.append(message)
 
     def message_clear(self):
         # 清除message
@@ -905,6 +1020,10 @@ class IDE(QMainWindow):
         for row in range(len(data)):
             self.register_table.item(row, 2).setText("0x{:04X}".format(data[row]))
 
+    def closeEvent(self, event):
+        """ 在窗口关闭时自动断开连接 """
+        self.disconnect()
+        event.accept()  # 关闭窗口
 
 
 if __name__ == '__main__':

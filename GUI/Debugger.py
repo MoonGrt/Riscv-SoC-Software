@@ -2,11 +2,11 @@ import subprocess, sys, time
 
 # /home/moon/openocd_riscv/src/openocd -f /mnt/hgfs/share/Riscv-SoC-Software/scripts/cyber.cfg
 
-def openocd_connect(openocd_path, config_path):
+def openocd_connect():
     """启动 OpenOCD 以连接到开发板"""
     try:
         # 启动 OpenOCD
-        openocd_cmd = [openocd_path, '-f', config_path]  # 修改为你的 OpenOCD 配置文件路径
+        openocd_cmd = ['/home/moon/openocd_riscv/src/openocd', '-f', '/mnt/hgfs/share/Riscv-SoC-Software/scripts/cyber.cfg']  # 修改为你的 OpenOCD 配置文件路径
         openocd_process = subprocess.Popen(openocd_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         # 等待 OpenOCD 启动
@@ -18,11 +18,11 @@ def openocd_connect(openocd_path, config_path):
         print(f"启动 OpenOCD 失败: {e}")
         sys.exit(1)
 
-def gdb_download(gdb_path, program_path):
+def gdb_download(program_path):
     """使用 GDB 下载程序"""
     try:
         # 启动 GDB
-        gdb_cmd = [gdb_path, program_path]  # 修改为你的 GDB 路径和程序文件
+        gdb_cmd = ["/opt/riscv/bin/riscv64-unknown-elf-gdb", program_path]  # 修改为你的 GDB 路径和程序文件
         gdb_process = subprocess.Popen(gdb_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         # 发送 GDB 命令
@@ -42,22 +42,13 @@ def gdb_download(gdb_path, program_path):
         print(f"下载程序失败: {e}")
         sys.exit(1)
 
-def run_debugger(openocd_path, config_path, gdb_path, program_path):
-    """启动调试过程"""
-    openocd_process = openocd_connect(openocd_path, config_path)
-    input("按 Enter 键继续以下载程序...")
-    gdb_download(gdb_path, program_path)
-    # 结束 OpenOCD
-    openocd_process.terminate()
-    openocd_process.wait()
-    print("OpenOCD 已停止。")
 
-# if __name__ == "__main__":
-#     # openocd_process = openocd_connect()
+if __name__ == "__main__":
+    # openocd_process = openocd_connect()
 
-#     # input("按 Enter 键继续以下载程序...")
-#     program_path = "/mnt/hgfs/share/Riscv-SoC-Software/projects/rt-thread/test/build/test.elf"  # 修改为你的程序文件路径
-#     gdb_download(program_path)
+    # input("按 Enter 键继续以下载程序...")
+    program_path = "/mnt/hgfs/share/Riscv-SoC-Software/projects/rt-thread/test/build/test.elf"  # 修改为你的程序文件路径
+    gdb_download(program_path)
 
     # 确保在程序下载后结束 OpenOCD
     # openocd_process.terminate()
