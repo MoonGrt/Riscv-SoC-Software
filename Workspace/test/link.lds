@@ -3,7 +3,7 @@ OUTPUT_ARCH( "riscv" )
 ENTRY(_start)
 
 MEMORY {
-  onChipRam : ORIGIN = 0x80000000, LENGTH = 256k
+  onChipRam : ORIGIN = 0x00000000, LENGTH = 256k
 }
 
 SECTIONS

@@ -1,4 +1,4 @@
-import sys, serial, serial.tools.list_ports, os, subprocess, shutil, signal
+import sys, serial, serial.tools.list_ports, os, subprocess, shutil, signal, re
 from PyQt5.QtWidgets import QVBoxLayout, QSplitter, QGridLayout, QTableWidget, QLabel, QTableWidgetItem, QHBoxLayout, QMessageBox, QFormLayout
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QAction, QFileDialog, QTabWidget, QWidget, QPushButton, QTabBar, QComboBox
 from PyQt5.QtWidgets import QTreeView, QFileSystemModel, QDialog
@@ -141,6 +141,7 @@ class IDE(QMainWindow):
         self.assemble_code_area = QTextEdit()
         self.assemble_code_area.setStyleSheet("background-color: #CEA69B")  # 设置为指定的背景色
         self.assemble_code_area.setReadOnly(True)
+        self.assemble_code_area.setLineWrapMode(QTextEdit.NoWrap) # 设置不自动换行
         assemble_layout.addWidget(self.assemble_code_area)  # 添加文本编辑区域
         # 机械码区域
         machine_layout = QVBoxLayout()  # 为机械码创建垂直布局
@@ -162,10 +163,10 @@ class IDE(QMainWindow):
         # 在 execute_tab 中创建一个 QGridLayout
         execute_layout = QGridLayout(execute_tab)
         # 创建四个表格 设置每个表格的行列数
-        self.code_table = QTableWidget(32, 4)
+        self.code_table = QTableWidget(32, 3)
         self.label_table = QTableWidget(8, 2)
-        self.data_table = QTableWidget(32, 9)
-        self.register_table = QTableWidget(8, 3)
+        self.data_table = QTableWidget(1024, 9)
+        self.register_table = QTableWidget(32, 2)
         # 表格初始化
         self.table_init()
 
@@ -185,13 +186,18 @@ class IDE(QMainWindow):
         execute_layout.addWidget(self.register_table, 3, 1)
         # 设置 execute_layout 中四个区域的大小比例
         execute_layout.setRowStretch(0, 1)    # 设置第一行的伸展因子
-        execute_layout.setRowStretch(1, 10)   # 设置第二行的伸展因子
+        execute_layout.setRowStretch(1, 15)   # 设置第二行的伸展因子
         execute_layout.setRowStretch(2, 1)    # 设置第三行的伸展因子
-        execute_layout.setRowStretch(3, 10)   # 设置第四行的伸展因子
+        execute_layout.setRowStretch(3, 15)   # 设置第四行的伸展因子
         execute_layout.setColumnStretch(0, 3) # 设置第一列的伸展因子
         execute_layout.setColumnStretch(1, 1) # 设置第二列的伸展因子
-
-
+        # 填充代码到表格中
+        self.fillCode()
+        self.fillLabel()
+        # 设置奇数行背景颜色为天蓝色，偶数行背景颜色为钢蓝色
+        for tabel in [self.code_table, self.label_table, self.data_table, self.register_table]:
+            for row in range(self.code_table.rowCount()):
+                self.setRowBackgroundColor(tabel, row, None)
 
         # 创建消息窗格
         messages_pane = QTabWidget()
@@ -247,22 +253,23 @@ class IDE(QMainWindow):
 
 
         # 设置上下窗格
-        splitterr = QSplitter()
-        splitterr.setOrientation(Qt.Vertical)
-        splitterr.addWidget(content_pane)
-        splitterr.addWidget(messages_pane)
-        splitterr.setSizes([4, 1]) # 设置 edit_tab 和 execute_tab 的大小比例
+        self.splitterr = QSplitter()
+        self.splitterr.setOrientation(Qt.Vertical)
+        self.splitterr.addWidget(content_pane)
+        self.splitterr.addWidget(messages_pane)
+        self.splitterr.setSizes([4, 1]) # 设置 edit_tab 和 execute_tab 的大小比例
         # 设置左右窗格
-        splitterl = QSplitter()
-        splitterl.setOrientation(Qt.Horizontal)
-        splitterl.addWidget(self.fileTree)
-        splitterl.addWidget(splitterr)
-        splitterl.setSizes([1, 8]) # 设置 edit_tab 和 execute_tab 的大小比例
+        self.splitterl = QSplitter()
+        self.splitterl.setOrientation(Qt.Horizontal)
+        self.splitterl.addWidget(self.fileTree)
+        self.splitterl.addWidget(self.splitterr)
+        self.splitterl.setSizes([1, 8]) # 设置 edit_tab 和 execute_tab 的大小比例
+        self.splitterl.splitterMoved.connect(self.adjust_tablewidth)
         # 创建主窗口
         main_widget = QWidget(self)
         self.setCentralWidget(main_widget)
         splitter_layout = QVBoxLayout(main_widget)
-        splitter_layout.addWidget(splitterl)  # 将QSplitter添加到布局中
+        splitter_layout.addWidget(self.splitterl)  # 将QSplitter添加到布局中
         main_widget.setLayout(splitter_layout)
 
 
@@ -490,10 +497,10 @@ class IDE(QMainWindow):
         self.register_table.setEditTriggers(QTableWidget.NoEditTriggers)
 
         # 设置表头
-        self.code_table.setHorizontalHeaderLabels(["Address", "Code", "Basic", "Source"])
+        self.code_table.setHorizontalHeaderLabels(["Address", "Code", "Source"])
         self.label_table.setHorizontalHeaderLabels(["Label", "Address"])
         self.data_table.setHorizontalHeaderLabels(["Address", "Value(+0)", "Value(+1)", "Value(+2)", "Value(+3)", "Value(+4)", "Value(+5)", "Value(+6)", "Value(+7)"])
-        self.register_table.setHorizontalHeaderLabels(["Register", "Name", "Value"])
+        self.register_table.setHorizontalHeaderLabels(["Register", "Value"])
 
         # 设置表格不显示行号
         self.code_table.verticalHeader().setVisible(False)
@@ -529,30 +536,26 @@ class IDE(QMainWindow):
         for row in range(self.data_table.rowCount()):
             for col in range(self.data_table.columnCount()):
                 if col == 0:
-                    address = "0x{:04X}".format(data_index*8)
+                    address = "0x{:08X}".format(data_index*8)
                     item = QTableWidgetItem(address)
                     item.setTextAlignment(Qt.AlignCenter)
                     self.data_table.setItem(row, col, item)
                     data_index += 1
                 else:
-                    item = QTableWidgetItem('0x0000')
+                    item = QTableWidgetItem('00000000')
                     item.setTextAlignment(Qt.AlignCenter)
                     self.data_table.setItem(row, col, item)
 
         # 设置 register_table 表格初值
-        register_init = [
-            ["r0", "s0", "0x0000"],
-            ["r1", "a1", "0x0000"],
-            ["r2", "a2", "0x0000"],
-            ["r3", "a3", "0x0000"],
-            ["r4", "a4", "0x0000"],
-            ["r5", "a5", "0x0000"],
-            ["r6", "sp", "0x0000"],
-            ["r7", "ra", "0x0000"],
+        register_names = [
+            "zero", "ra", "sp", "gp", "tp", "t0", "t1", "t2", 
+            "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5", 
+            "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7", 
+            "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
         ]
-        for row in range(self.register_table.rowCount()):
+        for row, register in enumerate(register_names):
             for col in range(self.register_table.columnCount()):
-                item = QTableWidgetItem(register_init[row][col])
+                item = QTableWidgetItem(register if col == 0 else "00000000")
                 item.setTextAlignment(Qt.AlignCenter)
                 self.register_table.setItem(row, col, item)
 
@@ -586,25 +589,34 @@ class IDE(QMainWindow):
 
     def set_ColumnWidth(self, table, line_num):
         if table == self.code_table:
-            self.code_table.setColumnWidth(0, 134)  # Address
-            self.code_table.setColumnWidth(1, 413)  # Code
-            self.code_table.setColumnWidth(2, 413)  # Basic
-            self.code_table.setColumnWidth(3, 413)  # Source
+            self.code_table.setColumnWidth(0, 275)  # Address
+            self.code_table.setColumnWidth(1, 275)  # Code
+            self.code_table.setColumnWidth(2, 540)  # Source
         elif table == self.label_table:
-            if line_num > 8:
-                self.label_table.setColumnWidth(0, 230)  # Label
-                self.label_table.setColumnWidth(1, 230)  # Address
-            else:
-                self.label_table.setColumnWidth(0, 232)  # Label
-                self.label_table.setColumnWidth(1, 232)  # Address
+            self.label_table.setColumnWidth(0, 170)  # Label
+            self.label_table.setColumnWidth(1, 175)  # Address
         elif table == self.data_table:
-            self.data_table.setColumnWidth(0, 134)  # Address
-            for row in range(self.data_table.rowCount()-1):
-                self.data_table.setColumnWidth(row+1, 155)  # Address
+            for row in range(self.data_table.rowCount()):
+                self.data_table.setColumnWidth(row, 121)  # Address
         elif table == self.register_table:
-            self.register_table.setColumnWidth(0, 154)  # Register
-            self.register_table.setColumnWidth(1, 155)  # Name
-            self.register_table.setColumnWidth(2, 155)  # Value
+            self.register_table.setColumnWidth(0, 170)  # Register
+            self.register_table.setColumnWidth(1, 175)  # Name
+
+    def adjust_tablewidth(self):
+        # 获取分隔条两边的宽度
+        widths = self.splitterl.sizes()
+        left_width = widths[0]
+        right_width = widths[1]
+        # 计算每个列的宽度，使其适应表格宽度
+        self.code_table.setColumnWidth(0, int((right_width-70)/4*3*0.25))  # Address
+        self.code_table.setColumnWidth(1, int((right_width-70)/4*3*0.25))  # Code
+        self.code_table.setColumnWidth(2, int((right_width-70)/4*3*0.5))  # Source
+        for row in range(self.data_table.rowCount()): # Address
+            self.data_table.setColumnWidth(row, int((right_width-70)/4*3/9))
+        self.label_table.setColumnWidth(0, int((right_width-130)/4*1*0.5))  # Label
+        self.label_table.setColumnWidth(1, int((right_width-130)/4*1*0.5))  # Address
+        self.register_table.setColumnWidth(0, int((right_width-130)/4*1*0.5))  # Register
+        self.register_table.setColumnWidth(1, int((right_width-130)/4*1*0.5))  # Name
 
     def findCodetablerow(self, data):
         for row in range(self.code_table.rowCount()):
@@ -812,10 +824,20 @@ class IDE(QMainWindow):
         with open(file_path, 'r', encoding='utf-8') as file:
             for line in file:
                 # 判断当前行是否以"80"开头
-                if line.startswith("80"):
+                if line.startswith("80") and not line.endswith(":\n"):
                     # 将符合条件的行追加到结果字符串中
                     assemble_code += line.replace("          	", "    ")
             return assemble_code
+
+    def extract_Label(self, file_path):
+        Label = ""
+        with open(file_path, 'r', encoding='utf-8') as file:
+            for line in file:
+                # 判断当前行是否以"80"开头
+                if line.startswith("80") and line.endswith(":\n"):
+                    # 将符合条件的行追加到结果字符串中
+                    Label += line
+            return Label
 
     def fillfile(self):
         try:
@@ -836,6 +858,11 @@ class IDE(QMainWindow):
                 last_three_lines = "\n".join(stdout_lines[-3:])  # 取最后三行
                 self.message_showmessage(last_three_lines + "\n")
                 self.fillfile()
+                self.fillCode()
+                # 设置奇数行背景颜色为天蓝色，偶数行背景颜色为钢蓝色
+                for tabel in [self.code_table, self.label_table, self.data_table, self.register_table]:
+                    for row in range(self.code_table.rowCount()):
+                        self.setRowBackgroundColor(tabel, row, None)
         except subprocess.CalledProcessError as e:
             print(e)
 
@@ -868,7 +895,7 @@ class IDE(QMainWindow):
             self.download_Action.setEnabled(True)
             self.run_Action.setEnabled(True)
         except Exception as e:
-            self.message_showmessage(f'Openocd: connected failed - {str(e)}')
+            self.message_showmessage(f'Openocd: connected failed-{str(e)}')
 
     def disconnect(self):
         if self.openocd_process is not None:
@@ -975,37 +1002,50 @@ class IDE(QMainWindow):
         # 清除 serial message
         self.serial_tab.setPlainText('')
 
-    def fillCode(self, assembly_code, machine_code, basic_code):
+    def fillCode(self):
         # 按行分割文本
-        lines_assembly = list(filter(lambda line: line.strip() != "", assembly_code.split('\n'))) # 去除空行
-        lines_machine = machine_code.split('\n')
-        lines_basic = basic_code.split('\n')
+        lines_assembly = list(filter(lambda line: line.strip() != "", self.assemble_code_area.toPlainText().split('\n'))) # 去除空行
+        address = []
+        machine = []
+        assemble = []
+        for line in lines_assembly:
+            split_line = line.split(maxsplit=2)
+            address.append(split_line[0][:-1])
+            machine.append(split_line[1])
+            assemble.append(split_line[2])
         # 设置表格的行数
         self.code_table.setRowCount(len(lines_assembly))
+        for row in range(self.code_table.rowCount()):
+            for col in range(self.code_table.columnCount()):
+                item = QTableWidgetItem('-')
+                item.setTextAlignment(Qt.AlignCenter)
+                self.code_table.setItem(row, col, item)
         # 填入数据
-        line_index = 0
         for row_index in range(len(lines_assembly)):
-            if not lines_assembly[row_index].endswith(':') and lines_machine[line_index] and lines_basic[line_index]:
-                # 填入程序行数
-                self.code_table.item(row_index, 0).setText(str(line_index))
-                # 填入机械码
-                self.code_table.item(row_index, 1).setText(lines_machine[line_index])
-                # 填入处理后的汇编码
-                self.code_table.item(row_index, 2).setText(lines_basic[line_index])
-                self.code_table.item(row_index, 2).setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
-                line_index += 1
+            # 填入地址
+            self.code_table.item(row_index, 0).setText(address[row_index])
+            # 填入机械码
+            self.code_table.item(row_index, 1).setText(machine[row_index])
             # 填入汇编码
-            self.code_table.item(row_index, 3).setText(lines_assembly[row_index].expandtabs(4))
-            self.code_table.item(row_index, 3).setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            self.code_table.item(row_index, 2).setText(assemble[row_index])
+            self.code_table.item(row_index, 2).setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
 
-    def fillLabel(self, data):
+    def fillLabel(self):
+        assemble_path = self.project_path + f"/build/{self.project_name}.asm"
+        self.Label = list(filter(lambda line: line.strip() != "", self.extract_Label(assemble_path).split('\n'))) # 去除空行
         # 设置表格的行数
-        self.label_table.setRowCount(max(len(data), 8))
-
+        self.label_table.setRowCount(max(len(self.Label), 8))
+        for row in range(self.label_table.rowCount()):
+            for col in range(self.label_table.columnCount()):
+                item = QTableWidgetItem('-')
+                item.setTextAlignment(Qt.AlignCenter)
+                self.label_table.setItem(row, col, item)
         # 填充表格
-        for row, (key, value) in enumerate(data.items()):
-            self.label_table.item(row, 0).setText(key)
-            self.label_table.item(row, 1).setText(str(value))
+        for index, line in enumerate(self.Label):
+            address, label = line.split(maxsplit=1)
+            label = label.strip('<>:')  # remove '<' '>' and ':' around '_start'
+            self.label_table.item(index, 0).setText(label)
+            self.label_table.item(index, 1).setText(address)
 
     def fillData(self, data):
         # 根据字典填充数据到表格
