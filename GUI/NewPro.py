@@ -931,19 +931,22 @@ class NewPro(QDialog):
             print(e)
             return
         # 替换 Makefile 中的 include 指令, 替换 name
-        with open(self.project_path + "/Makefile", 'r', encoding='utf-8') as file:
-            makefile_content = file.read()
-        makefile_content = makefile_content.replace("include ../gcc.mk", gcc_mk_content)
-        makefile_content = makefile_content.replace("include ../subproject.mk", subproject_mk_content)
-        lines = makefile_content.splitlines()
-        # 遍历每一行，找到包含 "PROJ_NAME =" 的行并替换
-        for i in range(len(lines)):
-            if lines[i].startswith("PROJ_NAME ="):
-                lines[i] = f"PROJ_NAME = {self.project_name_input.text()}"
-        # 将修改后的行重新拼接成一个字符串
-        new_makefile = "\n".join(lines)
-        with open(self.project_path + "/Makefile", 'w', encoding='utf-8') as file:
-            file.write(new_makefile)
+        try:
+            with open(self.project_path + "/Makefile", 'r', encoding='utf-8') as file:
+                makefile_content = file.read()
+            makefile_content = makefile_content.replace("include ../gcc.mk", gcc_mk_content)
+            makefile_content = makefile_content.replace("include ../subproject.mk", subproject_mk_content)
+            lines = makefile_content.splitlines()
+            # 遍历每一行，找到包含 "PROJ_NAME =" 的行并替换
+            for i in range(len(lines)):
+                if lines[i].startswith("PROJ_NAME ="):
+                    lines[i] = f"PROJ_NAME = {self.project_name_input.text()}"
+            # 将修改后的行重新拼接成一个字符串
+            new_makefile = "\n".join(lines)
+            with open(self.project_path + "/Makefile", 'w', encoding='utf-8') as file:
+                file.write(new_makefile)
+        except Exception as e:
+            print(e)
 
     # 生成顶层连接
     def Top_Connection_Gen(self):

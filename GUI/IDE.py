@@ -113,7 +113,7 @@ class IDE(QMainWindow):
         self.menu()
 
         # 创建文件目录
-        self.project_path = "../Workspace/demo"
+        self.project_path = "../Workspace"
         self.project_name = self.project_path.split('/')[-1]
         self.model = QFileSystemModel()
         self.model.setRootPath('')  # Set the root path to be empty
@@ -130,15 +130,16 @@ class IDE(QMainWindow):
         content_pane = QTabWidget()
         file_tab = QWidget()
         simulation_tab = QWidget()
-        
+        debug_tab = QWidget()
         content_pane.addTab(file_tab, "File")
         content_pane.addTab(simulation_tab, "Simulation")
-        content_pane.addTab(simulation_tab, "Debug")
+        content_pane.addTab(debug_tab, "Debug")
 
 
         # 创建左侧的编辑区域
         self.edit_area = QTabWidget(file_tab)  # 用于文件编辑的区域
         self.edit_area.setStyleSheet("background-color: #D1A7A4")  # 设置为指定的背景色
+        self.newFile(start_page=True)
 
         # 汇编代码区域
         assemble_layout = QVBoxLayout()  # 为汇编代码创建垂直布局
@@ -169,13 +170,10 @@ class IDE(QMainWindow):
         # 在 simulation_tab 中创建一个 QGridLayout
         simulation_layout = QGridLayout(simulation_tab)
         # 创建四个表格 设置每个表格的行列数
-        self.code_table = QTableWidget(32, 3)
-        self.label_table = QTableWidget(8, 2)
-        self.data_table = QTableWidget(1024, 9)
-        self.register_table = QTableWidget(32, 2)
-        # 表格初始化
-        self.table_init()
-
+        self.simulation_code_table = QTableWidget(32, 3)
+        self.simulation_label_table = QTableWidget(8, 2)
+        self.simulation_data_table = QTableWidget(1024, 9)
+        self.simulation_register_table = QTableWidget(32, 2)
         # 创建标签
         text_label = QLabel(" Text")
         label_label = QLabel(" Label")
@@ -183,13 +181,13 @@ class IDE(QMainWindow):
         register_label = QLabel(" Register")
         # 将小部件添加到 simulation_layout 中
         simulation_layout.addWidget(text_label, 0, 0)
-        simulation_layout.addWidget(self.code_table, 1, 0)
+        simulation_layout.addWidget(self.simulation_code_table, 1, 0)
         simulation_layout.addWidget(label_label, 0, 1)
-        simulation_layout.addWidget(self.label_table, 1, 1)
+        simulation_layout.addWidget(self.simulation_label_table, 1, 1)
         simulation_layout.addWidget(data_label, 2, 0)
-        simulation_layout.addWidget(self.data_table, 3, 0)
+        simulation_layout.addWidget(self.simulation_data_table, 3, 0)
         simulation_layout.addWidget(register_label, 2, 1)
-        simulation_layout.addWidget(self.register_table, 3, 1)
+        simulation_layout.addWidget(self.simulation_register_table, 3, 1)
         # 设置 simulation_layout 中四个区域的大小比例
         simulation_layout.setRowStretch(0, 1)    # 设置第一行的伸展因子
         simulation_layout.setRowStretch(1, 15)   # 设置第二行的伸展因子
@@ -197,12 +195,47 @@ class IDE(QMainWindow):
         simulation_layout.setRowStretch(3, 15)   # 设置第四行的伸展因子
         simulation_layout.setColumnStretch(0, 3) # 设置第一列的伸展因子
         simulation_layout.setColumnStretch(1, 1) # 设置第二列的伸展因子
+
+        # 在 debug_tab 中创建一个 QGridLayout
+        debug_layout = QGridLayout(debug_tab)
+        # 创建四个表格 设置每个表格的行列数
+        self.debug_code_table = QTableWidget(32, 3)
+        self.debug_label_table = QTableWidget(8, 2)
+        self.debug_data_table = QTableWidget(1024, 9)
+        self.debug_register_table = QTableWidget(32, 2)
+        # 创建标签
+        text_label = QLabel(" Text")
+        label_label = QLabel(" Label")
+        data_label = QLabel(" Data")
+        register_label = QLabel(" Register")
+        # 将小部件添加到 debug_layout 中
+        debug_layout.addWidget(text_label, 0, 0)
+        debug_layout.addWidget(self.debug_code_table, 1, 0)
+        debug_layout.addWidget(label_label, 0, 1)
+        debug_layout.addWidget(self.debug_label_table, 1, 1)
+        debug_layout.addWidget(data_label, 2, 0)
+        debug_layout.addWidget(self.debug_data_table, 3, 0)
+        debug_layout.addWidget(register_label, 2, 1)
+        debug_layout.addWidget(self.debug_register_table, 3, 1)
+        # 设置 debug_layout 中四个区域的大小比例
+        debug_layout.setRowStretch(0, 1)    # 设置第一行的伸展因子
+        debug_layout.setRowStretch(1, 15)   # 设置第二行的伸展因子
+        debug_layout.setRowStretch(2, 1)    # 设置第三行的伸展因子
+        debug_layout.setRowStretch(3, 15)   # 设置第四行的伸展因子
+        debug_layout.setColumnStretch(0, 3) # 设置第一列的伸展因子
+        debug_layout.setColumnStretch(1, 1) # 设置第二列的伸展因子
+
+        # 表格初始化
+        self.table_init()
         # 填充代码到表格中
         self.fillCode()
         self.fillLabel()
         # 设置奇数行背景颜色为天蓝色，偶数行背景颜色为钢蓝色
-        for tabel in [self.code_table, self.label_table, self.data_table, self.register_table]:
-            for row in range(self.code_table.rowCount()):
+        for tabel in [self.simulation_code_table, self.simulation_label_table, self.simulation_data_table, self.simulation_register_table]:
+            for row in range(self.simulation_code_table.rowCount()):
+                self.setRowBackgroundColor(tabel, row, None)
+        for tabel in [self.debug_code_table, self.debug_label_table, self.debug_data_table, self.debug_register_table]:
+            for row in range(tabel.rowCount()):
                 self.setRowBackgroundColor(tabel, row, None)
 
         # 创建消息窗格
@@ -277,7 +310,6 @@ class IDE(QMainWindow):
         splitter_layout = QVBoxLayout(main_widget)
         splitter_layout.addWidget(self.splitterl)  # 将QSplitter添加到布局中
         main_widget.setLayout(splitter_layout)
-
 
     def menu(self):
         # 文件菜单
@@ -420,39 +452,71 @@ class IDE(QMainWindow):
         self.run_Action.setEnabled(False)
         run_Menu.addAction(self.run_Action)
 
-        # 调试菜单
-        simultion_Menu = self.menuBar().addMenu('Simultion')
+        # 仿真菜单
+        simulation_Menu = self.menuBar().addMenu('Simultion')
 
-        self.simultion_run_Action = QAction(QIcon('icons/run.svg'), 'Run', self) # 运行代码
-        self.simultion_run_Action.setToolTip('Run')
-        self.simultion_run_Action.triggered.connect(self.simultion_run)
+        self.simulation_run_Action = QAction(QIcon('icons/run.svg'), 'Run', self) # 运行代码
+        self.simulation_run_Action.setToolTip('Run')
+        self.simulation_run_Action.triggered.connect(self.simulation_run)
         # self.run_Action.setEnabled(False)
-        simultion_Menu.addAction(self.simultion_run_Action)
+        simulation_Menu.addAction(self.simulation_run_Action)
 
-        self.simultion_run_step_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22)), 'Run step', self) # 单步运行
-        self.simultion_run_step_Action.setToolTip('Run step')
-        self.simultion_run_step_Action.triggered.connect(self.simultion_run_step)
+        self.simulation_run_step_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22)), 'Run step', self) # 单步运行
+        self.simulation_run_step_Action.setToolTip('Run step')
+        self.simulation_run_step_Action.triggered.connect(self.simulation_run_step)
         # self.run_step_Action.setEnabled(False)
-        simultion_Menu.addAction(self.simultion_run_step_Action)
+        simulation_Menu.addAction(self.simulation_run_step_Action)
 
-        self.simultion_run_undo_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22).transformed(QTransform().scale(-1, 1))), 'Run undo', self) # 单步退回
-        self.simultion_run_undo_Action.setToolTip('Run undo')
-        self.simultion_run_undo_Action.triggered.connect(self.simultion_run_undo)
+        self.simulation_run_undo_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22).transformed(QTransform().scale(-1, 1))), 'Run undo', self) # 单步退回
+        self.simulation_run_undo_Action.setToolTip('Run undo')
+        self.simulation_run_undo_Action.triggered.connect(self.simulation_run_undo)
         # self.run_undo_Action.setEnabled(False)
-        simultion_Menu.addAction(self.simultion_run_undo_Action)
+        simulation_Menu.addAction(self.simulation_run_undo_Action)
 
-        self.simultion_reset_Action = QAction(QIcon('icons/reset.svg'), 'Reset', self) # 重启
-        self.simultion_reset_Action.setToolTip('Reset')
-        self.simultion_reset_Action.triggered.connect(self.simultion_reset)
+        self.simulation_reset_Action = QAction(QIcon('icons/reset.svg'), 'Reset', self) # 重启
+        self.simulation_reset_Action.setToolTip('Reset')
+        self.simulation_reset_Action.triggered.connect(self.simulation_reset)
         # self.reset_Action.setEnabled(False)
-        simultion_Menu.addAction(self.simultion_reset_Action)
+        simulation_Menu.addAction(self.simulation_reset_Action)
 
-        self.simultion_stop_Action = QAction(QIcon('icons/stop.svg'), 'Stop', self) # 停止运行
-        self.simultion_stop_Action.setToolTip('Stop')
-        self.simultion_stop_Action.triggered.connect(self.simultion_stop)
+        self.simulation_stop_Action = QAction(QIcon('icons/stop.svg'), 'Stop', self) # 停止运行
+        self.simulation_stop_Action.setToolTip('Stop')
+        self.simulation_stop_Action.triggered.connect(self.simulation_stop)
         # self.stop_Action.setEnabled(False)
-        simultion_Menu.addAction(self.simultion_stop_Action)
+        simulation_Menu.addAction(self.simulation_stop_Action)
 
+        # 调试菜单
+        debug_Menu = self.menuBar().addMenu('Debug')
+
+        self.debug_run_Action = QAction(QIcon('icons/run.svg'), 'Run', self) # 运行代码
+        self.debug_run_Action.setToolTip('Run')
+        self.debug_run_Action.triggered.connect(self.debug_run)
+        # self.run_Action.setEnabled(False)
+        debug_Menu.addAction(self.debug_run_Action)
+
+        self.debug_run_step_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22)), 'Run step', self) # 单步运行
+        self.debug_run_step_Action.setToolTip('Run step')
+        self.debug_run_step_Action.triggered.connect(self.debug_run_step)
+        # self.run_step_Action.setEnabled(False)
+        debug_Menu.addAction(self.debug_run_step_Action)
+
+        self.debug_run_undo_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22).transformed(QTransform().scale(-1, 1))), 'Run undo', self) # 单步退回
+        self.debug_run_undo_Action.setToolTip('Run undo')
+        self.debug_run_undo_Action.triggered.connect(self.debug_run_undo)
+        # self.run_undo_Action.setEnabled(False)
+        debug_Menu.addAction(self.debug_run_undo_Action)
+
+        self.debug_reset_Action = QAction(QIcon('icons/reset.svg'), 'Reset', self) # 重启
+        self.debug_reset_Action.setToolTip('Reset')
+        self.debug_reset_Action.triggered.connect(self.debug_reset)
+        # self.reset_Action.setEnabled(False)
+        debug_Menu.addAction(self.debug_reset_Action)
+
+        self.debug_stop_Action = QAction(QIcon('icons/stop.svg'), 'Stop', self) # 停止运行
+        self.debug_stop_Action.setToolTip('Stop')
+        self.debug_stop_Action.triggered.connect(self.debug_stop)
+        # self.stop_Action.setEnabled(False)
+        debug_Menu.addAction(self.debug_stop_Action)
 
         # 帮助菜单
         help_Menu = self.menuBar().addMenu('Help')
@@ -487,72 +551,100 @@ class IDE(QMainWindow):
         toolbar3.addAction(self.run_Action)
 
         toolbar4 = self.addToolBar('Toolbar4')
-        toolbar4.addAction(self.simultion_run_Action)
-        toolbar4.addAction(self.simultion_run_step_Action)
-        toolbar4.addAction(self.simultion_run_undo_Action)
-        toolbar4.addAction(self.simultion_reset_Action)
-        toolbar4.addAction(self.simultion_stop_Action)
+        toolbar4.addAction(self.simulation_run_Action)
+        toolbar4.addAction(self.simulation_run_step_Action)
+        toolbar4.addAction(self.simulation_run_undo_Action)
+        toolbar4.addAction(self.simulation_reset_Action)
+        toolbar4.addAction(self.simulation_stop_Action)
 
         # 添加其他工具栏项...
 
     def table_init(self):
         # 设置表格只读
-        self.code_table.setEditTriggers(QTableWidget.NoEditTriggers)
-        self.label_table.setEditTriggers(QTableWidget.NoEditTriggers)
-        self.data_table.setEditTriggers(QTableWidget.NoEditTriggers)
-        self.register_table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.simulation_code_table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.simulation_label_table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.simulation_data_table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.simulation_register_table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.debug_code_table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.debug_label_table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.debug_data_table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.debug_register_table.setEditTriggers(QTableWidget.NoEditTriggers)
 
         # 设置表头
-        self.code_table.setHorizontalHeaderLabels(["Address", "Code", "Source"])
-        self.label_table.setHorizontalHeaderLabels(["Label", "Address"])
-        self.data_table.setHorizontalHeaderLabels(["Address", "Value(+0)", "Value(+1)", "Value(+2)", "Value(+3)", "Value(+4)", "Value(+5)", "Value(+6)", "Value(+7)"])
-        self.register_table.setHorizontalHeaderLabels(["Register", "Value"])
+        self.simulation_code_table.setHorizontalHeaderLabels(["Address", "Code", "Source"])
+        self.simulation_label_table.setHorizontalHeaderLabels(["Label", "Address"])
+        self.simulation_data_table.setHorizontalHeaderLabels(["Address", "Value(+0)", "Value(+1)", "Value(+2)", "Value(+3)", "Value(+4)", "Value(+5)", "Value(+6)", "Value(+7)"])
+        self.simulation_register_table.setHorizontalHeaderLabels(["Register", "Value"])
+        self.debug_code_table.setHorizontalHeaderLabels(["Address", "Code", "Source"])
+        self.debug_label_table.setHorizontalHeaderLabels(["Label", "Address"])
+        self.debug_data_table.setHorizontalHeaderLabels(["Address", "Value(+0)", "Value(+1)", "Value(+2)", "Value(+3)", "Value(+4)", "Value(+5)", "Value(+6)", "Value(+7)"])
+        self.debug_register_table.setHorizontalHeaderLabels(["Register", "Value"])
 
         # 设置表格不显示行号
-        self.code_table.verticalHeader().setVisible(False)
-        self.label_table.verticalHeader().setVisible(False)
-        self.data_table.verticalHeader().setVisible(False)
-        self.register_table.verticalHeader().setVisible(False)
+        self.simulation_code_table.verticalHeader().setVisible(False)
+        self.simulation_label_table.verticalHeader().setVisible(False)
+        self.simulation_data_table.verticalHeader().setVisible(False)
+        self.simulation_register_table.verticalHeader().setVisible(False)
+        self.debug_code_table.verticalHeader().setVisible(False)
+        self.debug_label_table.verticalHeader().setVisible(False)
+        self.debug_data_table.verticalHeader().setVisible(False)
+        self.debug_register_table.verticalHeader().setVisible(False)
 
         # 设置表格列宽
-        self.set_ColumnWidth(self.code_table, 9)
-        self.set_ColumnWidth(self.label_table, 8)
-        self.set_ColumnWidth(self.data_table, 8)
-        self.set_ColumnWidth(self.register_table, 8)
+        self.set_ColumnWidth(self.simulation_code_table, 9)
+        self.set_ColumnWidth(self.simulation_label_table, 8)
+        self.set_ColumnWidth(self.simulation_data_table, 8)
+        self.set_ColumnWidth(self.simulation_register_table, 8)
+        self.set_ColumnWidth(self.debug_code_table, 9)
+        self.set_ColumnWidth(self.debug_label_table, 8)
+        self.set_ColumnWidth(self.debug_data_table, 8)
+        self.set_ColumnWidth(self.debug_register_table, 8)
 
         # 设置表格行高
         self.set_RowWidth()
 
-        # 设置 code_table 表格初值
-        for row in range(self.code_table.rowCount()):
-            for col in range(self.code_table.columnCount()):
+        # 设置 simulation_code_table 表格初值
+        for row in range(self.simulation_code_table.rowCount()):
+            for col in range(self.simulation_code_table.columnCount()):
                 item = QTableWidgetItem('-')
                 item.setTextAlignment(Qt.AlignCenter)
-                self.code_table.setItem(row, col, item)
-
-        # 设置 label_table 表格初值
-        for row in range(self.label_table.rowCount()):
-            for col in range(self.label_table.columnCount()):
+                self.simulation_code_table.setItem(row, col, item)
                 item = QTableWidgetItem('-')
                 item.setTextAlignment(Qt.AlignCenter)
-                self.label_table.setItem(row, col, item)
+                self.debug_code_table.setItem(row, col, item)
 
-        # 设置 data_table 表格初值
+        # 设置 simulation_label_table 表格初值
+        for row in range(self.simulation_label_table.rowCount()):
+            for col in range(self.simulation_label_table.columnCount()):
+                item = QTableWidgetItem('-')
+                item.setTextAlignment(Qt.AlignCenter)
+                self.simulation_label_table.setItem(row, col, item)
+                item = QTableWidgetItem('-')
+                item.setTextAlignment(Qt.AlignCenter)
+                self.debug_label_table.setItem(row, col, item)
+
+        # 设置 simulation_data_table 表格初值
         data_index = 0
-        for row in range(self.data_table.rowCount()):
-            for col in range(self.data_table.columnCount()):
+        for row in range(self.simulation_data_table.rowCount()):
+            for col in range(self.simulation_data_table.columnCount()):
                 if col == 0:
                     address = "0x{:08X}".format(data_index*8)
                     item = QTableWidgetItem(address)
                     item.setTextAlignment(Qt.AlignCenter)
-                    self.data_table.setItem(row, col, item)
+                    self.simulation_data_table.setItem(row, col, item)
+                    item = QTableWidgetItem(address)
+                    item.setTextAlignment(Qt.AlignCenter)
+                    self.debug_data_table.setItem(row, col, item)
                     data_index += 1
                 else:
                     item = QTableWidgetItem('00000000')
                     item.setTextAlignment(Qt.AlignCenter)
-                    self.data_table.setItem(row, col, item)
+                    self.simulation_data_table.setItem(row, col, item)
+                    item = QTableWidgetItem('00000000')
+                    item.setTextAlignment(Qt.AlignCenter)
+                    self.debug_data_table.setItem(row, col, item)
 
-        # 设置 register_table 表格初值
+        # 设置 simulation_register_table 表格初值
         register_names = [
             "zero", "ra", "sp", "gp", "tp", "t0", "t1", "t2", 
             "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5", 
@@ -560,15 +652,30 @@ class IDE(QMainWindow):
             "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
         ]
         for row, register in enumerate(register_names):
-            for col in range(self.register_table.columnCount()):
+            for col in range(self.simulation_register_table.columnCount()):
                 item = QTableWidgetItem(register if col == 0 else "00000000")
                 item.setTextAlignment(Qt.AlignCenter)
-                self.register_table.setItem(row, col, item)
+                self.simulation_register_table.setItem(row, col, item)
+                item = QTableWidgetItem(register if col == 0 else "00000000")
+                item.setTextAlignment(Qt.AlignCenter)
+                self.debug_register_table.setItem(row, col, item)
 
         # 设置奇数行背景颜色为天蓝色，偶数行背景颜色为钢蓝色
-        for tabel in [self.code_table, self.label_table, self.data_table, self.register_table]:
-            for row in range(self.code_table.rowCount()):
+        for tabel in [self.simulation_code_table, self.simulation_label_table, self.simulation_data_table, self.simulation_register_table]:
+            for row in range(tabel.rowCount()):
                 self.setRowBackgroundColor(tabel, row, None)
+        for tabel in [self.debug_code_table, self.debug_label_table, self.debug_data_table, self.debug_register_table]:
+            for row in range(tabel.rowCount()):
+                self.setRowBackgroundColor(tabel, row, None)
+        # 设置表格头部背景颜色
+        self.simulation_code_table.horizontalHeader().setStyleSheet("QHeaderView::section { background-color: #C0B3B1; }")
+        self.simulation_label_table.horizontalHeader().setStyleSheet("QHeaderView::section { background-color: #C0B3B1; }")
+        self.simulation_data_table.horizontalHeader().setStyleSheet("QHeaderView::section { background-color: #C0B3B1; }")
+        self.simulation_register_table.horizontalHeader().setStyleSheet("QHeaderView::section { background-color: #C0B3B1; }")
+        self.debug_code_table.horizontalHeader().setStyleSheet("QHeaderView::section { background-color: #C0B3B1; }")
+        self.debug_label_table.horizontalHeader().setStyleSheet("QHeaderView::section { background-color: #C0B3B1; }")
+        self.debug_data_table.horizontalHeader().setStyleSheet("QHeaderView::section { background-color: #C0B3B1; }")
+        self.debug_register_table.horizontalHeader().setStyleSheet("QHeaderView::section { background-color: #C0B3B1; }")
 
     def setRowBackgroundColor(self, tabel, row, color):
         if row % 2 == 0:
@@ -589,24 +696,40 @@ class IDE(QMainWindow):
                         item.setBackground(QColor("#D1A7A4")) # light steelblue
 
     def set_RowWidth(self):
-        for table_widget in [self.label_table, self.register_table, self.code_table, self.data_table]:
+        for table_widget in [self.simulation_label_table, self.simulation_register_table, self.simulation_code_table, self.simulation_data_table]:
+            for row in range(table_widget.rowCount()):
+                table_widget.setRowHeight(row, 32)
+        for table_widget in [self.debug_label_table, self.debug_register_table, self.debug_code_table, self.debug_data_table]:
             for row in range(table_widget.rowCount()):
                 table_widget.setRowHeight(row, 32)
 
     def set_ColumnWidth(self, table, line_num):
-        if table == self.code_table:
-            self.code_table.setColumnWidth(0, 275)  # Address
-            self.code_table.setColumnWidth(1, 275)  # Code
-            self.code_table.setColumnWidth(2, 540)  # Source
-        elif table == self.label_table:
-            self.label_table.setColumnWidth(0, 170)  # Label
-            self.label_table.setColumnWidth(1, 175)  # Address
-        elif table == self.data_table:
-            for row in range(self.data_table.rowCount()):
-                self.data_table.setColumnWidth(row, 121)  # Address
-        elif table == self.register_table:
-            self.register_table.setColumnWidth(0, 170)  # Register
-            self.register_table.setColumnWidth(1, 175)  # Name
+        if table == self.simulation_code_table:
+            self.simulation_code_table.setColumnWidth(0, 275)  # Address
+            self.simulation_code_table.setColumnWidth(1, 275)  # Code
+            self.simulation_code_table.setColumnWidth(2, 540)  # Source
+        elif table == self.simulation_label_table:
+            self.simulation_label_table.setColumnWidth(0, 170)  # Label
+            self.simulation_label_table.setColumnWidth(1, 175)  # Address
+        elif table == self.simulation_data_table:
+            for row in range(self.simulation_data_table.rowCount()):
+                self.simulation_data_table.setColumnWidth(row, 121)  # Address
+        elif table == self.simulation_register_table:
+            self.simulation_register_table.setColumnWidth(0, 170)  # Register
+            self.simulation_register_table.setColumnWidth(1, 175)  # Name
+        if table == self.debug_code_table:
+            self.debug_code_table.setColumnWidth(0, 275)  # Address
+            self.debug_code_table.setColumnWidth(1, 275)  # Code
+            self.debug_code_table.setColumnWidth(2, 540)  # Source
+        elif table == self.debug_label_table:
+            self.debug_label_table.setColumnWidth(0, 170)  # Label
+            self.debug_label_table.setColumnWidth(1, 175)  # Address
+        elif table == self.debug_data_table:
+            for row in range(self.debug_data_table.rowCount()):
+                self.debug_data_table.setColumnWidth(row, 121)  # Address
+        elif table == self.debug_register_table:
+            self.debug_register_table.setColumnWidth(0, 170)  # Register
+            self.debug_register_table.setColumnWidth(1, 175)  # Name
 
     def adjust_tablewidth(self):
         # 获取分隔条两边的宽度
@@ -614,22 +737,36 @@ class IDE(QMainWindow):
         left_width = widths[0]
         right_width = widths[1]
         # 计算每个列的宽度，使其适应表格宽度
-        self.code_table.setColumnWidth(0, int((right_width-70)/4*3*0.25))  # Address
-        self.code_table.setColumnWidth(1, int((right_width-70)/4*3*0.25))  # Code
-        self.code_table.setColumnWidth(2, int((right_width-70)/4*3*0.5))  # Source
-        for row in range(self.data_table.rowCount()): # Address
-            self.data_table.setColumnWidth(row, int((right_width-70)/4*3/9))
-        self.label_table.setColumnWidth(0, int((right_width-130)/4*1*0.5))  # Label
-        self.label_table.setColumnWidth(1, int((right_width-130)/4*1*0.5))  # Address
-        self.register_table.setColumnWidth(0, int((right_width-130)/4*1*0.5))  # Register
-        self.register_table.setColumnWidth(1, int((right_width-130)/4*1*0.5))  # Name
+        self.simulation_code_table.setColumnWidth(0, int((right_width-70)/4*3*0.25))  # Address
+        self.simulation_code_table.setColumnWidth(1, int((right_width-70)/4*3*0.25))  # Code
+        self.simulation_code_table.setColumnWidth(2, int((right_width-70)/4*3*0.5))  # Source
+        self.debug_code_table.setColumnWidth(0, int((right_width-70)/4*3*0.25))  # Address
+        self.debug_code_table.setColumnWidth(1, int((right_width-70)/4*3*0.25))  # Code
+        self.debug_code_table.setColumnWidth(2, int((right_width-70)/4*3*0.5))  # Source
+        for row in range(self.simulation_data_table.rowCount()): # Address
+            self.simulation_data_table.setColumnWidth(row, int((right_width-70)/4*3/9))
+            self.debug_data_table.setColumnWidth(row, int((right_width-70)/4*3/9))
+        self.simulation_label_table.setColumnWidth(0, int((right_width-130)/4*1*0.5))  # Label
+        self.simulation_label_table.setColumnWidth(1, int((right_width-130)/4*1*0.5))  # Address
+        self.debug_label_table.setColumnWidth(0, int((right_width-130)/4*1*0.5))  # Label
+        self.debug_label_table.setColumnWidth(1, int((right_width-130)/4*1*0.5))  # Address
+        self.simulation_register_table.setColumnWidth(0, int((right_width-130)/4*1*0.5))  # Register
+        self.simulation_register_table.setColumnWidth(1, int((right_width-130)/4*1*0.5))  # Name
+        self.debug_register_table.setColumnWidth(0, int((right_width-130)/4*1*0.5))  # Register
+        self.debug_register_table.setColumnWidth(1, int((right_width-130)/4*1*0.5))  # Name
 
     def loadFile(self, index):
         filePath = self.model.filePath(index)
         if os.path.isfile(filePath):
-            # print(f"打开文件: {filePath}")
             # 创建新的文本编辑器选项卡
             text_edit = QTextEdit(self)
+            text_edit.setStyleSheet("""
+                QTextEdit {
+                    background-image: url('icons/new.png');
+                    background-repeat: no-repeat;
+                    background-position: center;
+                }
+            """)
             text_edit.file_path = filePath  # 设置文件路径属性
             self.edit_area.addTab(text_edit, filePath.split("/")[-1])
             # 读取文件内容并显示在文本编辑器中
@@ -642,10 +779,20 @@ class IDE(QMainWindow):
             index = self.edit_area.indexOf(text_edit)
             self.edit_area.setCurrentIndex(index)
 
-    def newFile(self):
+    def newFile(self, start_page=False):
         # 创建新的文本编辑器选项卡
         text_edit = QTextEdit(self)
-        self.edit_area.addTab(text_edit, "Untitled*")
+        text_edit.setStyleSheet("""
+            QTextEdit {
+                background-image: url('icons/new.png');
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+        """)
+        if start_page:
+            self.edit_area.addTab(text_edit, "Gowin")
+        else:
+            self.edit_area.addTab(text_edit, "Untitled")
         # 切换到新创建的选项卡
         index = self.edit_area.indexOf(text_edit)
         self.edit_area.setCurrentIndex(index)
@@ -879,8 +1026,11 @@ class IDE(QMainWindow):
                 self.fillfile()
                 self.fillCode()
                 # 设置奇数行背景颜色为天蓝色，偶数行背景颜色为钢蓝色
-                for tabel in [self.code_table, self.label_table, self.data_table, self.register_table]:
-                    for row in range(self.code_table.rowCount()):
+                for tabel in [self.simulation_code_table, self.simulation_label_table, self.simulation_data_table, self.simulation_register_table]:
+                    for row in range(self.simulation_code_table.rowCount()):
+                        self.setRowBackgroundColor(tabel, row, None)
+                for tabel in [self.debug_code_table, self.debug_label_table, self.debug_data_table, self.debug_register_table]:
+                    for row in range(tabel.rowCount()):
                         self.setRowBackgroundColor(tabel, row, None)
         except subprocess.CalledProcessError as e:
             print(e)
@@ -959,34 +1109,34 @@ class IDE(QMainWindow):
         self.gdb_process.stdin.flush()
         self.message_showmessage("Connect to Openocd\n")
 
-    def simultion_run(self):
+    def simulation_run(self):
         # 运行程序
         try:
             self.Sim.load_program(self.project_path + f"/build/{self.project_name}.v")
             print(self.Sim.pyriscv._pc)
-            self.setRowBackgroundColor(self.code_table, self.Sim.pc, QColor(200, 0, 0))
+            self.setRowBackgroundColor(self.simulation_code_table, self.Sim.pc, QColor(200, 0, 0))
         except:
             pass
 
-    def simultion_run_step(self):
+    def simulation_run_step(self):
         # 单步运行程序
         self.Sim.step()
         self.fillRegister(self.Sim.pyriscv._regs)
         # self.fillData(self.Sim.pyriscv._dmem)
 
         # 将运行到的行标红
-        self.setRowBackgroundColor(self.code_table, self.Sim.pc / 4, QColor(255, 0, 0))
-        self.setRowBackgroundColor(self.code_table, self.Sim.last_pc / 4, None)
+        self.setRowBackgroundColor(self.simulation_code_table, self.Sim.pc / 4, QColor(255, 0, 0))
+        self.setRowBackgroundColor(self.simulation_code_table, self.Sim.last_pc / 4, None)
 
-    def simultion_run_undo(self):
+    def simulation_run_undo(self):
         # 单步返回程序
         pass
 
-    def simultion_reset(self):
+    def simulation_reset(self):
         # 将表格颜色恢复到初值
         pass
 
-    def simultion_stop(self):
+    def simulation_stop(self):
         # 停止运行程序
         pass
 
@@ -1002,51 +1152,85 @@ class IDE(QMainWindow):
             machine.append(split_line[1])
             assemble.append(split_line[2])
         # 设置表格的行数
-        self.code_table.setRowCount(len(lines_assembly))
-        for row in range(self.code_table.rowCount()):
-            for col in range(self.code_table.columnCount()):
+        self.simulation_code_table.setRowCount(len(lines_assembly))
+        self.debug_code_table.setRowCount(len(lines_assembly))
+        for row in range(self.simulation_code_table.rowCount()):
+            for col in range(self.simulation_code_table.columnCount()):
                 item = QTableWidgetItem('-')
                 item.setTextAlignment(Qt.AlignCenter)
-                self.code_table.setItem(row, col, item)
+                self.simulation_code_table.setItem(row, col, item)
+                item = QTableWidgetItem('-')
+                item.setTextAlignment(Qt.AlignCenter)
+                self.debug_code_table.setItem(row, col, item)
         # 填入数据
         for row_index in range(len(lines_assembly)):
             # 填入地址
-            self.code_table.item(row_index, 0).setText(address[row_index])
+            self.simulation_code_table.item(row_index, 0).setText(address[row_index])
+            self.debug_code_table.item(row_index, 0).setText(address[row_index])
             # 填入机械码
-            self.code_table.item(row_index, 1).setText(machine[row_index])
+            self.simulation_code_table.item(row_index, 1).setText(machine[row_index])
+            self.debug_code_table.item(row_index, 1).setText(machine[row_index])
             # 填入汇编码
-            self.code_table.item(row_index, 2).setText(assemble[row_index])
-            self.code_table.item(row_index, 2).setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            self.simulation_code_table.item(row_index, 2).setText(assemble[row_index])
+            self.simulation_code_table.item(row_index, 2).setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            self.debug_code_table.item(row_index, 2).setText(assemble[row_index])
+            self.debug_code_table.item(row_index, 2).setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
 
     def fillLabel(self):
         try:
             assemble_path = self.project_path + f"/build/{self.project_name}.asm"
             self.Label = list(filter(lambda line: line.strip() != "", self.extract_Label(assemble_path).split('\n'))) # 去除空行
             # 设置表格的行数
-            self.label_table.setRowCount(max(len(self.Label), 8))
-            for row in range(self.label_table.rowCount()):
-                for col in range(self.label_table.columnCount()):
+            self.simulation_label_table.setRowCount(max(len(self.Label), 8))
+            self.debug_label_table.setRowCount(max(len(self.Label), 8))
+            for row in range(self.simulation_label_table.rowCount()):
+                for col in range(self.simulation_label_table.columnCount()):
                     item = QTableWidgetItem('-')
                     item.setTextAlignment(Qt.AlignCenter)
-                    self.label_table.setItem(row, col, item)
+                    self.simulation_label_table.setItem(row, col, item)
+                    item = QTableWidgetItem('-')
+                    item.setTextAlignment(Qt.AlignCenter)
+                    self.debug_label_table.setItem(row, col, item)
             # 填充表格
             for index, line in enumerate(self.Label):
                 address, label = line.split(maxsplit=1)
                 label = label.strip('<>:')  # remove '<' '>' and ':' around '_start'
-                self.label_table.item(index, 0).setText(label)
-                self.label_table.item(index, 1).setText(address)
+                self.simulation_label_table.item(index, 0).setText(label)
+                self.simulation_label_table.item(index, 1).setText(address)
+                self.debug_label_table.item(index, 0).setText(label)
+                self.debug_label_table.item(index, 1).setText(address)
         except:
             pass
 
     def fillRegister(self, data):
         # 确保数据和表格行数匹配
-        if len(data) != self.register_table.rowCount():
+        if len(data) != self.simulation_register_table.rowCount():
             raise ValueError("Data dimensions do not match table dimensions.")
         for row in range(len(data)):
-            self.register_table.item(row, 1).setText("0x{:04X}".format(data[row]))
+            self.simulation_register_table.item(row, 1).setText("0x{:04X}".format(data[row]))
 
     def fillData(self, data):
         # 根据字典填充数据到表格
+        pass
+
+    def debug_run(self):
+        # 运行程序
+        pass
+
+    def debug_run_step(self):
+        # 单步运行程序
+        pass
+
+    def debug_run_undo(self):
+        # 单步返回程序
+        pass
+
+    def debug_reset(self):
+        # 将表格颜色恢复到初值
+        pass
+
+    def debug_stop(self):
+        # 停止运行程序
         pass
 
     def about(self):
