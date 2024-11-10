@@ -1,5 +1,4 @@
-
-from pyriscv_riscv_def import *
+from .pyriscv_riscv_def import *
 import operator
 
 class PyRiscvOperator:

@@ -1,24 +1,51 @@
-from pymem import PyMEM
-from pyriscv_regs import PyRiscvRegs
-from pyriscv_types import *
-from pyriscv_riscv_def import *
-from pyriscv_operator import *
+from .pymem import PyMEM
+from .pyriscv_regs import PyRiscvRegs
+from .pyriscv_types import *
+from .pyriscv_riscv_def import *
+from .pyriscv_operator import *
 
+class Sim:
+    def __init__(self):
+        self.pyriscv = None
+        self.pc = 0
+        self.last_pc = 0
+
+    def load_program(self, code_path):
+        # 清空 pyriscv
+        self.pyriscv = None
+        # 加载指令
+        imem = PyMEM(code_path)
+        self.pyriscv = PyRiscv(imem, imem)
+        self.last_pc = self.pc
+        self.pc = self.pyriscv._pc
+
+    def step(self):
+        self.pyriscv.step()
+        self.last_pc = self.pc
+        self.pc = self.pyriscv._pc
+        
 
 class PyRiscv:
-    def __init__(self, imem, dmem, reset_vec=0x00000000,bw=32):
+    def __init__(self, imem, dmem, reset_vec=0x00000000, bw=32):
         self._imem = imem
         self._dmem = dmem
         self._pc   = reset_vec
         self._regs = PyRiscvRegs(32,bw)
         self._operator = PyRiscvOperator(bw)
         self._bw = bw
-        self.__control()
+        self._exit = False
+        # self.__control()
+
+    def step(self):
+        if not self._exit:
+            print("0x{:08x}".format(self._pc))
+            inst = self.__stage_if(self._pc)
+            decode_map = self.__stage_decode(inst)
+            self.__stage_exec(decode_map)
 
     def __control(self):
-        self._exit = False
         while not self._exit:
-            print("PC: 0x{:08x}".format(self._pc))
+            # print("0x{:08x}".format(self._pc))
             inst = self.__stage_if(self._pc)
             decode_map = self.__stage_decode(inst)
             self.__stage_exec(decode_map)
@@ -113,6 +140,7 @@ class PyRiscv:
             self._pc += 4
         if decode_map.EXIT:
             self._exit = True
+
 
 if __name__ == '__main__':
     imem = PyMEM("./test2.v")

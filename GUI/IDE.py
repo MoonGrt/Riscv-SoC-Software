@@ -1,10 +1,11 @@
-import sys, serial, serial.tools.list_ports, os, subprocess, shutil, signal, re
+import sys, serial, serial.tools.list_ports, os, subprocess, shutil, signal
 from PyQt5.QtWidgets import QVBoxLayout, QSplitter, QGridLayout, QTableWidget, QLabel, QTableWidgetItem, QHBoxLayout, QMessageBox, QFormLayout
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QAction, QFileDialog, QTabWidget, QWidget, QPushButton, QTabBar, QComboBox
 from PyQt5.QtWidgets import QTreeView, QFileSystemModel, QDialog
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QIcon, QTransform, QColor
 from NewPro import NewPro
+from RISCVSim.pyriscv import Sim
 
 class Serial(QDialog):
     def __init__(self):
@@ -16,8 +17,10 @@ class Serial(QDialog):
         self.setGeometry(200, 200, 200, 200)
         self.setWindowTitle('Serial')
         self.setStyleSheet("background-color: #D1B0B0;")
-        layout = QFormLayout()
         self.setWindowIcon(QIcon('icons/serial.svg'))
+
+        # 表单布局
+        layout = QFormLayout()
 
         # COM端口选择
         self.com_line_edit = QComboBox()
@@ -89,6 +92,7 @@ class IDE(QMainWindow):
     def __init__(self):
         super().__init__()
         self.Serial = Serial()
+        self.Sim = Sim()
         self.init_ui()
         
         # self.project_name = ''
@@ -109,7 +113,7 @@ class IDE(QMainWindow):
         self.menu()
 
         # 创建文件目录
-        self.project_path = "../Workspace/test"
+        self.project_path = "../Workspace/demo"
         self.project_name = self.project_path.split('/')[-1]
         self.model = QFileSystemModel()
         self.model.setRootPath('')  # Set the root path to be empty
@@ -125,9 +129,11 @@ class IDE(QMainWindow):
         # 创建主窗格
         content_pane = QTabWidget()
         file_tab = QWidget()
-        execute_tab = QWidget()
+        simulation_tab = QWidget()
+        
         content_pane.addTab(file_tab, "File")
-        content_pane.addTab(execute_tab, "Simulation")
+        content_pane.addTab(simulation_tab, "Simulation")
+        content_pane.addTab(simulation_tab, "Debug")
 
 
         # 创建左侧的编辑区域
@@ -160,8 +166,8 @@ class IDE(QMainWindow):
         file_tab_layout.addLayout(machine_layout, stretch=1)
 
 
-        # 在 execute_tab 中创建一个 QGridLayout
-        execute_layout = QGridLayout(execute_tab)
+        # 在 simulation_tab 中创建一个 QGridLayout
+        simulation_layout = QGridLayout(simulation_tab)
         # 创建四个表格 设置每个表格的行列数
         self.code_table = QTableWidget(32, 3)
         self.label_table = QTableWidget(8, 2)
@@ -175,22 +181,22 @@ class IDE(QMainWindow):
         label_label = QLabel(" Label")
         data_label = QLabel(" Data")
         register_label = QLabel(" Register")
-        # 将小部件添加到 execute_layout 中
-        execute_layout.addWidget(text_label, 0, 0)
-        execute_layout.addWidget(self.code_table, 1, 0)
-        execute_layout.addWidget(label_label, 0, 1)
-        execute_layout.addWidget(self.label_table, 1, 1)
-        execute_layout.addWidget(data_label, 2, 0)
-        execute_layout.addWidget(self.data_table, 3, 0)
-        execute_layout.addWidget(register_label, 2, 1)
-        execute_layout.addWidget(self.register_table, 3, 1)
-        # 设置 execute_layout 中四个区域的大小比例
-        execute_layout.setRowStretch(0, 1)    # 设置第一行的伸展因子
-        execute_layout.setRowStretch(1, 15)   # 设置第二行的伸展因子
-        execute_layout.setRowStretch(2, 1)    # 设置第三行的伸展因子
-        execute_layout.setRowStretch(3, 15)   # 设置第四行的伸展因子
-        execute_layout.setColumnStretch(0, 3) # 设置第一列的伸展因子
-        execute_layout.setColumnStretch(1, 1) # 设置第二列的伸展因子
+        # 将小部件添加到 simulation_layout 中
+        simulation_layout.addWidget(text_label, 0, 0)
+        simulation_layout.addWidget(self.code_table, 1, 0)
+        simulation_layout.addWidget(label_label, 0, 1)
+        simulation_layout.addWidget(self.label_table, 1, 1)
+        simulation_layout.addWidget(data_label, 2, 0)
+        simulation_layout.addWidget(self.data_table, 3, 0)
+        simulation_layout.addWidget(register_label, 2, 1)
+        simulation_layout.addWidget(self.register_table, 3, 1)
+        # 设置 simulation_layout 中四个区域的大小比例
+        simulation_layout.setRowStretch(0, 1)    # 设置第一行的伸展因子
+        simulation_layout.setRowStretch(1, 15)   # 设置第二行的伸展因子
+        simulation_layout.setRowStretch(2, 1)    # 设置第三行的伸展因子
+        simulation_layout.setRowStretch(3, 15)   # 设置第四行的伸展因子
+        simulation_layout.setColumnStretch(0, 3) # 设置第一列的伸展因子
+        simulation_layout.setColumnStretch(1, 1) # 设置第二列的伸展因子
         # 填充代码到表格中
         self.fillCode()
         self.fillLabel()
@@ -257,13 +263,13 @@ class IDE(QMainWindow):
         self.splitterr.setOrientation(Qt.Vertical)
         self.splitterr.addWidget(content_pane)
         self.splitterr.addWidget(messages_pane)
-        self.splitterr.setSizes([4, 1]) # 设置 edit_tab 和 execute_tab 的大小比例
+        self.splitterr.setSizes([4, 1]) # 设置 edit_tab 和 simulation_tab 的大小比例
         # 设置左右窗格
         self.splitterl = QSplitter()
         self.splitterl.setOrientation(Qt.Horizontal)
         self.splitterl.addWidget(self.fileTree)
         self.splitterl.addWidget(self.splitterr)
-        self.splitterl.setSizes([1, 8]) # 设置 edit_tab 和 execute_tab 的大小比例
+        self.splitterl.setSizes([1, 8]) # 设置 edit_tab 和 simulation_tab 的大小比例
         self.splitterl.splitterMoved.connect(self.adjust_tablewidth)
         # 创建主窗口
         main_widget = QWidget(self)
@@ -415,37 +421,37 @@ class IDE(QMainWindow):
         run_Menu.addAction(self.run_Action)
 
         # 调试菜单
-        debug_Menu = self.menuBar().addMenu('Debug')
+        simultion_Menu = self.menuBar().addMenu('Simultion')
 
-        self.debug_run_Action = QAction(QIcon('icons/run.svg'), 'Run', self) # 运行代码
-        self.debug_run_Action.setToolTip('Run')
-        self.debug_run_Action.triggered.connect(self.debug_run)
+        self.simultion_run_Action = QAction(QIcon('icons/run.svg'), 'Run', self) # 运行代码
+        self.simultion_run_Action.setToolTip('Run')
+        self.simultion_run_Action.triggered.connect(self.simultion_run)
         # self.run_Action.setEnabled(False)
-        debug_Menu.addAction(self.debug_run_Action)
+        simultion_Menu.addAction(self.simultion_run_Action)
 
-        self.debug_run_step_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22)), 'Run step', self) # 单步运行
-        self.debug_run_step_Action.setToolTip('Run step')
-        self.debug_run_step_Action.triggered.connect(self.debug_run_step)
+        self.simultion_run_step_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22)), 'Run step', self) # 单步运行
+        self.simultion_run_step_Action.setToolTip('Run step')
+        self.simultion_run_step_Action.triggered.connect(self.simultion_run_step)
         # self.run_step_Action.setEnabled(False)
-        debug_Menu.addAction(self.debug_run_step_Action)
+        simultion_Menu.addAction(self.simultion_run_step_Action)
 
-        self.debug_run_undo_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22).transformed(QTransform().scale(-1, 1))), 'Run undo', self) # 单步退回
-        self.debug_run_undo_Action.setToolTip('Run undo')
-        self.debug_run_undo_Action.triggered.connect(self.debug_run_undo)
+        self.simultion_run_undo_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22).transformed(QTransform().scale(-1, 1))), 'Run undo', self) # 单步退回
+        self.simultion_run_undo_Action.setToolTip('Run undo')
+        self.simultion_run_undo_Action.triggered.connect(self.simultion_run_undo)
         # self.run_undo_Action.setEnabled(False)
-        debug_Menu.addAction(self.debug_run_undo_Action)
+        simultion_Menu.addAction(self.simultion_run_undo_Action)
 
-        self.debug_reset_Action = QAction(QIcon('icons/reset.svg'), 'Reset', self) # 重启
-        self.debug_reset_Action.setToolTip('Reset')
-        self.debug_reset_Action.triggered.connect(self.debug_reset)
+        self.simultion_reset_Action = QAction(QIcon('icons/reset.svg'), 'Reset', self) # 重启
+        self.simultion_reset_Action.setToolTip('Reset')
+        self.simultion_reset_Action.triggered.connect(self.simultion_reset)
         # self.reset_Action.setEnabled(False)
-        debug_Menu.addAction(self.debug_reset_Action)
+        simultion_Menu.addAction(self.simultion_reset_Action)
 
-        self.debug_stop_Action = QAction(QIcon('icons/stop.svg'), 'Stop', self) # 停止运行
-        self.debug_stop_Action.setToolTip('Stop')
-        self.debug_stop_Action.triggered.connect(self.debug_stop)
+        self.simultion_stop_Action = QAction(QIcon('icons/stop.svg'), 'Stop', self) # 停止运行
+        self.simultion_stop_Action.setToolTip('Stop')
+        self.simultion_stop_Action.triggered.connect(self.simultion_stop)
         # self.stop_Action.setEnabled(False)
-        debug_Menu.addAction(self.debug_stop_Action)
+        simultion_Menu.addAction(self.simultion_stop_Action)
 
 
         # 帮助菜单
@@ -481,11 +487,11 @@ class IDE(QMainWindow):
         toolbar3.addAction(self.run_Action)
 
         toolbar4 = self.addToolBar('Toolbar4')
-        toolbar4.addAction(self.debug_run_Action)
-        toolbar4.addAction(self.debug_run_step_Action)
-        toolbar4.addAction(self.debug_run_undo_Action)
-        toolbar4.addAction(self.debug_reset_Action)
-        toolbar4.addAction(self.debug_stop_Action)
+        toolbar4.addAction(self.simultion_run_Action)
+        toolbar4.addAction(self.simultion_run_step_Action)
+        toolbar4.addAction(self.simultion_run_undo_Action)
+        toolbar4.addAction(self.simultion_reset_Action)
+        toolbar4.addAction(self.simultion_stop_Action)
 
         # 添加其他工具栏项...
 
@@ -618,13 +624,6 @@ class IDE(QMainWindow):
         self.register_table.setColumnWidth(0, int((right_width-130)/4*1*0.5))  # Register
         self.register_table.setColumnWidth(1, int((right_width-130)/4*1*0.5))  # Name
 
-    def findCodetablerow(self, data):
-        for row in range(self.code_table.rowCount()):
-            item = self.code_table.item(row, 0)  # 第一列的item
-            if item and item.text() == str(data):  # 判断item存在且文本与data相等
-                return row  # 返回找到的行数
-        return -1  # 未找到返回-1
-
     def loadFile(self, index):
         filePath = self.model.filePath(index)
         if os.path.isfile(filePath):
@@ -655,9 +654,7 @@ class IDE(QMainWindow):
         # 打开新建项目对话框
         new_project = NewPro()
         if new_project.exec_() == QDialog.Accepted:  # QDialog.Accepted 若用户点击了确定按钮
-            self.project_path = new_project.project_path
-            self.project_name = self.project_path.split('/')[-1]
-            self.fileTree.setRootIndex(self.model.index(self.project_path))
+            self.switchfolder(new_project.project_path)
 
     def openFile(self):
         # 打开文件对话框
@@ -677,12 +674,28 @@ class IDE(QMainWindow):
                 with open(file_path, 'r') as file:
                     text_edit.setPlainText(file.read())
 
+    def switchfolder(self, path):
+        # 切换文件夹
+        self.project_path = path
+        self.project_name = self.project_path.split('/')[-1]
+        self.fileTree.setRootIndex(self.model.index(self.project_path))
+        try:
+            self.fillCode()
+        except:
+            pass
+        try:
+            self.fillLabel()
+        except:
+            pass
+        try:
+            self.Sim.load_program(self.project_path + f"/build/{self.project_name}.v")
+        except:
+            pass
+
     def openFolder(self):
         dirName = QFileDialog.getExistingDirectory(self, 'Open Folder', '')
         if dirName:
-            self.project_path = dirName
-            self.project_name = self.project_path.split('/')[-1]
-            self.fileTree.setRootIndex(self.model.index(self.project_path))
+            self.switchfolder(dirName)
 
     def addFileToEditArea(self, filePath):
         # 创建新的标签页
@@ -946,67 +959,36 @@ class IDE(QMainWindow):
         self.gdb_process.stdin.flush()
         self.message_showmessage("Connect to Openocd\n")
 
-    def debug_run(self):
+    def simultion_run(self):
         # 运行程序
-        pass
+        try:
+            self.Sim.load_program(self.project_path + f"/build/{self.project_name}.v")
+            print(self.Sim.pyriscv._pc)
+            self.setRowBackgroundColor(self.code_table, self.Sim.pc, QColor(200, 0, 0))
+        except:
+            pass
 
-    def debug_run_step(self):
+    def simultion_run_step(self):
         # 单步运行程序
-        pass
+        self.Sim.step()
+        self.fillRegister(self.Sim.pyriscv._regs)
+        # self.fillData(self.Sim.pyriscv._dmem)
 
-    def debug_run_undo(self):
+        # 将运行到的行标红
+        self.setRowBackgroundColor(self.code_table, self.Sim.pc / 4, QColor(255, 0, 0))
+        self.setRowBackgroundColor(self.code_table, self.Sim.last_pc / 4, None)
+
+    def simultion_run_undo(self):
         # 单步返回程序
         pass
 
-    def debug_reset(self):
+    def simultion_reset(self):
         # 将表格颜色恢复到初值
         pass
 
-    def debug_stop(self):
+    def simultion_stop(self):
         # 停止运行程序
         pass
-
-    def about(self):
-        # 关于
-        about_text = "简单IDE v1.0\n\n一个基于PyQt的简单集成开发环境。\n\n作者: CyberMalo"
-        QMessageBox.about(self, '关于', about_text)
-
-    def message_showmessage(self, message):
-        # 将内容添加到messages
-        # current_content = self.message_tab.toPlainText()
-        # updated_content = current_content + message
-        # self.message_tab.setPlainText(updated_content)
-        self.message_tab.append(message)
-
-    def message_clear(self):
-        # 清除message
-        self.message_tab.setPlainText('')
-
-    def serial_showmessage(self, message):
-        # 将内容添加到messages
-        current_content = self.message_tab.toPlainText()
-        updated_content = current_content + message
-        self.serial_tab.setPlainText(updated_content)
-
-    def serial_setting(self):
-        # 打开串口配置窗口
-        if self.Serial.exec_() == QDialog.Accepted:
-            # 配置串口
-            pass
-
-    def serial_connect(self):
-        # 连接串口
-        pass
-
-    def serial_disconnect(self):
-        self.download_Action.setEnabled(False)
-        self.serial_connect_bottom.setEnabled(True)
-        self.serial_disconnect_bottom.setEnabled(False)
-        self.message_showmessage("Port  closed\n")
-
-    def serial_clear(self):
-        # 清除 serial message
-        self.serial_tab.setPlainText('')
 
     def fillCode(self):
         # 按行分割文本
@@ -1056,18 +1038,55 @@ class IDE(QMainWindow):
         except:
             pass
 
-    def fillData(self, data):
-        # 根据字典填充数据到表格
-        for address, value in data.items():
-            self.data_table.item(address // 8, address % 8).setText("0x{:04X}".format(value))
-
     def fillRegister(self, data):
         # 确保数据和表格行数匹配
         if len(data) != self.register_table.rowCount():
             raise ValueError("Data dimensions do not match table dimensions.")
-
         for row in range(len(data)):
-            self.register_table.item(row, 2).setText("0x{:04X}".format(data[row]))
+            self.register_table.item(row, 1).setText("0x{:04X}".format(data[row]))
+
+    def fillData(self, data):
+        # 根据字典填充数据到表格
+        pass
+
+    def about(self):
+        # 关于
+        about_text = "简单IDE v1.0\n\n一个基于PyQt的简单集成开发环境。\n\n作者: CyberMalo"
+        QMessageBox.about(self, '关于', about_text)
+
+    def message_showmessage(self, message):
+        # 将内容添加到messages
+        self.message_tab.append(message)
+
+    def message_clear(self):
+        # 清除message
+        self.message_tab.setPlainText('')
+
+    def serial_showmessage(self, message):
+        # 将内容添加到messages
+        current_content = self.message_tab.toPlainText()
+        updated_content = current_content + message
+        self.serial_tab.setPlainText(updated_content)
+
+    def serial_setting(self):
+        # 打开串口配置窗口
+        if self.Serial.exec_() == QDialog.Accepted:
+            # 配置串口
+            pass
+
+    def serial_connect(self):
+        # 连接串口
+        pass
+
+    def serial_disconnect(self):
+        self.download_Action.setEnabled(False)
+        self.serial_connect_bottom.setEnabled(True)
+        self.serial_disconnect_bottom.setEnabled(False)
+        self.message_showmessage("Port  closed\n")
+
+    def serial_clear(self):
+        # 清除 serial message
+        self.serial_tab.setPlainText('')
 
     def closeEvent(self, event):
         """ 在窗口关闭时自动断开连接 """

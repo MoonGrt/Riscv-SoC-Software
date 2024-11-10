@@ -1,18 +1,21 @@
 # make clean && make
 
-PROJ_NAME = demo
-DEBUG = no
+PROJ_NAME = test
+DEBUG = yes
 BENCH = no
 FUNC_OPT = yes
 MULDIV = yes
 
 SRCS = $(wildcard libs/*.c) \
-       $(wildcard libs/*.S) \
-       $(wildcard src/*.c) \
-       $(wildcard src/*.S)
+       $(wildcard user/*.c) \
+       $(wildcard user/*.S) \
+       $(wildcard rt-thread/libcpu/*.c) \
+       $(wildcard rt-thread/libcpu/*.S) \
+       $(wildcard rt-thread/src/*.c) \
+       $(wildcard rt-thread/components/finsh/*.c)
 
-INC += -I./libs -I./src
-LDSCRIPT = linker.ld
+INC += -I./libs -I./rt-thread/include -I./rt-thread/libcpu -I./user -I./rt-thread/components/finsh
+LDSCRIPT = link.lds
 
 # Set it to yes if you are using the sifive precompiled GCC pack
 SIFIVE_GCC_PACK ?= yes
@@ -117,8 +120,6 @@ $(OBJDIR)/%.o: %.cpp
 $(OBJDIR)/%.o: %.S
 	mkdir -p $(dir $@)
 	$(RISCV_CC) -c $(CFLAGS) -o $@ $^ -D__ASSEMBLY__=1
-
-
 
 clean:
 	rm -rf $(OBJDIR)/*

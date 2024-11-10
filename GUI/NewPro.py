@@ -78,9 +78,9 @@ def GPIO_Gen(modules, template_file="demo/RISCV/APB3GPIO.v", output_file="Apb3GP
     # 将格式化后的 Apb3GPIORouter 模块替换回原始文件内容中
     updated_content = full_content.replace(apb3gpiouter_template, apb3gpiouter_code)
     # 写入新文件
-    with open(output_file, "w") as f:
-        f.write(updated_content)
-    print(f"'{output_file}' 生成成功。")
+    # with open(output_file, "w") as f:
+    #     f.write(updated_content)
+    # print(f"'{output_file}' 生成成功。")
     return updated_content
 
 def Extract_APB3USART(template_file="demo/RISCV/APB3USART.v"):
@@ -160,9 +160,9 @@ def UART_Gen(modules, template_file="demo/RISCV/APB3USART.v", output_file="Apb3U
     # 将格式化后的 Apb3USARTRouter 模块替换回原始文件内容中
     updated_content = full_content.replace(apb3usarrouter_template, apb3usarrouter_code)
     # 写入新文件
-    with open(output_file, "w") as f:
-        f.write(updated_content)
-    print(f"'{output_file}' 生成成功。")
+    # with open(output_file, "w") as f:
+    #     f.write(updated_content)
+    # print(f"'{output_file}' 生成成功。")
     return updated_content
 
 def Extract_APB3I2C(template_file="demo/RISCV/APB3I2C.v"):
@@ -242,9 +242,9 @@ def I2C_Gen(modules, template_file="demo/RISCV/APB3I2C.v", output_file="Apb3I2C.
     # 将格式化后的 Apb3I2CRouter 模块替换回原始文件内容中
     updated_content = full_content.replace(apb3i2crouter_template, apb3i2crouter_code)
     # 写入新文件
-    with open(output_file, "w") as f:
-        f.write(updated_content)
-    print(f"'{output_file}' 生成成功。")
+    # with open(output_file, "w") as f:
+    #     f.write(updated_content)
+    # print(f"'{output_file}' 生成成功。")
     return updated_content
 
 def Extract_APB3SPI(template_file="demo/RISCV/APB3SPI.v"):
@@ -326,9 +326,9 @@ def SPI_Gen(modules, template_file="demo/RISCV/APB3SPI.v", output_file="Apb3SPI.
     # 将格式化后的 Apb3SPIRouter 模块替换回原始文件内容中
     updated_content = full_content.replace(apb3spirouter_template, apb3spirouter_code)
     # 写入新文件
-    with open(output_file, "w") as f:
-        f.write(updated_content)
-    print(f"'{output_file}' 生成成功。")
+    # with open(output_file, "w") as f:
+    #     f.write(updated_content)
+    # print(f"'{output_file}' 生成成功。")
     return updated_content
 
 def Extract_APB3TIM(template_file="demo/RISCV/APB3TIM.v"):
@@ -407,9 +407,9 @@ def TIM_Gen(modules, template_file="demo/RISCV/APB3TIM.v", output_file="Apb3TIM.
     # 将格式化后的 Apb3TIMRouter 模块替换回原始文件内容中
     updated_content = full_content.replace(apb3timrouter_template, apb3timrouter_code)
     # 写入新文件
-    with open(output_file, "w") as f:
-        f.write(updated_content)
-    print(f"'{output_file}' 生成成功。")
+    # with open(output_file, "w") as f:
+    #     f.write(updated_content)
+    # print(f"'{output_file}' 生成成功。")
     return updated_content
 
 def Extract_APB3WDG(template_file="demo/RISCV/APB3WDG.v"):
@@ -486,27 +486,27 @@ def WDG_Gen(modules, template_file="demo/RISCV/APB3WDG.v", output_file="Apb3WDG.
     # 将格式化后的 Apb3WDGRouter 模块替换回原始文件内容中
     updated_content = full_content.replace(apb3wdgrouter_template, apb3wdgrouter_code)
     # 写入新文件
-    with open(output_file, "w") as f:
-        f.write(updated_content)
-    print(f"'{output_file}' 生成成功。")
+    # with open(output_file, "w") as f:
+    #     f.write(updated_content)
+    # print(f"'{output_file}' 生成成功。")
     return updated_content
 
 def RCC_Gen(output_file="AhbRCC.v"):
     content = ""
     with open("demo/RISCV/AHBRCC.v", "r", encoding="utf-8") as f:
         content += f.read()
-    with open(output_file, "w") as f:
-        f.write(content)
-    print(f"'{output_file}' 生成成功。")
+    # with open(output_file, "w") as f:
+    #     f.write(content)
+    # print(f"'{output_file}' 生成成功。")
     return content
 
 def DMA_Gen(output_file="AhbDMA.v"):
     content = ""
     with open("demo/RISCV/AHBDMA.v", "r", encoding="utf-8") as f:
         content += f.read()
-    with open(output_file, "w") as f:
-        f.write(content)
-    print(f"'{output_file}' 生成成功。")
+    # with open(output_file, "w") as f:
+    #     f.write(content)
+    # print(f"'{output_file}' 生成成功。")
     return content
 
 def DVP_Gen(output_file="AHBDVP.v"):
@@ -528,10 +528,39 @@ def DVP_Gen(output_file="AHBDVP.v"):
         with open(path, "r", encoding="utf-8") as f:
             content += f.read() + "\n\n"
     # 写入新文件
-    with open(output_file, "w") as f:
-        f.write(content)
-    print(f"'{output_file}' 生成成功。")
+    # with open(output_file, "w") as f:
+    #     f.write(content)
+    # print(f"'{output_file}' 生成成功。")
     return content
+
+def Top_Gen(DEVICES, output_file="Cyber.v"):
+    """生成顶层文件 Top.v"""
+    Cyber = ""
+
+    Connection = ""
+    for GPIO_port, AFIO in DEVICES["GPIO"].items():
+        AFIO_connection = ""
+        for i, pin in enumerate(AFIO):
+            if pin:
+                _, type = pin.split("_", 1)
+                if type in ["RX", "MISO"]:
+                    AFIO_connection += "1'bz, "
+                    Connection += f"wire {pin} = AFIO{GPIO_port}[{16-i}];\n"
+                else:
+                    AFIO_connection += f"{pin}, "
+                    Connection += f"wire {pin};\n"
+            else:
+                AFIO_connection += "1'bz, "
+        AFIO_connection = AFIO_connection[:-2]
+        Connection += f"wire [15:0] AFIO{GPIO_port} = " + "{" + AFIO_connection + "};\n"
+
+    with open("demo/Cyber.v", "r", encoding="utf-8") as f:
+        Cyber += f.read() + "\n\n"
+    with open("demo/RISCV/VexRiscv.v", "r", encoding="utf-8") as f:
+        Cyber += f.read() + "\n\n"
+    with open("demo/RISCV/APB3RAM.v", "r", encoding="utf-8") as f:
+        Cyber += f.read() + "\n\n"
+    return Cyber
 
 class NewPro(QDialog):
     def __init__(self):
@@ -918,25 +947,23 @@ class NewPro(QDialog):
 
     # 生成顶层连接
     def Top_Connection_Gen(self):
-        # Connection = ""
-        # for GPIO_port, AFIO in self.GPIOS.items():
-        #     AFIO_connection = ""
-        #     for i, pin in enumerate(AFIO):
-        #         if pin:
-        #             _, type = pin.split("_", 1)
-        #             if type in ["RX", "MISO"]:
-        #                 AFIO_connection += "1'bz, "
-        #                 Connection += f"wire {pin} = AFIO{GPIO_port}[{16-i}];\n"
-        #             else:
-        #                 AFIO_connection += f"{pin}, "
-        #                 Connection += f"wire {pin};\n"
-        #         else:
-        #             AFIO_connection += "1'bz, "
-        #     AFIO_connection = AFIO_connection[:-2]
-        #     Connection += f"wire [15:0] AFIO{GPIO_port} = " + "{" + AFIO_connection + "};\n"
-        # print(Connection)
-        pass
-
+        Connection = ""
+        for GPIO_port, AFIO in self.DEVICES["GPIO"].items():
+            AFIO_connection = ""
+            for i, pin in enumerate(AFIO):
+                if pin:
+                    _, type = pin.split("_", 1)
+                    if type in ["RX", "MISO"]:
+                        AFIO_connection += "1'bz, "
+                        Connection += f"wire {pin} = AFIO{GPIO_port}[{16-i}];\n"
+                    else:
+                        AFIO_connection += f"{pin}, "
+                        Connection += f"wire {pin};\n"
+                else:
+                    AFIO_connection += "1'bz, "
+            AFIO_connection = AFIO_connection[:-2]
+            Connection += f"wire [15:0] AFIO{GPIO_port} = " + "{" + AFIO_connection + "};\n"
+        print(Connection)
 
     def Generate_Hardware(self):
         Cyber = ""
@@ -964,17 +991,13 @@ class NewPro(QDialog):
             AHB += DMA_Gen() + "\n\n"
             AHB += DVP_Gen() + "\n\n"
         if self.cyber_checkbox.isChecked():
-            self.Top_Connection_Gen()
-            with open("demo/Cyber.v", "r", encoding="utf-8") as f:
-                Cyber += f.read() + "\n\n"
-            with open("demo/RISCV/VexRiscv.v", "r", encoding="utf-8") as f:
-                Cyber += f.read() + "\n\n"
-            with open("demo/RISCV/APB3RAM.v", "r", encoding="utf-8") as f:
-                Cyber += f.read() + "\n\n"
-        # 写入新文件
-        with open("./Cyber.v", "w") as f:
-            f.write(Cyber + APB + AHB)
+            Cyber += Top_Gen(self.DEVICES) + "\n\n"
 
+        # 写入新文件
+        # with open("./Cyber.v", "w") as f:
+        #     f.write(Cyber + APB + AHB)
+        with open(f"{self.project_path}/Cyber.v", "w") as f:
+            f.write(Cyber + APB + AHB)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

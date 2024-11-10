@@ -1,4 +1,4 @@
-from pyriscv_operator import *
+from .pyriscv_operator import *
 
 class PyRiscvRegs:
     def __init__(self,n,bw):
@@ -15,7 +15,11 @@ class PyRiscvRegs:
         fmt = '%' + fmt
         hv = fmt % v
         if a == 0:
-            print("[DEBUG] 0x%s(%d)" % (hv,v))
+            # print("[DEBUG] 0x%s(%d)" % (hv,v))
+            pass
         else:
-            print("X%d <= %d(%x)" % (a,v,v))
+            # print("X%d <= %d(%x)" % (a,v,v))
             self._regs[a] = v
+
+    def __len__(self):
+        return len(self._regs)

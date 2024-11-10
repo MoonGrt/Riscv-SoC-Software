@@ -1,6 +1,3 @@
-# PYMEM
-# Author: jerry-jho@github
-
 from collections import OrderedDict
 
 def PyMem_Iter(_mdata):
@@ -16,7 +13,7 @@ def PyMem_Iter(_mdata):
 
 class PyMEM:
     FORMAT_VLOG_B8 = 1
-    SIZE = 16384  # 8K address limit
+    SIZE = 16384
 
     def __init__(self,file_or_fileobj,FORMAT=None):
         obj_close_flag = type(file_or_fileobj) == type("")

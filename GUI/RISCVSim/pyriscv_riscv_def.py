@@ -1,5 +1,4 @@
-from pyriscv_types import *
-
+from .pyriscv_types import *
 
 class PYRSISCV_CODECLASS(PyRiscvEnum):
     BASE = 0b11
