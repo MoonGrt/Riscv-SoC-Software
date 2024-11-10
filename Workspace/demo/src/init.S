@@ -3,7 +3,7 @@
 .global irqCallback
 
 crtStart:
-  j main
+  j crtInit
   nop
   nop
   nop

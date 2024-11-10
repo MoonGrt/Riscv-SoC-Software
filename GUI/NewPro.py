@@ -1,13 +1,544 @@
-import sys, os, shutil
+import sys, os, shutil, re
 from PyQt5.QtWidgets import QApplication, QFrame, QCheckBox, QDialog, QHBoxLayout, QVBoxLayout, QLabel, QLineEdit, QPushButton, QComboBox, QMessageBox, QFileDialog
 from PyQt5.QtGui import QIcon
 from GPIOConf import GPIOConf
+
+def Extract_APB3GPIO(template_file="demo/RISCV/APB3GPIO.v"):
+    """读取文件并提取Apb3GPIORouter模块的内容，返回文件内容和Apb3GPIORouter内容"""
+    with open(template_file, "r", encoding="utf-8") as f:
+        content = f.read()
+    # 提取 Apb3GPIORouter 模块
+    match = re.search(r"(module\s+Apb3GPIORouter\b.*?endmodule)", content, re.S)
+    if match:
+        apb3gpiouter_content = match.group(1)
+        return content, apb3gpiouter_content
+    else:
+        raise ValueError("模板文件中未找到 Apb3GPIORouter 模块！")
+
+def GPIO_Gen(modules, template_file="demo/RISCV/APB3GPIO.v", output_file="Apb3GPIO.v"):
+    # 获取整个模板文件内容和 Apb3GPIORouter 模块内容
+    full_content, apb3gpiouter_template = Extract_APB3GPIO(template_file)
+
+    # 模板代码片段
+    gpio_port_template = "    input wire [15:0] AFIO{name},\n    inout wire [15:0] GPIO{name},"
+    signal_template = """
+    // GPIO{name}
+    wire [ 2:0] io_apb_PADDR_{name} = io_apb_PADDR[4:2];
+    wire        io_apb_PSEL_{name} = Apb3PSEL[{index}];
+    wire        io_apb_PENABLE_{name} = io_apb_PENABLE;
+    wire        io_apb_PREADY_{name};
+    wire        io_apb_PWRITE_{name} = io_apb_PWRITE;
+    wire [31:0] io_apb_PWDATA_{name} = io_apb_PWDATA;
+    wire [31:0] io_apb_PRDATA_{name};
+    wire        io_apb_PSLVERROR_{name} = 1'b0;
+    """
+    case_template = """                16'h{case_hex}: begin
+                    _zz_io_apb_PREADY = io_apb_PREADY_{name};
+                    _zz_io_apb_PRDATA = io_apb_PRDATA_{name};
+                    _zz_io_apb_PSLVERROR = io_apb_PSLVERROR_{name};
+                end"""
+    psel_assignment_template = """            Apb3PSEL[{index}] = ((io_apb_PADDR[15:12] == 4'd{addr}) && io_apb_PSEL[0]);  // {name}"""
+    module_instance_template = """
+    Apb3GPIO Apb3GPIO{name} (
+        .io_apb_PCLK   (io_apb_PCLK),
+        .io_apb_PRESET (io_apb_PRESET),
+        .io_apb_PADDR  (io_apb_PADDR_{name}),
+        .io_apb_PSEL   (io_apb_PSEL_{name}),
+        .io_apb_PENABLE(io_apb_PENABLE_{name}),
+        .io_apb_PREADY (io_apb_PREADY_{name}),
+        .io_apb_PWRITE (io_apb_PWRITE_{name}),
+        .io_apb_PWDATA (io_apb_PWDATA_{name}),
+        .io_apb_PRDATA (io_apb_PRDATA_{name}),
+        .AFIO          (AFIO{name}),
+        .GPIO          (GPIO{name})
+    );
+    """
+
+    # 初始化模块的各个部分内容
+    gpio_ports = ""
+    module_signals = ""
+    case_statements = ""
+    psel_assignments = ""
+    module_instances = ""
+    # 为每个模块生成对应的 Verilog 代码片段
+    for index, (name, _) in enumerate(modules.items()):
+        gpio_ports += gpio_port_template.format(name=name) + "\n"
+        module_signals += signal_template.format(name=name, index=index)
+        case_statements += case_template.format(case_hex=f"{1 << index:04x}", name=name) + "\n"
+        psel_assignments += psel_assignment_template.format(index=index, addr=index, name=name) + "\n"
+        module_instances += module_instance_template.format(name=name)
+    # 格式化 Apb3GPIORouter 模块内容
+    apb3gpiouter_code = apb3gpiouter_template.format(
+        gpio_ports=gpio_ports.strip()[:-1],
+        module_signals=module_signals.strip(),
+        case_statements=case_statements.strip(),
+        psel_assignments=psel_assignments.strip(),
+        module_instances=module_instances.strip()
+    )
+    # 将格式化后的 Apb3GPIORouter 模块替换回原始文件内容中
+    updated_content = full_content.replace(apb3gpiouter_template, apb3gpiouter_code)
+    # 写入新文件
+    with open(output_file, "w") as f:
+        f.write(updated_content)
+    print(f"'{output_file}' 生成成功。")
+    return updated_content
+
+def Extract_APB3USART(template_file="demo/RISCV/APB3USART.v"):
+    """读取文件并提取 Apb3USARTRouter 模块的内容"""
+    with open(template_file, "r", encoding="utf-8") as f:
+        content = f.read()
+    # 提取 Apb3USARTRouter 模块
+    match = re.search(r"(module\s+Apb3USARTRouter\b.*?endmodule)", content, re.S)
+    if match:
+        apb3usarrouter_content = match.group(1)
+        return content, apb3usarrouter_content
+    else:
+        raise ValueError("模板文件中未找到 Apb3USARTRouter 模块！")
+
+def UART_Gen(modules, template_file="demo/RISCV/APB3USART.v", output_file="Apb3USART.v"):
+    # 获取整个模板文件内容和 Apb3USARTRouter 模块内容
+    full_content, apb3usarrouter_template = Extract_APB3USART(template_file)
+
+    # 模板代码片段
+    usart_port_template = "    input  wire {name}_RX,\n    output wire {name}_TX,\n    output wire {name}_interrupt,"
+    signal_template = """
+    // {name}
+    wire [ 2:0] io_apb_PADDR_{name} = io_apb_PADDR[4:2];
+    wire        io_apb_PSEL_{name} = Apb3PSEL[{index}];
+    wire        io_apb_PENABLE_{name} = io_apb_PENABLE;
+    wire        io_apb_PREADY_{name};
+    wire        io_apb_PWRITE_{name} = io_apb_PWRITE;
+    wire [31:0] io_apb_PWDATA_{name} = io_apb_PWDATA;
+    wire [31:0] io_apb_PRDATA_{name};
+    wire        io_apb_PSLVERROR_{name} = 1'b0;
+    """
+    case_template = """                16'h{case_hex}: begin
+                    _zz_io_apb_PREADY = io_apb_PREADY_{name};
+                    _zz_io_apb_PRDATA = io_apb_PRDATA_{name};
+                    _zz_io_apb_PSLVERROR = io_apb_PSLVERROR_{name};
+                end"""
+    psel_assignment_template = """            Apb3PSEL[{index}] = ((io_apb_PADDR[15:12] == 4'd{addr}) && io_apb_PSEL[0]);  // {name}"""
+    module_instance_template = """
+    Apb3USART Apb3{name} (
+        .io_apb_PCLK   (io_apb_PCLK),
+        .io_apb_PRESET (io_apb_PRESET),
+        .io_apb_PADDR  (io_apb_PADDR_{name}),
+        .io_apb_PSEL   (io_apb_PSEL_{name}),
+        .io_apb_PENABLE(io_apb_PENABLE_{name}),
+        .io_apb_PREADY (io_apb_PREADY_{name}),
+        .io_apb_PWRITE (io_apb_PWRITE_{name}),
+        .io_apb_PWDATA (io_apb_PWDATA_{name}),
+        .io_apb_PRDATA (io_apb_PRDATA_{name}),
+        .USART_RX      ({name}_RX),
+        .USART_TX      ({name}_TX),
+        .interrupt     ({name}_interrupt)
+    );
+    """
+
+    # 初始化模块的各个部分内容
+    usart_ports = ""
+    module_signals = ""
+    case_statements = ""
+    psel_assignments = ""
+    module_instances = ""
+    # 为每个模块生成对应的 Verilog 代码片段
+    for index, (key, _) in enumerate(modules.items()):
+        name = f"USART{key}"
+        usart_ports += usart_port_template.format(name=name) + "\n"
+        module_signals += signal_template.format(name=name, index=index)
+        case_statements += case_template.format(case_hex=f"{1 << index:04x}", name=name) + "\n"
+        psel_assignments += psel_assignment_template.format(index=index, addr=index, name=name) + "\n"
+        module_instances += module_instance_template.format(name=name)
+    # 格式化 Apb3USARTRouter 模块内容
+    apb3usarrouter_code = apb3usarrouter_template.format(
+        usart_ports=usart_ports.strip()[:-1],
+        module_signals=module_signals.strip(),
+        case_statements=case_statements.strip(),
+        psel_assignments=psel_assignments.strip(),
+        module_instances=module_instances.strip()
+    )
+    # 将格式化后的 Apb3USARTRouter 模块替换回原始文件内容中
+    updated_content = full_content.replace(apb3usarrouter_template, apb3usarrouter_code)
+    # 写入新文件
+    with open(output_file, "w") as f:
+        f.write(updated_content)
+    print(f"'{output_file}' 生成成功。")
+    return updated_content
+
+def Extract_APB3I2C(template_file="demo/RISCV/APB3I2C.v"):
+    """读取文件并提取Apb3I2CRouter模块的内容，返回文件内容和Apb3I2CRouter内容"""
+    with open(template_file, "r", encoding="utf-8") as f:
+        content = f.read()
+    # 提取 Apb3I2CRouter 模块
+    match = re.search(r"(module\s+Apb3I2CRouter\b.*?endmodule)", content, re.S)
+    if match:
+        apb3i2crouter_content = match.group(1)
+        return content, apb3i2crouter_content
+    else:
+        raise ValueError("模板文件中未找到 Apb3I2CRouter 模块！")
+
+def I2C_Gen(modules, template_file="demo/RISCV/APB3I2C.v", output_file="Apb3I2C.v"):
+    # 获取整个模板文件内容和 Apb3I2CRouter 模块内容
+    full_content, apb3i2crouter_template = Extract_APB3I2C(template_file)
+
+    # 模板代码片段
+    i2c_port_template = "    input  wire {name}_SDA,\n    output wire {name}_SCL,\n    output wire {name}_interrupt,"
+    signal_template = """
+    // {name}
+    wire [ 3:0] io_apb_PADDR_{name} = io_apb_PADDR[5:2];
+    wire        io_apb_PSEL_{name} = Apb3PSEL[{index}];
+    wire        io_apb_PENABLE_{name} = io_apb_PENABLE;
+    wire        io_apb_PREADY_{name};
+    wire        io_apb_PWRITE_{name} = io_apb_PWRITE;
+    wire [31:0] io_apb_PWDATA_{name} = io_apb_PWDATA;
+    wire [31:0] io_apb_PRDATA_{name};
+    wire        io_apb_PSLVERROR_{name} = 1'b0;
+    """
+    case_template = """                16'h{case_hex}: begin
+                    _zz_io_apb_PREADY = io_apb_PREADY_{name};
+                    _zz_io_apb_PRDATA = io_apb_PRDATA_{name};
+                    _zz_io_apb_PSLVERROR = io_apb_PSLVERROR_{name};
+                end"""
+    psel_assignment_template = """            Apb3PSEL[{index}] = ((io_apb_PADDR[15:12] == 4'd{addr}) && io_apb_PSEL[0]);  // {name}"""
+    module_instance_template = """
+    Apb3I2C Apb3{name} (
+        .io_apb_PCLK   (io_apb_PCLK),
+        .io_apb_PRESET (io_apb_PRESET),
+        .io_apb_PADDR  (io_apb_PADDR_{name}),
+        .io_apb_PSEL   (io_apb_PSEL_{name}),
+        .io_apb_PENABLE(io_apb_PENABLE_{name}),
+        .io_apb_PREADY (io_apb_PREADY_{name}),
+        .io_apb_PWRITE (io_apb_PWRITE_{name}),
+        .io_apb_PWDATA (io_apb_PWDATA_{name}),
+        .io_apb_PRDATA (io_apb_PRDATA_{name}),
+        .I2C_SDA       ({name}_SDA),
+        .I2C_SCL       ({name}_SCL),
+        .interrupt     ({name}_interrupt)
+    );
+    """
+
+    # 初始化模块的各个部分内容
+    i2c_ports = ""
+    module_signals = ""
+    case_statements = ""
+    psel_assignments = ""
+    module_instances = ""
+    # 为每个模块生成对应的 Verilog 代码片段
+    for index, (key, _) in enumerate(modules.items()):
+        name = f"I2C{key}"
+        i2c_ports += i2c_port_template.format(name=name) + "\n"
+        module_signals += signal_template.format(name=name, index=index)
+        case_statements += case_template.format(case_hex=f"{1 << index:04x}", name=name) + "\n"
+        psel_assignments += psel_assignment_template.format(index=index, addr=index, name=name) + "\n"
+        module_instances += module_instance_template.format(name=name)
+    # 格式化 Apb3I2CRouter 模块内容
+    apb3i2crouter_code = apb3i2crouter_template.format(
+        i2c_ports=i2c_ports.strip()[:-1],
+        module_signals=module_signals.strip(),
+        case_statements=case_statements.strip(),
+        psel_assignments=psel_assignments.strip(),
+        module_instances=module_instances.strip()
+    )
+    # 将格式化后的 Apb3I2CRouter 模块替换回原始文件内容中
+    updated_content = full_content.replace(apb3i2crouter_template, apb3i2crouter_code)
+    # 写入新文件
+    with open(output_file, "w") as f:
+        f.write(updated_content)
+    print(f"'{output_file}' 生成成功。")
+    return updated_content
+
+def Extract_APB3SPI(template_file="demo/RISCV/APB3SPI.v"):
+    """读取文件并提取Apb3SPIRouter模块的内容，返回文件内容和Apb3SPIRouter内容"""
+    with open(template_file, "r", encoding="utf-8") as f:
+        content = f.read()
+    # 提取 Apb3SPIRouter 模块
+    match = re.search(r"(module\s+Apb3SPIRouter\b.*?endmodule)", content, re.S)
+    if match:
+        apb3spirouter_content = match.group(1)
+        return content, apb3spirouter_content
+    else:
+        raise ValueError("模板文件中未找到 Apb3SPIRouter 模块！")
+
+def SPI_Gen(modules, template_file="demo/RISCV/APB3SPI.v", output_file="Apb3SPI.v"):
+    # 获取整个模板文件内容和 Apb3SPIRouter 模块内容
+    full_content, apb3spirouter_template = Extract_APB3SPI(template_file)
+
+    # 模板代码片段
+    spi_port_template = """    output wire {name}_SCK,\n    output wire {name}_MOSI,\n    input  wire {name}_MISO,\n    output wire {name}_CS,\n    output wire {name}_interrupt,"""
+    signal_template = """
+    // {name}
+    wire [ 3:0] io_apb_PADDR_{name} = io_apb_PADDR[5:2];
+    wire        io_apb_PSEL_{name} = Apb3PSEL[{index}];
+    wire        io_apb_PENABLE_{name} = io_apb_PENABLE;
+    wire        io_apb_PREADY_{name};
+    wire        io_apb_PWRITE_{name} = io_apb_PWRITE;
+    wire [31:0] io_apb_PWDATA_{name} = io_apb_PWDATA;
+    wire [31:0] io_apb_PRDATA_{name};
+    wire        io_apb_PSLVERROR_{name} = 1'b0;
+    """
+    case_template = """                16'h{case_hex}: begin
+                    _zz_io_apb_PREADY = io_apb_PREADY_{name};
+                    _zz_io_apb_PRDATA = io_apb_PRDATA_{name};
+                    _zz_io_apb_PSLVERROR = io_apb_PSLVERROR_{name};
+                end"""
+    psel_assignment_template = """            Apb3PSEL[{index}] = ((io_apb_PADDR[15:12] == 4'd{addr}) && io_apb_PSEL[0]);  // {name}"""
+    module_instance_template = """
+    Apb3SPI Apb3SPI{name} (
+        .io_apb_PCLK   (io_apb_PCLK),
+        .io_apb_PRESET (io_apb_PRESET),
+        .io_apb_PADDR  (io_apb_PADDR_{name}),
+        .io_apb_PSEL   (io_apb_PSEL_{name}),
+        .io_apb_PENABLE(io_apb_PENABLE_{name}),
+        .io_apb_PREADY (io_apb_PREADY_{name}),
+        .io_apb_PWRITE (io_apb_PWRITE_{name}),
+        .io_apb_PWDATA (io_apb_PWDATA_{name}),
+        .io_apb_PRDATA (io_apb_PRDATA_{name}),
+        .SPI_SCK       ({name}_SCK),
+        .SPI_MOSI      ({name}_MOSI),
+        .SPI_MISO      ({name}_MISO),
+        .SPI_CS        ({name}_CS),
+        .interrupt     ({name}_interrupt)
+    );
+    """
+
+    # 初始化模块的各个部分内容
+    spi_ports = ""
+    module_signals = ""
+    case_statements = ""
+    psel_assignments = ""
+    module_instances = ""
+    # 为每个模块生成对应的 Verilog 代码片段
+    for index, (key, _) in enumerate(modules.items()):
+        name = f"SPI{key}"
+        spi_ports += spi_port_template.format(name=name) + "\n"
+        module_signals += signal_template.format(name=name, index=index)
+        case_statements += case_template.format(case_hex=f"{1 << index:04x}", name=name) + "\n"
+        psel_assignments += psel_assignment_template.format(index=index, addr=index, name=name) + "\n"
+        module_instances += module_instance_template.format(name=name)
+    # 格式化 Apb3SPIRouter 模块内容
+    apb3spirouter_code = apb3spirouter_template.format(
+        spi_ports=spi_ports.strip()[0:-1],
+        module_signals=module_signals.strip(),
+        case_statements=case_statements.strip(),
+        psel_assignments=psel_assignments.strip(),
+        module_instances=module_instances.strip()
+    )
+    # 将格式化后的 Apb3SPIRouter 模块替换回原始文件内容中
+    updated_content = full_content.replace(apb3spirouter_template, apb3spirouter_code)
+    # 写入新文件
+    with open(output_file, "w") as f:
+        f.write(updated_content)
+    print(f"'{output_file}' 生成成功。")
+    return updated_content
+
+def Extract_APB3TIM(template_file="demo/RISCV/APB3TIM.v"):
+    """读取文件并提取Apb3TIMRouter模块的内容，返回文件内容和Apb3TIMRouter内容"""
+    with open(template_file, "r", encoding="utf-8") as f:
+        content = f.read()
+    # 提取 Apb3TIMRouter 模块
+    match = re.search(r"(module\s+Apb3TIMRouter\b.*?endmodule)", content, re.S)
+    if match:
+        apb3timrouter_content = match.group(1)
+        return content, apb3timrouter_content
+    else:
+        raise ValueError("模板文件中未找到 Apb3TIMRouter 模块！")
+
+def TIM_Gen(modules, template_file="demo/RISCV/APB3TIM.v", output_file="Apb3TIM.v"):
+    # 获取整个模板文件内容和 Apb3TIMRouter 模块内容
+    full_content, apb3timrouter_template = Extract_APB3TIM(template_file)
+
+    # 模板代码片段
+    tim_port_template = "    output wire [3:0] {name}_CH,\n    output wire       {name}_interrupt,"
+    signal_template = """
+    // {name}
+    wire [ 4:0] io_apb_PADDR_{name} = io_apb_PADDR[6:2];
+    wire        io_apb_PSEL_{name} = Apb3PSEL[{index}];
+    wire        io_apb_PENABLE_{name} = io_apb_PENABLE;
+    wire        io_apb_PREADY_{name};
+    wire        io_apb_PWRITE_{name} = io_apb_PWRITE;
+    wire [31:0] io_apb_PWDATA_{name} = io_apb_PWDATA;
+    wire [31:0] io_apb_PRDATA_{name};
+    wire        io_apb_PSLVERROR_{name} = 1'b0;
+    """
+    case_template = """                16'h{case_hex}: begin
+                    _zz_io_apb_PREADY = io_apb_PREADY_{name};
+                    _zz_io_apb_PRDATA = io_apb_PRDATA_{name};
+                    _zz_io_apb_PSLVERROR = io_apb_PSLVERROR_{name};
+                end"""
+    psel_assignment_template = """            Apb3PSEL[{index}] = ((io_apb_PADDR[15:12] == 4'd{addr}) && io_apb_PSEL[0]);  // {name}"""
+    module_instance_template = """
+    Apb3TIM Apb3TIM{name} (
+        .io_apb_PCLK   (io_apb_PCLK),
+        .io_apb_PRESET (io_apb_PRESET),
+        .io_apb_PADDR  (io_apb_PADDR_{name}),
+        .io_apb_PSEL   (io_apb_PSEL_{name}),
+        .io_apb_PENABLE(io_apb_PENABLE_{name}),
+        .io_apb_PREADY (io_apb_PREADY_{name}),
+        .io_apb_PWRITE (io_apb_PWRITE_{name}),
+        .io_apb_PWDATA (io_apb_PWDATA_{name}),
+        .io_apb_PRDATA (io_apb_PRDATA_{name}),
+        .TIM_CH        ({name}_CH),
+        .interrupt     ({name}_interrupt)
+    );
+    """
+
+    # 初始化模块的各个部分内容
+    tim_ports = ""
+    module_signals = ""
+    case_statements = ""
+    psel_assignments = ""
+    module_instances = ""
+    # 为每个模块生成对应的 Verilog 代码片段
+    for index, (key, _) in enumerate(modules.items()):
+        name = f"TIM{key}"
+        tim_ports += tim_port_template.format(name=name) + "\n"
+        module_signals += signal_template.format(name=name, index=index)
+        case_statements += case_template.format(case_hex=f"{1 << index:04x}", name=name) + "\n"
+        psel_assignments += psel_assignment_template.format(index=index, addr=index, name=name) + "\n"
+        module_instances += module_instance_template.format(name=name)
+    # 格式化 Apb3TIMRouter 模块内容
+    apb3timrouter_code = apb3timrouter_template.format(
+        tim_ports=tim_ports.strip()[:-1],
+        module_signals=module_signals.strip(),
+        case_statements=case_statements.strip(),
+        psel_assignments=psel_assignments.strip(),
+        module_instances=module_instances.strip()
+    )
+    # 将格式化后的 Apb3TIMRouter 模块替换回原始文件内容中
+    updated_content = full_content.replace(apb3timrouter_template, apb3timrouter_code)
+    # 写入新文件
+    with open(output_file, "w") as f:
+        f.write(updated_content)
+    print(f"'{output_file}' 生成成功。")
+    return updated_content
+
+def Extract_APB3WDG(template_file="demo/RISCV/APB3WDG.v"):
+    """读取文件并提取Apb3WDGRouter模块的内容，返回文件内容和Apb3WDGRouter模块内容"""
+    with open(template_file, "r", encoding="utf-8") as f:
+        content = f.read()
+    # 提取 Apb3WDGRouter 模块
+    match = re.search(r"(module\s+Apb3WDGRouter\b.*?endmodule)", content, re.S)
+    if match:
+        apb3wdgrouter_content = match.group(1)
+        return content, apb3wdgrouter_content
+    else:
+        raise ValueError("模板文件中未找到 Apb3WDGRouter 模块！")
+
+def WDG_Gen(modules, template_file="demo/RISCV/APB3WDG.v", output_file="Apb3WDG.v"):
+    # 获取整个模板文件内容和 Apb3WDGRouter 模块内容
+    full_content, apb3wdgrouter_template = Extract_APB3WDG(template_file)
+
+    # 模板代码片段
+    wdg_port_template = "    output wire {name},"
+    signal_template = """
+    // {name}
+    wire [ 1:0] io_apb_PADDR_{name} = io_apb_PADDR[3:2];
+    wire        io_apb_PSEL_{name} = Apb3PSEL[{index}];
+    wire        io_apb_PENABLE_{name} = io_apb_PENABLE;
+    wire        io_apb_PREADY_{name};
+    wire        io_apb_PWRITE_{name} = io_apb_PWRITE;
+    wire [31:0] io_apb_PWDATA_{name} = io_apb_PWDATA;
+    wire [31:0] io_apb_PRDATA_{name};
+    wire        io_apb_PSLVERROR_{name} = 1'b0;
+    """
+    case_template = """                16'h{case_hex}: begin
+                    _zz_io_apb_PREADY = io_apb_PREADY_{name};
+                    _zz_io_apb_PRDATA = io_apb_PRDATA_{name};
+                    _zz_io_apb_PSLVERROR = io_apb_PSLVERROR_{name};
+                end"""
+    psel_assignment_template = """            Apb3PSEL[{index}] = ((io_apb_PADDR[15:12] == 4'd{addr}) && io_apb_PSEL[0]);  // {name}"""
+    module_instance_template = """
+    {name} {name} (
+        .io_apb_PCLK   (io_apb_PCLK),
+        .io_apb_PRESET (io_apb_PRESET),
+        .io_apb_PADDR  (io_apb_PADDR_{name}),
+        .io_apb_PSEL   (io_apb_PSEL_{name}),
+        .io_apb_PENABLE(io_apb_PENABLE_{name}),
+        .io_apb_PREADY (io_apb_PREADY_{name}),
+        .io_apb_PWRITE (io_apb_PWRITE_{name}),
+        .io_apb_PWDATA (io_apb_PWDATA_{name}),
+        .io_apb_PRDATA (io_apb_PRDATA_{name}),
+        .{name}_rst      ({name}_rst)
+    );
+    """
+
+    # 初始化模块的各个部分内容
+    wdg_ports = ""
+    module_signals = ""
+    case_statements = ""
+    psel_assignments = ""
+    module_instances = ""
+    # 为每个模块生成对应的 Verilog 代码片段
+    for index, (name, _) in enumerate(modules.items()):
+        wdg_ports += wdg_port_template.format(name=name) + "\n"
+        module_signals += signal_template.format(name=name, index=index)
+        case_statements += case_template.format(case_hex=f"{1 << index:04x}", name=name) + "\n"
+        psel_assignments += psel_assignment_template.format(index=index, addr=index, name=name) + "\n"
+        module_instances += module_instance_template.format(name=name)
+    # 格式化 Apb3WDGRouter 模块内容
+    apb3wdgrouter_code = apb3wdgrouter_template.format(
+        wdg_ports=wdg_ports.strip()[:-1],
+        module_signals=module_signals.strip(),
+        case_statements=case_statements.strip(),
+        psel_assignments=psel_assignments.strip(),
+        module_instances=module_instances.strip()
+    )
+    # 将格式化后的 Apb3WDGRouter 模块替换回原始文件内容中
+    updated_content = full_content.replace(apb3wdgrouter_template, apb3wdgrouter_code)
+    # 写入新文件
+    with open(output_file, "w") as f:
+        f.write(updated_content)
+    print(f"'{output_file}' 生成成功。")
+    return updated_content
+
+def RCC_Gen(output_file="AhbRCC.v"):
+    content = ""
+    with open("demo/RISCV/AHBRCC.v", "r", encoding="utf-8") as f:
+        content += f.read()
+    with open(output_file, "w") as f:
+        f.write(content)
+    print(f"'{output_file}' 生成成功。")
+    return content
+
+def DMA_Gen(output_file="AhbDMA.v"):
+    content = ""
+    with open("demo/RISCV/AHBDMA.v", "r", encoding="utf-8") as f:
+        content += f.read()
+    with open(output_file, "w") as f:
+        f.write(content)
+    print(f"'{output_file}' 生成成功。")
+    return content
+
+def DVP_Gen(output_file="AHBDVP.v"):
+    content = ""
+    file_paths = [
+        "demo/RISCV/AHBDVP.v",
+        "demo/RISCV/AHBVI.v",
+        "demo/RISCV/AHBVP.v",
+        "demo/RISCV/AHBVO.v",
+        "demo/VP/binarizer.v",
+        "demo/VP/cutter.v",
+        "demo/VP/edger.v",
+        "demo/VP/filler.v",
+        "demo/VP/filter.v",
+        "demo/VP/rgb2ycbcr.v",
+        "demo/VP/scaler.v"
+    ]
+    for path in file_paths:
+        with open(path, "r", encoding="utf-8") as f:
+            content += f.read() + "\n\n"
+    # 写入新文件
+    with open(output_file, "w") as f:
+        f.write(content)
+    print(f"'{output_file}' 生成成功。")
+    return content
 
 class NewPro(QDialog):
     def __init__(self):
         super().__init__()
         self.GPIOConf = GPIOConf()
         self.DEVICES = self.GPIOConf.DEVICES
+        self.project_path = ""
 
         self.setWindowTitle("New Project")
         self.setWindowIcon(QIcon('icons/app.svg'))
@@ -23,6 +554,7 @@ class NewPro(QDialog):
         project_name_layout = QHBoxLayout()
         self.project_name_label = QLabel("Project Name:")
         self.project_name_input = QLineEdit()
+        self.project_name_input.setText("demo")
         project_name_layout.addWidget(self.project_name_label)
         project_name_layout.addWidget(self.project_name_input)
         main_layout.addLayout(project_name_layout)
@@ -148,10 +680,6 @@ class NewPro(QDialog):
         # 创建并显示 GPIO 配置对话框
         if self.GPIOConf.exec_() == QDialog.Accepted:  # QDialog.Accepted 若用户点击了确定按钮
             self.DEVICES = self.GPIOConf.DEVICES
-            # 生成 SoC 代码
-            self.Generate_Hardware()
-            # 生成 Libs
-            self.Generate_Software()
 
     def update_options(self):
         # 获取第一个选择框的选中项
@@ -170,10 +698,35 @@ class NewPro(QDialog):
             ])
 
     def Generate(self):
+        # 验证输入内容
+        if not self.project_name_input.text():
+            QMessageBox.warning(self, "Warning", "Please input project name!")
+            return
+        if not self.project_path_input.text():
+            QMessageBox.warning(self, "Warning", "Please input project location!")
+            return
+
+        # 获取项目名称和路径
+        self.project_path = self.project_path_input.text() + '/' + self.project_name_input.text()
+        # 复制模板工程到指定路径
+        if not os.path.exists(self.project_path):
+            os.makedirs(self.project_path)  # 如果目标目录不存在，则创建它
+        else:
+            # 如果目标目录存在，则提示用户是否覆盖
+            reply = QMessageBox.question(self, "Warning", "The project already exists, do you want to overwrite it?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if reply == QMessageBox.No:
+                return
+            # 如果用户选择覆盖，则先删除目标目录
+            try:
+                shutil.rmtree(self.project_path)
+                os.makedirs(self.project_path, exist_ok=True)
+            except Exception as e:
+                print(e)
+                return
         # 生成软件工程
         self.Generate_Software()
         # 生成硬件工程
-        # self.Generate_Hardware()
+        self.Generate_Hardware()
         # 关闭对话框
         self.accept()
 
@@ -302,22 +855,6 @@ class NewPro(QDialog):
         # 获取模板路径、工程名称、工程路径
         template_path = "../projects/"
         selected_template = template_path + self.template_combo.currentText() + '/' + self.sub_template_combo.currentText()
-        self.project_path = self.project_path_input.text() + '/' + self.project_name_input.text()
-        # 复制模板工程到指定路径
-        if not os.path.exists(self.project_path):
-            os.makedirs(self.project_path)  # 如果目标目录不存在，则创建它
-        else:
-            # 如果目标目录存在，则提示用户是否覆盖
-            reply = QMessageBox.question(self, "Warning", "The project already exists, do you want to overwrite it?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-            if reply == QMessageBox.No:
-                return
-            # 如果用户选择覆盖，则先删除目标目录
-            try:
-                shutil.rmtree(self.project_path)
-                os.makedirs(self.project_path, exist_ok=True)
-            except Exception as e:
-                print(e)
-                return
         # 遍历源目录中的文件和文件夹
         for item in os.listdir(selected_template):
             if item == "build":
@@ -381,100 +918,65 @@ class NewPro(QDialog):
 
     # 生成顶层连接
     def Top_Connection_Gen(self):
-        Connection = ""
-        for GPIO_port, AFIO in self.GPIOS.items():
-            AFIO_connection = ""
-            for i, pin in enumerate(AFIO):
-                if pin:
-                    _, type = pin.split("_", 1)
-                    if type in ["RX", "MISO"]:
-                        AFIO_connection += "1'bz, "
-                        Connection += f"wire {pin} = AFIO{GPIO_port}[{16-i}];\n"
-                    else:
-                        AFIO_connection += f"{pin}, "
-                        Connection += f"wire {pin};\n"
-                else:
-                    AFIO_connection += "1'bz, "
-            AFIO_connection = AFIO_connection[:-2]
-            Connection += f"wire [15:0] AFIO{GPIO_port} = " + "{" + AFIO_connection + "};\n"
-        print(Connection)
-
-    def GPIO_Gen(self):
+        # Connection = ""
+        # for GPIO_port, AFIO in self.GPIOS.items():
+        #     AFIO_connection = ""
+        #     for i, pin in enumerate(AFIO):
+        #         if pin:
+        #             _, type = pin.split("_", 1)
+        #             if type in ["RX", "MISO"]:
+        #                 AFIO_connection += "1'bz, "
+        #                 Connection += f"wire {pin} = AFIO{GPIO_port}[{16-i}];\n"
+        #             else:
+        #                 AFIO_connection += f"{pin}, "
+        #                 Connection += f"wire {pin};\n"
+        #         else:
+        #             AFIO_connection += "1'bz, "
+        #     AFIO_connection = AFIO_connection[:-2]
+        #     Connection += f"wire [15:0] AFIO{GPIO_port} = " + "{" + AFIO_connection + "};\n"
+        # print(Connection)
         pass
 
-    def SPI_Gen(self):
-        pass
-
-    def I2C_Gen(self):
-        pass
-
-    def TIM_Gen(self):
-        pass
-
-    def WDG_Gen(self):
-        pass
 
     def Generate_Hardware(self):
-        if not self.DEVICES:
-            return
-
-        os.makedirs("output/Hardware", exist_ok=True)
-        output = os.path.join("output/Hardware", 'Cyber.v')
-        with open(output, 'w') as f:
-            # 基础组件
-            # TOP
-            with open("GUI/demo/Hardware/Cyber.v", 'r', encoding='utf-8') as infile:
-                f.write(infile.read()+"\n")
-            print("Murax.v has been added to the SoC")
-            # JTAG
-            with open("GUI/demo/Hardware/Cyber.v", 'r', encoding='utf-8') as infile:
-                f.write(infile.read()+"\n")
-            print("JtagBridge.v has been added to the SoC")
-            # VexRiscv
-            with open("GUI/demo/Hardware/VexRiscv.v", 'r', encoding='utf-8') as infile:
-                f.write(infile.read()+"\n")
-            print("VexRiscv.v has been added to the SoC")
-            # APB3 BUS
-            with open("GUI/demo/Hardware/APB3BUS.v", 'r', encoding='utf-8') as infile:
-                f.write(infile.read()+"\n")
-            print("APB3BUS.v has been added to the SoC")
-            # RAM
-            with open("GUI/demo/Hardware/APB3RAM.v", 'r', encoding='utf-8') as infile:
-                f.write(infile.read()+"\n")
-            print("RAM.v has been added to the SoC")
-
-            # Device 生成
+        Cyber = ""
+        APB = ""
+        AHB = ""
+        if self.apb_checkbox.isChecked():
+            with open("demo/RISCV/APB3BUS.v", "r", encoding="utf-8") as f:
+                APB += f.read()
             if self.DEVICES["GPIO"] != {}:
-                self.GPIO_Gen()
-                # with open("demo/Hardware/APB3GPIO.v", 'r', encoding='utf-8') as infile:
-                #     f.write(infile.read()+"\n")
-                #     print("APB3GPIO.v has been added to the SoC")
-
-                # GPIO 连接
-                # if self.DEVICES["UART"] != {}:
-                #     with open("demo/Hardware/APB3USART.v", 'r', encoding='utf-8') as infile:
-                #         f.write(infile.read()+"\n")
-                #         print("APB3USART.v has been added to the SoC")
-                # if self.DEVICES["SPI"] != {}:
-                #     with open("demo/Hardware/APB3SPI.v", 'r', encoding='utf-8') as infile:
-                #         f.write(infile.read()+"\n")
-                #         print("APB3SPI.v has been added to the SoC")
-                # if self.DEVICES["I2C"] != {}:
-                #     with open("demo/Hardware/APB3I2C.v", 'r', encoding='utf-8') as infile:
-                #         f.write(infile.read()+"\n")
-                #         print("APB3I2C.v has been added to the SoC")
-                # if self.DEVICES["TIM"] != {}:
-                #     with open("demo/Hardware/APB3TIM.v", 'r', encoding='utf-8') as infile:
-                #         f.write(infile.read()+"\n")
-                #         print("APB3TIM.v has been added to the SoC")
-                # if self.DEVICES["WDG"] != []:
-                #     with open("demo/Hardware/APB3WDG.v", 'r', encoding='utf-8') as infile:
-                #         f.write(infile.read()+"\n")
-                #         print("APB3WDG.v has been added to the SoC")
+                APB += GPIO_Gen(self.DEVICES["GPIO"]) + "\n\n"
+            if self.DEVICES["UART"] != {}:
+                APB += UART_Gen(self.DEVICES["UART"]) + "\n\n"
+            if self.DEVICES["I2C"] != {}:
+                APB += I2C_Gen(self.DEVICES["I2C"]) + "\n\n"
+            if self.DEVICES["SPI"] != {}:
+                APB += SPI_Gen(self.DEVICES["SPI"]) + "\n\n"
+            if self.DEVICES["TIM"] != {}:
+                APB += TIM_Gen(self.DEVICES["TIM"]) + "\n\n"
+            if self.DEVICES["WDG"] != {}:
+                APB += WDG_Gen(self.DEVICES["WDG"]) + "\n\n"
+        if self.ahb_checkbox.isChecked():
+            with open("demo/RISCV/AHBBUS.v", "r", encoding="utf-8") as f:
+                AHB += f.read() + "\n\n"
+            AHB += RCC_Gen() + "\n\n"
+            AHB += DMA_Gen() + "\n\n"
+            AHB += DVP_Gen() + "\n\n"
+        if self.cyber_checkbox.isChecked():
+            self.Top_Connection_Gen()
+            with open("demo/Cyber.v", "r", encoding="utf-8") as f:
+                Cyber += f.read() + "\n\n"
+            with open("demo/RISCV/VexRiscv.v", "r", encoding="utf-8") as f:
+                Cyber += f.read() + "\n\n"
+            with open("demo/RISCV/APB3RAM.v", "r", encoding="utf-8") as f:
+                Cyber += f.read() + "\n\n"
+        # 写入新文件
+        with open("./Cyber.v", "w") as f:
+            f.write(Cyber + APB + AHB)
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     dialog = NewPro()
     dialog.exec_()
-

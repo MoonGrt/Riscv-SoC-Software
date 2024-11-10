@@ -127,7 +127,7 @@ class IDE(QMainWindow):
         file_tab = QWidget()
         execute_tab = QWidget()
         content_pane.addTab(file_tab, "File")
-        content_pane.addTab(execute_tab, "Execute")
+        content_pane.addTab(execute_tab, "Simulation")
 
 
         # 创建左侧的编辑区域
@@ -628,7 +628,7 @@ class IDE(QMainWindow):
     def loadFile(self, index):
         filePath = self.model.filePath(index)
         if os.path.isfile(filePath):
-            print(f"打开文件: {filePath}")
+            # print(f"打开文件: {filePath}")
             # 创建新的文本编辑器选项卡
             text_edit = QTextEdit(self)
             text_edit.file_path = filePath  # 设置文件路径属性
@@ -821,23 +821,29 @@ class IDE(QMainWindow):
 
     def extract_assemblecode(self, file_path):
         assemble_code = ""
-        with open(file_path, 'r', encoding='utf-8') as file:
-            for line in file:
-                # 判断当前行是否以"80"开头
-                if line.startswith("80") and not line.endswith(":\n"):
-                    # 将符合条件的行追加到结果字符串中
-                    assemble_code += line.replace("          	", "    ")
-            return assemble_code
+        try:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                for line in file:
+                    # 判断当前行是否以"80"开头
+                    if line.startswith("80") and not line.endswith(":\n"):
+                        # 将符合条件的行追加到结果字符串中
+                        assemble_code += line.replace("          	", "    ")
+                return assemble_code
+        except:
+            pass
 
     def extract_Label(self, file_path):
         Label = ""
-        with open(file_path, 'r', encoding='utf-8') as file:
-            for line in file:
-                # 判断当前行是否以"80"开头
-                if line.startswith("80") and line.endswith(":\n"):
-                    # 将符合条件的行追加到结果字符串中
-                    Label += line
-            return Label
+        try:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                for line in file:
+                    # 判断当前行是否以"80"开头
+                    if line.startswith("80") and line.endswith(":\n"):
+                        # 将符合条件的行追加到结果字符串中
+                        Label += line
+                return Label
+        except:
+            pass
 
     def fillfile(self):
         try:
@@ -1031,21 +1037,24 @@ class IDE(QMainWindow):
             self.code_table.item(row_index, 2).setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
 
     def fillLabel(self):
-        assemble_path = self.project_path + f"/build/{self.project_name}.asm"
-        self.Label = list(filter(lambda line: line.strip() != "", self.extract_Label(assemble_path).split('\n'))) # 去除空行
-        # 设置表格的行数
-        self.label_table.setRowCount(max(len(self.Label), 8))
-        for row in range(self.label_table.rowCount()):
-            for col in range(self.label_table.columnCount()):
-                item = QTableWidgetItem('-')
-                item.setTextAlignment(Qt.AlignCenter)
-                self.label_table.setItem(row, col, item)
-        # 填充表格
-        for index, line in enumerate(self.Label):
-            address, label = line.split(maxsplit=1)
-            label = label.strip('<>:')  # remove '<' '>' and ':' around '_start'
-            self.label_table.item(index, 0).setText(label)
-            self.label_table.item(index, 1).setText(address)
+        try:
+            assemble_path = self.project_path + f"/build/{self.project_name}.asm"
+            self.Label = list(filter(lambda line: line.strip() != "", self.extract_Label(assemble_path).split('\n'))) # 去除空行
+            # 设置表格的行数
+            self.label_table.setRowCount(max(len(self.Label), 8))
+            for row in range(self.label_table.rowCount()):
+                for col in range(self.label_table.columnCount()):
+                    item = QTableWidgetItem('-')
+                    item.setTextAlignment(Qt.AlignCenter)
+                    self.label_table.setItem(row, col, item)
+            # 填充表格
+            for index, line in enumerate(self.Label):
+                address, label = line.split(maxsplit=1)
+                label = label.strip('<>:')  # remove '<' '>' and ':' around '_start'
+                self.label_table.item(index, 0).setText(label)
+                self.label_table.item(index, 1).setText(address)
+        except:
+            pass
 
     def fillData(self, data):
         # 根据字典填充数据到表格

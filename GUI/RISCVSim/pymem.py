@@ -16,7 +16,8 @@ def PyMem_Iter(_mdata):
 
 class PyMEM:
     FORMAT_VLOG_B8 = 1
-    
+    SIZE = 16384  # 8K address limit
+
     def __init__(self,file_or_fileobj,FORMAT=None):
         obj_close_flag = type(file_or_fileobj) == type("")
         if obj_close_flag:
@@ -24,6 +25,7 @@ class PyMEM:
         self._mdata = OrderedDict()   
         if FORMAT is None:
             self.__read_vlog_b8(self._mdata, file_or_fileobj)
+            self.__fill()
         if obj_close_flag:
             file_or_fileobj.close()
                 
@@ -35,11 +37,16 @@ class PyMEM:
                 if seg == '':
                     continue
                 if seg.startswith('@'):
-                    addr = int(seg[1:],base=16)
+                    addr = int(seg[2:],base=16)
                 else:
                     data = int(seg,base=16)
                     mdata[addr] = data
                     addr += 1
+    def __fill(self):
+        current_size = len(self._mdata)
+        if current_size < self.SIZE:
+            for addr in range(current_size, self.SIZE):
+                self._mdata[addr] = 0  # Fill missing addresses with 0
     def __getitem__(self,addr):
         return self._mdata[addr]
     def __setitem__(self,addr,data):
@@ -49,7 +56,7 @@ class PyMEM:
                     
 if __name__ == '__main__':
     import sys
-    o = PyMEM("./test.v")
+    o = PyMEM("./test2.v")
     print(o._mdata)
     for a in o.keys():
         print(a,o[a])

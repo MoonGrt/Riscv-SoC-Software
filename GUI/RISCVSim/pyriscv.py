@@ -18,6 +18,7 @@ class PyRiscv:
     def __control(self):
         self._exit = False
         while not self._exit:
+            print("PC: 0x{:08x}".format(self._pc))
             inst = self.__stage_if(self._pc)
             decode_map = self.__stage_decode(inst)
             self.__stage_exec(decode_map)
@@ -59,7 +60,7 @@ class PyRiscv:
 
         if decode_map.OPCODE == PYRSISCV_OPCODE.JAL:
             self._regs[decode_map.RD] = self._pc + 4
-            self._pc = decode_map.IMMJ
+            self._pc += decode_map.IMMJ
         elif decode_map.OPCODE == PYRSISCV_OPCODE.JALR:
             self._regs[decode_map.RD] = self._pc + 4
             self._pc = ((decode_map.IMM + self._regs[decode_map.RS1]) | 0x1) - 1 + self._pc
@@ -78,8 +79,8 @@ class PyRiscv:
             self._regs[decode_map.RD] = decode_map.IMMU
             self._pc += 4
         elif decode_map.OPCODE == PYRSISCV_OPCODE.AUIPC:
-            self._pc += decode_map.IMMU
-            self._regs[decode_map.RD] = self._pc
+            self._regs[decode_map.RD] = self._pc + decode_map.IMMU
+            self._pc += 4
         elif decode_map.OPCODE == PYRSISCV_OPCODE.LOAD:
             dmem_base = self._regs[decode_map.RS1] + decode_map.IMMI
             if decode_map.FUNCT3_LOADSTORE == PYRSISCV_FUNCT3_LOAD_STORE.W:
@@ -108,9 +109,11 @@ class PyRiscv:
             elif decode_map.FUNCT3_LOADSTORE == PYRSISCV_FUNCT3_LOAD_STORE.B:
                 self._dmem[dmem_base]   = dmem_data & 0xFF
             self._pc += 4
+        elif decode_map.OPCODE == PYRSISCV_OPCODE.CSR:
+            self._pc += 4
         if decode_map.EXIT:
             self._exit = True
 
 if __name__ == '__main__':
-    imem = PyMEM("./test.v")
+    imem = PyMEM("./test2.v")
     PyRiscv(imem, imem)

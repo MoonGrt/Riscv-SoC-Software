@@ -16,7 +16,12 @@ typedef enum{ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 #define APBPERIPH_BASE PERIPH_BASE
 #define AHBPERIPH_BASE (PERIPH_BASE + 0x1000000)
 
-
+#ifdef CYBER_DVP
+/*!< DVP */
+#include "dvp.h"
+#define DVP_BASE (AHBPERIPH_BASE + 0x20000)
+#define DVP ((DVP_TypeDef *)DVP_BASE) // 0xF1020000
+#endif
 
 #ifdef CYBER_GPIO
 /*!< GPIO */

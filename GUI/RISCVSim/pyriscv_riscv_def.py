@@ -14,6 +14,7 @@ class PYRSISCV_OPCODE(PyRiscvEnum):
     OP        = 0b01100
     LOAD      = 0b00000
     STORE     = 0b01000
+    CSR       = 0b11100
     
 class PYRSISCV_FUNCT3_OP_IMM_OP(PyRiscvEnum):
     ADD  = 0b000
