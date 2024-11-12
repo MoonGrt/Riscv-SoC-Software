@@ -1,8 +1,8 @@
-import sys, serial, serial.tools.list_ports, os, subprocess, shutil, signal
+import sys, serial, serial.tools.list_ports, os, subprocess, shutil, signal, pexpect
 from PyQt5.QtWidgets import QVBoxLayout, QSplitter, QGridLayout, QTableWidget, QLabel, QTableWidgetItem, QHBoxLayout, QMessageBox, QFormLayout
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QAction, QFileDialog, QTabWidget, QWidget, QPushButton, QTabBar, QComboBox
 from PyQt5.QtWidgets import QTreeView, QFileSystemModel, QDialog
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, QThread, pyqtSignal
 from PyQt5.QtGui import QIcon, QTransform, QColor
 from NewPro import NewPro
 from RISCVSim.pyriscv import Sim
@@ -87,6 +87,60 @@ class Serial(QDialog):
         ports = [port.device for port in serial.tools.list_ports.comports()]
         # 将端口添加到下拉框中
         self.com_line_edit.addItems(ports)
+
+class GdbThread(QThread):
+    progress_signal = pyqtSignal(str)
+
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.gdb_process = None
+
+    def run(self):
+        """ 在子线程中执行 GDB 操作 """
+        try:
+            # 启动 gdb 进程
+            self.gdb_process = pexpect.spawn('/opt/riscv/bin/riscv64-unknown-elf-gdb')
+            self._capture_output()  # 捕获并显示输出
+            # 输入文件路径
+            self.gdb_process.sendline('file /mnt/hgfs/share/Riscv-SoC-Software/projects/rt-thread/test/build/test.elf')
+            self._capture_output()
+            # 连接远程目标
+            self.gdb_process.sendline('target extended-remote :3333')
+            self._capture_output()
+            # 执行监控命令
+            self.gdb_process.sendline('monitor reset halt')
+            self._capture_output()
+            # 加载程序
+            self.gdb_process.sendline('load')
+            self._capture_output()
+            # 继续执行
+            self.gdb_process.expect('(gdb)')
+            self.gdb_process.sendline('continue')
+            self._capture_output()
+            # 更新界面为烧录成功
+            self.gdb_process.expect('(gdb)')
+            self.progress_signal.emit('烧录成功！')
+            # 进入 GDB 交互模式，直到停止
+            self.gdb_process.interact()
+
+        except Exception as e:
+            self.progress_signal.emit(f'烧录失败: {str(e)}')
+            self.gdb_process.terminate() 
+
+    def _capture_output(self):
+        """ 捕获 GDB 的输出并发送到 UI """
+        try:
+            # 捕获 GDB 输出直到遇到 '(gdb)' 提示符
+            while True:
+                index = self.gdb_process.expect(['\n', '(gdb)'], timeout=10)
+                if index == 0:  # 如果捕获到新的一行输出
+                    output = self.gdb_process.before.decode('utf-8').strip()
+                    if output:
+                        self.progress_signal.emit(output)  # 更新 UI
+                if index == 1:  # 如果遇到 gdb 提示符
+                    break
+        except pexpect.TIMEOUT:
+            self.progress_signal.emit("GDB 超时，未能获取输出")
 
 class IDE(QMainWindow):
     def __init__(self):
@@ -228,6 +282,7 @@ class IDE(QMainWindow):
         # 表格初始化
         self.table_init()
         # 填充代码到表格中
+        self.fillfile()
         self.fillCode()
         self.fillLabel()
         # 设置奇数行背景颜色为天蓝色，偶数行背景颜色为钢蓝色
@@ -827,6 +882,10 @@ class IDE(QMainWindow):
         self.project_name = self.project_path.split('/')[-1]
         self.fileTree.setRootIndex(self.model.index(self.project_path))
         try:
+            self.fillfile()
+        except:
+            pass
+        try:
             self.fillCode()
         except:
             pass
@@ -838,6 +897,13 @@ class IDE(QMainWindow):
             self.Sim.load_program(self.project_path + f"/build/{self.project_name}.v")
         except:
             pass
+        # 设置奇数行背景颜色为天蓝色，偶数行背景颜色为钢蓝色
+        for tabel in [self.simulation_code_table, self.simulation_label_table, self.simulation_data_table, self.simulation_register_table]:
+            for row in range(self.simulation_code_table.rowCount()):
+                self.setRowBackgroundColor(tabel, row, None)
+        for tabel in [self.debug_code_table, self.debug_label_table, self.debug_data_table, self.debug_register_table]:
+            for row in range(tabel.rowCount()):
+                self.setRowBackgroundColor(tabel, row, None)
 
     def openFolder(self):
         dirName = QFileDialog.getExistingDirectory(self, 'Open Folder', '')
@@ -1025,6 +1091,7 @@ class IDE(QMainWindow):
                 self.message_showmessage(last_three_lines + "\n")
                 self.fillfile()
                 self.fillCode()
+                self.fillLabel()
                 # 设置奇数行背景颜色为天蓝色，偶数行背景颜色为钢蓝色
                 for tabel in [self.simulation_code_table, self.simulation_label_table, self.simulation_data_table, self.simulation_register_table]:
                     for row in range(self.simulation_code_table.rowCount()):
@@ -1082,32 +1149,52 @@ class IDE(QMainWindow):
         else:
             self.message_showmessage('Openocd not running.')
 
+    # def download(self):
+    #     # 下载/烧录
+    #     try:
+    #         # 启动 GDB
+    #         program = f"{self.project_path}/build/{self.project_name}.elf"
+    #         gdb_cmd = ["/opt/riscv/bin/riscv64-unknown-elf-gdb", program]  # 修改为你的 GDB 路径和程序文件
+    #         self.gdb_process = subprocess.Popen(gdb_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    #         # 发送 GDB 命令
+    #         self.gdb_process.stdin.write(b"target extended-remote :3333\n")  # 连接到 OpenOCD 的 GDB 服务器
+    #         self.gdb_process.stdin.write(b"load\n")
+    #         self.gdb_process.stdin.write(b"monitor reset halt\n")
+    #         self.gdb_process.stdin.write(b"continue\n")
+    #         self.gdb_process.stdin.flush()
+
+    #         # 获取输出
+    #         stdout, stderr = self.gdb_process.communicate()
+    #         self.message_showmessage(stdout.decode())
+    #     except Exception as e:
+    #         print(e)
+    #         sys.exit(1)
+
     def download(self):
         # 下载/烧录
-        try:
-            # 启动 GDB
-            program = f"{self.project_path}/build/{self.project_name}.elf"
-            gdb_cmd = ["/opt/riscv/bin/riscv64-unknown-elf-gdb", program]  # 修改为你的 GDB 路径和程序文件
-            self.gdb_process = subprocess.Popen(gdb_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            
-            # 发送 GDB 命令
-            self.gdb_process.stdin.write(b"target extended-remote :3333\n")  # 连接到 OpenOCD 的 GDB 服务器
-            self.gdb_process.stdin.write(b"load\n")
-            self.gdb_process.stdin.write(b"monitor reset halt\n")
-            # self.gdb_process.stdin.write(b"continue\n")
-            self.gdb_process.stdin.flush()
+        """ 当按钮被点击时，开始烧录过程 """
+        self.message_showmessage('烧录中...')
 
-            # 获取输出
-            stdout, stderr = self.gdb_process.communicate()
-            self.message_showmessage(stdout.decode())
-        except Exception as e:
-            print(e)
-            sys.exit(1)
+        # 启动烧录的线程
+        self.gdb_thread = GdbThread(self)
+        self.gdb_thread.progress_signal.connect(self.update_status)
+        # self.gdb_thread.finished.connect(self.on_finish)
+        self.gdb_thread.start()
+
+    def stop_running(self):
+        """ 当点击停止按钮时，停止 GDB 运行并结束线程 """
+        if self.gdb_thread:
+            self.gdb_thread.quit()  # 告诉线程退出
+            self.gdb_thread.wait()  # 等待线程退出
+        self.message_showmessage('运行已停止')
+
+    def update_status(self, message):
+        """ 更新界面上的状态，并显示 GDB 输出 """
+        self.message_showmessage(message)
 
     def run(self):
-        self.gdb_process.stdin.write(b"continue\n")  # 连接到 OpenOCD 的 GDB 服务器
-        self.gdb_process.stdin.flush()
-        self.message_showmessage("Connect to Openocd\n")
+        pass
 
     def simulation_run(self):
         # 运行程序

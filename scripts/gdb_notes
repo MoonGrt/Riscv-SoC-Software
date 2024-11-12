@@ -10,7 +10,7 @@ quit
 
 
 
-
+/opt/riscv/bin/riscv64-unknown-elf-gdb /mnt/hgfs/share/Riscv-SoC-Software/projects/rt-thread/test/build/test.elf -batch -ex "target extended-remote :3333" -ex "monitor reset halt" -ex "load" -ex "continue"
 
 
 

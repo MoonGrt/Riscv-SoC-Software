@@ -1,31 +1,37 @@
-from PIL import Image
+import pexpect
 
-# 打开图片
-image = Image.open("icons/gowin_logo.png")  # 确保图像是 RGBA 格式（包含透明度）
+# 启动 gdb
+gdb_process = pexpect.spawn('/opt/riscv/bin/riscv64-unknown-elf-gdb')
 
-# 如果图像是 RGB 格式（没有透明度），先转换为 RGBA
-if image.mode != 'RGBA':
-    image = image.convert('RGBA')
+# 等待 gdb 提示符
+gdb_process.expect('(gdb)')
 
-# 设置缩放的尺寸
-new_width = 700
-new_height = 250
-resized_image = image.resize((new_width, new_height), Image.LANCZOS)  # 使用 LANCZOS 代替 ANTIALIAS
+# 输入文件路径
+gdb_process.sendline('file /mnt/hgfs/share/Riscv-SoC-Software/projects/rt-thread/test/build/test.elf')
 
-# 获取裁剪后的图像的像素数据
-data = resized_image.getdata()
+# 等待 gdb 提示符
+gdb_process.expect('(gdb)')
 
-# 设置透明度（alpha 通道）
-new_data = []
-for item in data:
-    # item 是 (r, g, b, a) 格式
-    r, g, b, a = item
-    # 设置新的透明度值，0 表示完全透明，255 表示完全不透明
-    new_a = int(a * 0.1)  # 设置透明度为原来的 50%
-    new_data.append((r, g, b, new_a))
+# 连接远程目标
+gdb_process.sendline('target extended-remote :3333')
 
-# 更新裁剪后的图像的像素数据
-resized_image.putdata(new_data)
+# 等待 gdb 提示符
+gdb_process.expect('(gdb)')
 
-# 保存裁剪并修改透明度后的图像
-resized_image.save("new.png")
+# 执行监控命令
+gdb_process.sendline('monitor reset halt')
+
+# 等待 gdb 提示符
+gdb_process.expect('(gdb)')
+
+# 加载程序
+gdb_process.sendline('load')
+
+# 等待 gdb 提示符
+gdb_process.expect('(gdb)')
+
+# 继续执行
+gdb_process.sendline('continue')
+
+# 保持 gdb 进程运行
+gdb_process.interact()

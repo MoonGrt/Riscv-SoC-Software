@@ -19,7 +19,7 @@ int atoi(const char* str) {
 // 复位 DVP
 void DVP_Reset(void)
 {
-    DVP->VP_CR = 0xadbacb;
+    DVP_init();
 }
 MSH_CMD_EXPORT(DVP_Reset, DVP_Reset)
 

@@ -42,11 +42,11 @@ void DVP_init(void)
     // 创建并配置 DVP 初始化结构体
     DVP_InitTypeDef DVP_InitStructure;
     // 配置 VI 模式
-    DVP_InitStructure.VIMode = VI_CAMERA | ENABLE; // 启用 CAMERA 模式
+    DVP_InitStructure.VIMode = VI_TEST | ENABLE; // 启用 CAMERA 模式
     // 配置 VP 模式
     DVP_InitStructure.VPMode.Mode = VP_Scaler | ENABLE;           // 启用 Scaler 模式
     DVP_InitStructure.VPMode.CutterMode = ENABLE;                 // 启用 Cutter 模式
-    DVP_InitStructure.VPMode.FilterMode = VP_Gaussian | ENABLE;   // 启用 Gaussian 模式
+    DVP_InitStructure.VPMode.FilterMode = ENABLE;                 // 启用 Gaussian 模式
     DVP_InitStructure.VPMode.ScalerMode = VP_Bilinear | ENABLE;   // 启用 Bilinear 模式
     DVP_InitStructure.VPMode.ColorMode = VP_YUV422 | ENABLE;      // 启用 YUV422 模式
     DVP_InitStructure.VPMode.EdgerMode = VP_Sobel | ENABLE;       // 启用 Sobel 模式
