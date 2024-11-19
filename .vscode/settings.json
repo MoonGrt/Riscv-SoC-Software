@@ -38,6 +38,7 @@
         "msh.h": "c",
         "led.h": "c",
         "dvp.h": "c",
-        "*.tcc": "c"
+        "*.tcc": "c",
+        "ov5640_reg.h": "c"
     }
 }

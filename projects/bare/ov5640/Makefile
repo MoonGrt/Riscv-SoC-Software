@@ -1,7 +1,7 @@
 # make clean && make
 
-PROJ_NAME = dvp
-DEBUG = yes
+PROJ_NAME = ov5640
+DEBUG = no
 BENCH = no
 FUNC_OPT = yes
 MULDIV = yes

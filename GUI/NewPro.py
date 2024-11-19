@@ -629,7 +629,7 @@ class NewPro(QDialog):
         self.ahb_checkbox = QCheckBox("Enable")
         self.ahb_checkbox.setChecked(True)
         self.ahb_checkbox.toggled.connect(self.toggle_ahb_config)
-        self.ahb_button = QPushButton("Configration")
+        self.ahb_button = QPushButton("DVP Conf")
         # self.ahb_button.clicked.connect(self.open_gpio_config)
         ahb_layout = QHBoxLayout()
         ahb_layout.addWidget(self.ahb_label)
@@ -641,7 +641,7 @@ class NewPro(QDialog):
         self.apb_checkbox = QCheckBox("Enable")
         self.apb_checkbox.setChecked(True)
         self.apb_checkbox.toggled.connect(self.toggle_apb_config)
-        self.apb_button = QPushButton("Configration")
+        self.apb_button = QPushButton("GPIO Conf")
         self.apb_button.clicked.connect(self.open_gpio_config)
         apb_layout = QHBoxLayout()
         apb_layout.addWidget(self.apb_label)
@@ -700,11 +700,11 @@ class NewPro(QDialog):
     def toggle_ahb_config(self):
         # 控制 AHB 配置按钮的使能状态
         self.ahb_button.setEnabled(self.ahb_checkbox.isChecked())
-    
+
     def toggle_apb_config(self):
         # 控制 APB 配置按钮的使能状态
         self.apb_button.setEnabled(self.apb_checkbox.isChecked())
-    
+
     def open_gpio_config(self):
         # 创建并显示 GPIO 配置对话框
         if self.GPIOConf.exec_() == QDialog.Accepted:  # QDialog.Accepted 若用户点击了确定按钮
@@ -717,7 +717,7 @@ class NewPro(QDialog):
         self.sub_template_combo.clear()
         # 根据第一个选择框的选项生成第二个选择框的内容
         if selected_template == "bare":
-            self.sub_template_combo.addItems(["demo", "boot", "dvp", "led_breathe", "led_flow"])
+            self.sub_template_combo.addItems(["demo", "boot", "dvp", "led_breathe", "led_flow", "ov5640"])
         elif selected_template == "freertos":
             self.sub_template_combo.addItems(["demo1-blinky", "test"])
         elif selected_template == "rt-thread":
