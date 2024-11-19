@@ -39,6 +39,14 @@
         "led.h": "c",
         "dvp.h": "c",
         "*.tcc": "c",
-        "ov5640_reg.h": "c"
+        "ov5640_reg.h": "c",
+        "climits": "c",
+        "cmath": "c",
+        "cstdarg": "c",
+        "cstdio": "c",
+        "cstdlib": "c",
+        "type_traits": "c",
+        "limits": "c",
+        "typeinfo": "c"
     }
 }

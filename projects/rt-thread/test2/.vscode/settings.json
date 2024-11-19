@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "dfs.h": "c",
+        "rtthread.h": "c",
+        "ov5640.h": "c",
+        "shell.h": "c"
+    }
+}
