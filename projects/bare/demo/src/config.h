@@ -14,5 +14,6 @@
 #define CYBER_WWDG
 #define CYBER_IWDG
 #define CYBER_WDG
+#define CYBER_DVP
 
 #endif /* __CONFIG_H_ */

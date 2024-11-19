@@ -30,8 +30,11 @@ void Camera_Init(void) {
     OV5640_Start(&ov5640);
 }
 
-void demo_DVP(void)
+int main()
 {
+    // camera init
+    Camera_Init();
+
     // 创建并配置 DVP 初始化结构体
     DVP_InitTypeDef DVP_InitStructure;
     // 配置 VI 模式
@@ -61,14 +64,6 @@ void demo_DVP(void)
     // DVP_VP_SetOutRes(DVP, 1280 / 2, 720 / 2);
     // 配置 TH
     DVP_VP_SetThreshold(DVP, 0x40, 0x80);
-}
-
-int main()
-{
-    // camera init
-    Camera_Init();
-    // DVP demo
-    demo_DVP();
 }
 
 void irqCallback()

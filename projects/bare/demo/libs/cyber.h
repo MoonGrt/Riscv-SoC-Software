@@ -16,11 +16,26 @@ typedef enum{ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 #define APBPERIPH_BASE PERIPH_BASE
 #define AHBPERIPH_BASE (PERIPH_BASE + 0x1000000)
 
+/*!< AHB */
 #ifdef CYBER_RCC
 /*!< RCC */
 #include "rcc.h"
 #define RCC_BASE (AHBPERIPH_BASE + 0x00000)
 #define RCC ((RCC_TypeDef *)RCC_BASE) // 0xF1000000
+#endif
+
+#ifdef CYBER_DMA
+/*!< DMA */
+#include "dma.h"
+#define DMA_BASE (AHBPERIPH_BASE + 0x10000)
+#define DMA ((DMA_TypeDef *)DMA_BASE) // 0xF1010000
+#endif
+
+#ifdef CYBER_DVP
+/*!< DVP */
+#include "dvp.h"
+#define DVP_BASE (AHBPERIPH_BASE + 0x20000)
+#define DVP ((DVP_TypeDef *)DVP_BASE) // 0xF1020000
 #endif
 
 #ifdef CYBER_GPIO
