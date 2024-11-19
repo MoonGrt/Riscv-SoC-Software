@@ -3,12 +3,12 @@ OUTPUT_ARCH( "riscv" )
 ENTRY(_start)
 
 MEMORY {
-  onChipRam : ORIGIN = 0x80000000, LENGTH = 256k
+  onChipRam : ORIGIN = 0x80000000, LENGTH = 32k
 }
 
 SECTIONS
 {
-   __stack_size = DEFINED(__stack_size) ? __stack_size : 8K;
+  __stack_size = DEFINED(__stack_size) ? __stack_size : 1K;
 
   .init           :
   {
@@ -134,11 +134,12 @@ SECTIONS
   PROVIDE( _end = . );
   PROVIDE( end = . );
 
-  .stack          :
+  .stack ORIGIN(onChipRam) + LENGTH(onChipRam) - __stack_size :
   {
     PROVIDE( _heap_end = . );
     . = __stack_size;
     PROVIDE( _sp = . );
     __freertos_irq_stack_top = .;
-  } > onChipRam
+  } >onChipRam
+
 }

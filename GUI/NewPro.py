@@ -723,7 +723,7 @@ class NewPro(QDialog):
         elif selected_template == "rt-thread":
             self.sub_template_combo.addItems([
                 "demo1-thread", "demo2-container", "demo3-delay", "demo4-muti_priority",
-                "demo5-timer", "demo6-timeslice", "demo7-finish", "demo7-finish+", "test"
+                "demo5-timer", "demo6-timeslice", "demo7-finsh", "demo7-finsh+", "test"
             ])
 
     def Generate(self):
@@ -882,7 +882,7 @@ class NewPro(QDialog):
 
     def Generate_Software(self):
         # 获取模板路径、工程名称、工程路径
-        template_path = "../projects/"
+        template_path = "/mnt/hgfs/share/Riscv-SoC-Software/projects/"
         selected_template = template_path + self.template_combo.currentText() + '/' + self.sub_template_combo.currentText()
         # 遍历源目录中的文件和文件夹
         for item in os.listdir(selected_template):

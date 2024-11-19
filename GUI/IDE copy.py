@@ -123,16 +123,24 @@ class GdbThread(QThread):
             self.progress_signal.emit(f'烧录失败: {str(e)}')
             self.gdb_process.terminate()
 
-    def stop_run(self):
+    def run_again(self):
         """ 在子线程中执行 GDB 操作 """
         try:
+            # 输入文件路径
             self.gdb_process.sendline('\x03')  # 发送 ctrl+c
             self.gdb_process.sendline('\x03')  # 发送 ctrl+c
-            self.gdb_process.sendline('n')  # 发送 ctrl+c
-            self._capture_output()
-            self.gdb_process.sendline('quit')
-            self._capture_output()
+            self.gdb_process.sendline(f'file {self.program}')
             self.gdb_process.sendline('y')
+            self.gdb_process.sendline('y')
+            self._capture_output()
+            # 执行监控命令
+            self.gdb_process.sendline('monitor reset halt')
+            self._capture_output()
+            # 加载程序
+            self.gdb_process.sendline('load')
+            self._capture_output()
+            # 继续执行
+            self.gdb_process.sendline('continue')
             self._capture_output()
         except Exception as e:
             self.progress_signal.emit(f'烧录失败: {str(e)}')
@@ -512,20 +520,20 @@ class IDE(QMainWindow):
         self.download_Action.setEnabled(False)
         run_Menu.addAction(self.download_Action)
 
-        self.stop_Action = QAction(QIcon("icons/stop.svg"), 'Run', self) # 烧录
-        self.stop_Action.setToolTip('Stop')
-        self.stop_Action.triggered.connect(self.stop_run)
-        self.stop_Action.setEnabled(False)
-        run_Menu.addAction(self.stop_Action)
+        self.run_Action = QAction(QIcon("icons/run.svg"), 'Run', self) # 烧录
+        self.run_Action.setToolTip('Run')
+        self.run_Action.triggered.connect(self.run)
+        self.run_Action.setEnabled(False)
+        run_Menu.addAction(self.run_Action)
 
         # 仿真菜单
         simulation_Menu = self.menuBar().addMenu('Simultion')
 
-        self.simulation_stop_Action = QAction(QIcon('icons/run.svg'), 'Run', self) # 运行代码
-        self.simulation_stop_Action.setToolTip('Run')
-        self.simulation_stop_Action.triggered.connect(self.simulation_run)
-        # self.stop_Action.setEnabled(False)
-        simulation_Menu.addAction(self.simulation_stop_Action)
+        self.simulation_run_Action = QAction(QIcon('icons/run.svg'), 'Run', self) # 运行代码
+        self.simulation_run_Action.setToolTip('Run')
+        self.simulation_run_Action.triggered.connect(self.simulation_run)
+        # self.run_Action.setEnabled(False)
+        simulation_Menu.addAction(self.simulation_run_Action)
 
         self.simulation_run_step_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22)), 'Run step', self) # 单步运行
         self.simulation_run_step_Action.setToolTip('Run step')
@@ -554,11 +562,11 @@ class IDE(QMainWindow):
         # 调试菜单
         debug_Menu = self.menuBar().addMenu('Debug')
 
-        self.debug_stop_Action = QAction(QIcon('icons/run.svg'), 'Run', self) # 运行代码
-        self.debug_stop_Action.setToolTip('Run')
-        self.debug_stop_Action.triggered.connect(self.debug_run)
-        # self.stop_Action.setEnabled(False)
-        debug_Menu.addAction(self.debug_stop_Action)
+        self.debug_run_Action = QAction(QIcon('icons/run.svg'), 'Run', self) # 运行代码
+        self.debug_run_Action.setToolTip('Run')
+        self.debug_run_Action.triggered.connect(self.debug_run)
+        # self.run_Action.setEnabled(False)
+        debug_Menu.addAction(self.debug_run_Action)
 
         self.debug_run_step_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22)), 'Run step', self) # 单步运行
         self.debug_run_step_Action.setToolTip('Run step')
@@ -614,10 +622,10 @@ class IDE(QMainWindow):
         toolbar3.addAction(self.connect_Action)
         toolbar3.addAction(self.disconnect_Action)
         toolbar3.addAction(self.download_Action)
-        toolbar3.addAction(self.stop_Action)
+        toolbar3.addAction(self.run_Action)
 
         toolbar4 = self.addToolBar('Toolbar4')
-        toolbar4.addAction(self.simulation_stop_Action)
+        toolbar4.addAction(self.simulation_run_Action)
         toolbar4.addAction(self.simulation_run_step_Action)
         toolbar4.addAction(self.simulation_run_undo_Action)
         toolbar4.addAction(self.simulation_reset_Action)
@@ -1148,6 +1156,7 @@ class IDE(QMainWindow):
             self.connect_Action.setEnabled(False)
             self.disconnect_Action.setEnabled(True)
             self.download_Action.setEnabled(True)
+            self.run_Action.setEnabled(True)
         except Exception as e:
             self.message_showmessage(f'Openocd: connected failed-{str(e)}')
 
@@ -1161,11 +1170,33 @@ class IDE(QMainWindow):
                 self.connect_Action.setEnabled(True)
                 self.disconnect_Action.setEnabled(False)
                 self.download_Action.setEnabled(False)
-                self.stop_Action.setEnabled(False)
+                self.run_Action.setEnabled(False)
             except Exception as e:
                 self.message_showmessage(e)
         else:
             self.message_showmessage('Openocd not running.')
+
+    # def download(self):
+    #     # 下载/烧录
+    #     try:
+    #         # 启动 GDB
+    #         program = f"{self.project_path}/build/{self.project_name}.elf"
+    #         gdb_cmd = ["/opt/riscv/bin/riscv64-unknown-elf-gdb", program]  # 修改为你的 GDB 路径和程序文件
+    #         self.gdb_process = subprocess.Popen(gdb_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    #         # 发送 GDB 命令
+    #         self.gdb_process.stdin.write(b"target extended-remote :3333\n")  # 连接到 OpenOCD 的 GDB 服务器
+    #         self.gdb_process.stdin.write(b"load\n")
+    #         self.gdb_process.stdin.write(b"monitor reset halt\n")
+    #         self.gdb_process.stdin.write(b"continue\n")
+    #         self.gdb_process.stdin.flush()
+
+    #         # 获取输出
+    #         stdout, stderr = self.gdb_process.communicate()
+    #         self.message_showmessage(stdout.decode())
+    #     except Exception as e:
+    #         print(e)
+    #         sys.exit(1)
 
     def download(self):
         # 下载/烧录
@@ -1179,19 +1210,22 @@ class IDE(QMainWindow):
             self.gdb_thread.progress_signal.connect(self.update_status)
             # self.gdb_thread.finished.connect(self.on_finish)
             self.gdb_thread.start()
-            self.download_Action.setEnabled(False)
-            self.stop_Action.setEnabled(True)
         else:
             self.message_showmessage('Program do not exist!')
 
-    def stop_run(self):
-        self.gdb_thread.stop_run()
-        self.download_Action.setEnabled(True)
-        self.stop_Action.setEnabled(False)
+    def stop_running(self):
+        """ 当点击停止按钮时，停止 GDB 运行并结束线程 """
+        if self.gdb_thread:
+            self.gdb_thread.quit()  # 告诉线程退出
+            self.gdb_thread.wait()  # 等待线程退出
+        self.message_showmessage('Stop')
 
     def update_status(self, message):
         """ 更新界面上的状态，并显示 GDB 输出 """
         self.message_showmessage(message)
+
+    def run(self):
+        self.gdb_thread.run()
 
     def simulation_run(self):
         # 运行程序
