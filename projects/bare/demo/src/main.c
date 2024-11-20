@@ -12,13 +12,13 @@ void demo_DVP(void);
 void main()
 {
     // demo_GPIO();
-    // demo_USART();
+    demo_USART();
     // demo_I2C();
     // demo_SPI();
     // demo_TIM();
     // demo_PWM();
     // demo_WDG();
-    demo_DVP();
+    // demo_DVP();
 }
 
 uint8_t Serial_RxData; // 定义串口接收的数据变量

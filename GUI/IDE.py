@@ -120,7 +120,7 @@ class GdbThread(QThread):
             self.gdb_process.sendline('continue')
             self._capture_output()
         except Exception as e:
-            self.progress_signal.emit(f'烧录失败: {str(e)}')
+            # self.progress_signal.emit(f'Failed to download: {str(e)}')
             self.gdb_process.terminate()
 
     def stop_run(self):
@@ -925,7 +925,7 @@ class IDE(QMainWindow):
                 self.setRowBackgroundColor(tabel, row, None)
 
     def openFolder(self):
-        dirName = QFileDialog.getExistingDirectory(self, 'Open Folder', '')
+        dirName = QFileDialog.getExistingDirectory(self, 'Open Folder', '/mnt/hgfs/share/Riscv-SoC-Software/Workspace')
         if dirName:
             self.switchfolder(dirName)
 
@@ -1256,9 +1256,9 @@ class IDE(QMainWindow):
             self.debug_code_table.item(row_index, 1).setText(machine[row_index])
             # 填入汇编码
             self.simulation_code_table.item(row_index, 2).setText(assemble[row_index])
-            self.simulation_code_table.item(row_index, 2).setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            self.simulation_code_table.item(row_index, 2).setTextAlignment(int(Qt.AlignLeft | Qt.AlignVCenter))
             self.debug_code_table.item(row_index, 2).setText(assemble[row_index])
-            self.debug_code_table.item(row_index, 2).setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            self.debug_code_table.item(row_index, 2).setTextAlignment(int(Qt.AlignLeft | Qt.AlignVCenter))
 
     def fillLabel(self):
         try:
