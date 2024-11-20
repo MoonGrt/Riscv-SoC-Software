@@ -52,9 +52,6 @@ void USART_init(void)
 
     /*USART使能*/
     USART_Cmd(USART1, ENABLE); // 使能USART1，串口开始运行
-    /*Send*/
-    USART_SendData(USART1, 'A');
-    USART_SendData(USART1, '\n');
 }
 
 /* main 函数 */
@@ -103,12 +100,12 @@ void thread_1_entry(void *p_arg)
     rt_tick_t tick;
     for ( ;; ) 
     {
-        printf("Th1\n");
+        printf("Th1\r\n");
         tick = rt_tick_get();
-        printf("Tick_before: %d\n", tick);
-        rt_thread_delay(1000);
+        printf("Tick_before: %d\r\n", tick);
+        rt_thread_delay(5);
         tick = rt_tick_get();
-        printf("Tick_after: %d\n", tick);
+        printf("Tick_after: %d\r\n", tick);
     }
 }
 
@@ -118,12 +115,12 @@ void thread_2_entry(void *p_arg)
     rt_tick_t tick;
     for ( ;; ) 
     {
-        printf("Th2\n");
+        printf("Th2\r\n");
         tick = rt_tick_get();
-        printf("Tick_before: %d\n", tick);
-        rt_thread_delay(1000);
+        printf("Tick_before: %d\r\n", tick);
+        rt_thread_delay(5);
         tick = rt_tick_get();
-        printf("Tick_after: %d\n", tick);
+        printf("Tick_after: %d\r\n", tick);
     }
 }
 

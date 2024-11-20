@@ -1,22 +1,9 @@
 #ifndef __CYBER_H_
 #define __CYBER_H_
 
-typedef enum
-{
-    RESET = 0,
-    SET = !RESET
-} FlagStatus,
-    ITStatus;
-typedef enum
-{
-    DISABLE = 0,
-    ENABLE = !DISABLE
-} FunctionalState;
-typedef enum
-{
-    ERROR = 0,
-    SUCCESS = !ERROR
-} ErrorStatus;
+typedef enum{RESET = 0, SET = !RESET} FlagStatus, ITStatus;
+typedef enum{DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
+typedef enum{ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 
 #include <stdint.h>
 #include "config.h"
@@ -29,11 +16,26 @@ typedef enum
 #define APBPERIPH_BASE PERIPH_BASE
 #define AHBPERIPH_BASE (PERIPH_BASE + 0x1000000)
 
+/*!< AHB */
 #ifdef CYBER_RCC
 /*!< RCC */
 #include "rcc.h"
 #define RCC_BASE (AHBPERIPH_BASE + 0x00000)
 #define RCC ((RCC_TypeDef *)RCC_BASE) // 0xF1000000
+#endif
+
+#ifdef CYBER_DMA
+/*!< DMA */
+#include "dma.h"
+#define DMA_BASE (AHBPERIPH_BASE + 0x10000)
+#define DMA ((DMA_TypeDef *)DMA_BASE) // 0xF1010000
+#endif
+
+#ifdef CYBER_DVP
+/*!< DVP */
+#include "dvp.h"
+#define DVP_BASE (AHBPERIPH_BASE + 0x20000)
+#define DVP ((DVP_TypeDef *)DVP_BASE) // 0xF1020000
 #endif
 
 #ifdef CYBER_GPIO
@@ -82,8 +84,8 @@ typedef enum
 #define TIM2_BASE (APBPERIPH_BASE + 0x41000)
 #define TIM3_BASE (APBPERIPH_BASE + 0x42000)
 #define TIM1 ((TIM_TypeDef *)TIM1_BASE) // 0xF0040000
-#define TIM2 ((TIM_TypeDef *)TIM2_BASE) // 0xF0041000
-#define TIM3 ((TIM_TypeDef *)TIM3_BASE) // 0xF0042000
+#define TIM1 ((TIM_TypeDef *)TIM2_BASE) // 0xF0041000
+#define TIM2 ((TIM_TypeDef *)TIM3_BASE) // 0xF0042000
 #endif
 
 #ifdef CYBER_IWDG

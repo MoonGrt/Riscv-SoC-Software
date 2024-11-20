@@ -61,6 +61,10 @@ void USART_init(void)
 
     /*USART使能*/
     USART_Cmd(USART1, ENABLE); // 使能USART1，串口开始运行
+    // /*USART发送*/
+    // USART_SendData(USART1, 'A');
+    // USART_SendData(USART1, '\n');
+    // printf("Cyber USART Test\r\n");
 }
 
 /* DVP 初始化 */
@@ -100,8 +104,7 @@ int main(void)
     Camera_Init();             /* 初始化Camera */
     DVP_init();                /* 初始化DVP */
     hw_timer_init();           /* 初始化硬件定时器 */
-    init_filesystem();
-    printf("init successed!\r\n");
+    init_fs();
 
     /* 系统定时器列表初始化 */
     rt_system_timer_init();

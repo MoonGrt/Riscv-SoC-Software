@@ -42,7 +42,7 @@ typedef struct FileSystem {
 // int cd(FileSystem* fs, const char* dir_name);  // 切换到指定目录
 // int cat(FileSystem* fs, const char* file_name);  // 查看文件内容
 // void free_filesystem(FileSystem* fs);  // 释放文件系统内存
-void init_filesystem(void);
+void init_fs(void);
 void ls(int argc, char** argv);
 void cd(int argc, char** argv);
 void cat(int argc, char** argv);

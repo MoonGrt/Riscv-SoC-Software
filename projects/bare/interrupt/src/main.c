@@ -15,8 +15,8 @@ void main()
     demo_USART();
     // demo_I2C();
     // demo_SPI();
-    demo_TIM();
-    demo_PWM();
+    // demo_TIM();
+    // demo_PWM();
     // demo_WDG();
     // demo_DVP();
 }

@@ -102,7 +102,7 @@ void thread_1_entry(void *p_arg)
 
     for ( ;; ) 
     {
-        printf("Thread 1 running...\n");
+        printf("Thread 1 running...\r\n");
         /* 获取线程对象容器 */
         information = rt_object_get_information(RT_Object_Class_Thread);
         struct rt_object *object = RT_NULL;
@@ -112,9 +112,9 @@ void thread_1_entry(void *p_arg)
         {
             object = rt_list_entry(index, struct rt_object, list);
        
-            printf("th_name: %s\n", object->name);
-            printf("th_type: %d\n", object->type);
-            printf("th_flag: %d\n", object->flag);
+            printf("th_name: %s\r\n", object->name);
+            printf("th_type: %d\r\n", object->type);
+            printf("th_flag: %d\r\n", object->flag);
         }
         delay(100);
         /* 线程切换 */
@@ -127,7 +127,7 @@ void thread_2_entry(void *p_arg)
 {
     for ( ;; ) 
     {
-        printf("Thread 2 running...\n");
+        printf("Thread 2 running...\r\n");
         delay(100);
         /* 线程切换 */
         rt_schedule();

@@ -52,9 +52,6 @@ void USART_init(void)
 
     /*USART使能*/
     USART_Cmd(USART1, ENABLE); // 使能USART1，串口开始运行
-    /*Send*/
-    USART_SendData(USART1, 'A');
-    USART_SendData(USART1, '\n');
 }
 
 /* main 函数 */
@@ -126,7 +123,7 @@ void thread_1_entry(void *p_arg)
 {
     for ( ;; ) 
     {
-        printf("Thread 1 running...\n");
+        printf("Thread 1 running...\r\n");
 	    delay(50);
     }
 }
@@ -136,7 +133,7 @@ void thread_2_entry(void *p_arg)
 {
     for ( ;; ) 
     {
-        printf("Thread 2 running...\n");
+        printf("Thread 2 running...\r\n");
         delay(50);
     }
 }
@@ -146,7 +143,7 @@ void thread_3_entry(void *p_arg)
 {
     for ( ;; ) 
     {
-        printf("Thread 3 running...\n");
+        printf("Thread 3 running...\r\n");
         delay(50);
     }
 }

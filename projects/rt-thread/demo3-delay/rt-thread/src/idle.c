@@ -23,7 +23,7 @@ static void rt_thread_idle_entry(void *parameter)
     while (1)
     {
         /* 这里暂时只打印信息 */
-        printf("Idle_th\n");
+        printf("Idle_th\r\n");
 	    delay(100);
     }
 }

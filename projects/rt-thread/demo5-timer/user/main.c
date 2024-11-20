@@ -52,9 +52,6 @@ void USART_init(void)
 
     /*USART使能*/
     USART_Cmd(USART1, ENABLE); // 使能USART1，串口开始运行
-    /*Send*/
-    USART_SendData(USART1, 'A');
-    USART_SendData(USART1, '\n');
 }
 
 /* main 函数 */
@@ -128,16 +125,16 @@ void thread_1_entry(void *p_arg)
 
     for ( ;; ) 
     {
-        printf("Thread 1 running...\n");
+        printf("Thread 1 running...\r\n");
 
         tick = rt_tick_get();
-        printf("the thread1 tick before is %d\n", tick);
+        printf("the thread1 tick before is %d\r\n", tick);
 
         /* 阻塞线程 5s */
         rt_thread_delay(5);
 
         tick = rt_tick_get();
-        printf("the thread1 tick after is %d\n", tick);
+        printf("the thread1 tick after is %d\r\n", tick);
     }
 }
 
@@ -147,16 +144,16 @@ void thread_2_entry(void *p_arg)
     rt_tick_t tick;
     for ( ;; ) 
     {
-        printf("Thread 2 running...\n");
+        printf("Thread 2 running...\r\n");
 
         tick = rt_tick_get();
-        printf("the thread2 tick before is %d\n", tick);
+        printf("the thread2 tick before is %d\r\n", tick);
 
         /* 阻塞线程 2s */
         rt_thread_delay(2);
 
         tick = rt_tick_get();
-        printf("the thread2 tick after is %d\n", tick);
+        printf("the thread2 tick after is %d\r\n", tick);
     }
 }
 
@@ -165,7 +162,7 @@ void thread_3_entry(void *p_arg)
 {
     for ( ;; ) 
     {
-        printf("Thread 3 running...\n");
+        printf("Thread 3 running...\r\n");
         delay(10);
     }
 }

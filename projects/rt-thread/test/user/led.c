@@ -53,7 +53,7 @@ void led_flow_breathe(int led_index, int increasing) {
     GPIO_Write(GPIOA, ~(1 << led_index)); // 点亮对应的 LED
     for (int pulse = 0; pulse <= 100; pulse++) {
         TIM_SetCompare4(TIM2, increasing ? pulse : 100 - pulse); // 根据 increasing 控制亮度变化
-        rt_thread_delay(5); // 延时 5ms
+        rt_thread_delay(5); // 延时
     }
 }
 
@@ -65,6 +65,7 @@ void th_led_en(void *p_arg)
     GPIO_init();
     PWM_init();
 
+    printf("th_led_en\r\n");
     for (;;)
     {
         led_flow_breathe(0, 1); // LED 0; 逐渐变亮

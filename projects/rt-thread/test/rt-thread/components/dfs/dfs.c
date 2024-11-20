@@ -4,7 +4,7 @@
 static FileSystem fs;
 
 // 初始化文件系统
-void init_filesystem(void)
+void init_fs(void)
 {
     fs.current_dir = &fs.root;
 
@@ -35,11 +35,11 @@ void init_filesystem(void)
     // fs.root.subdirs[fs.root.subdir_count] = docs_dir;
     // fs.root.subdir_count++;
 
-    Directory* docs_dir = &fs.root.subdirs[fs.root.subdir_count];
-    docs_dir->file_count = 0;
-    docs_dir->subdir_count = 0;
-    rt_strncpy(docs_dir->name, "docs", MAX_NAME_LENGTH);
-    fs.root.subdir_count++;
+    // Directory* docs_dir = &fs.root.subdirs[fs.root.subdir_count];
+    // docs_dir->file_count = 0;
+    // docs_dir->subdir_count = 0;
+    // rt_strncpy(docs_dir->name, "docs", MAX_NAME_LENGTH);
+    // fs.root.subdir_count++;
 }
 
 // ls: 列出当前目录的文件和子目录
