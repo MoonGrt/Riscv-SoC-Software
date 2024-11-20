@@ -9,6 +9,4 @@
 #include "finsh.h"
 #include "cyber.h"
 
-
-
 #endif /* __DVP_TEST_H */

@@ -40,6 +40,16 @@ long hello(void)
 }
 MSH_CMD_EXPORT(hello, say hello world);
 
+long clear(void)
+{
+    // ANSI 转义序列清屏
+    printf("\033[2J");       // 清空屏幕
+    printf("\033[H");        // 将光标移动到屏幕顶部左上角
+
+    return 0;
+}
+MSH_CMD_EXPORT(clear, clear the screen);
+
 /* 列出所有命令 */
 long list(void)
 {

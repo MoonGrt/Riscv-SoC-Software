@@ -100,6 +100,8 @@ int main(void)
     Camera_Init();             /* 初始化Camera */
     DVP_init();                /* 初始化DVP */
     hw_timer_init();           /* 初始化硬件定时器 */
+    init_filesystem();
+    printf("init successed!\r\n");
 
     /* 系统定时器列表初始化 */
     rt_system_timer_init();
