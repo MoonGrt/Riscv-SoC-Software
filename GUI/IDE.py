@@ -491,7 +491,7 @@ class IDE(QMainWindow):
         run_Menu.addAction(assemble_Action)
 
         clean_Action = QAction(QIcon('icons/clean.svg'), 'Clean', self) # 编译
-        clean_Action.setToolTip('Assemble')
+        clean_Action.setToolTip('Clean')
         # clean_Action.setShortcut('Ctrl+R')  # 设置快捷键
         clean_Action.triggered.connect(self.clean)
         run_Menu.addAction(clean_Action)
@@ -523,67 +523,67 @@ class IDE(QMainWindow):
         # 仿真菜单
         simulation_Menu = self.menuBar().addMenu('Simultion')
 
-        self.simulation_stop_Action = QAction(QIcon('icons/run.svg'), 'Run', self) # 运行代码
-        self.simulation_stop_Action.setToolTip('Run')
-        self.simulation_stop_Action.triggered.connect(self.simulation_run)
-        # self.stop_Action.setEnabled(False)
-        simulation_Menu.addAction(self.simulation_stop_Action)
+        self.simulation_run_Action = QAction(QIcon('icons/run.svg'), 'Run', self) # 运行代码
+        self.simulation_run_Action.setToolTip('Run')
+        self.simulation_run_Action.triggered.connect(self.simulation_run)
+        # self.simulation_run_Action.setEnabled(False)
+        simulation_Menu.addAction(self.simulation_run_Action)
 
         self.simulation_run_step_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22)), 'Run step', self) # 单步运行
         self.simulation_run_step_Action.setToolTip('Run step')
         self.simulation_run_step_Action.triggered.connect(self.simulation_run_step)
-        # self.run_step_Action.setEnabled(False)
+        self.simulation_run_step_Action.setEnabled(False)
         simulation_Menu.addAction(self.simulation_run_step_Action)
 
         self.simulation_run_undo_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22).transformed(QTransform().scale(-1, 1))), 'Run undo', self) # 单步退回
         self.simulation_run_undo_Action.setToolTip('Run undo')
         self.simulation_run_undo_Action.triggered.connect(self.simulation_run_undo)
-        # self.run_undo_Action.setEnabled(False)
+        self.simulation_run_undo_Action.setEnabled(False)
         simulation_Menu.addAction(self.simulation_run_undo_Action)
 
         self.simulation_reset_Action = QAction(QIcon('icons/reset.svg'), 'Reset', self) # 重启
         self.simulation_reset_Action.setToolTip('Reset')
         self.simulation_reset_Action.triggered.connect(self.simulation_reset)
-        # self.reset_Action.setEnabled(False)
+        self.simulation_reset_Action.setEnabled(False)
         simulation_Menu.addAction(self.simulation_reset_Action)
 
         self.simulation_stop_Action = QAction(QIcon('icons/stop.svg'), 'Stop', self) # 停止运行
         self.simulation_stop_Action.setToolTip('Stop')
         self.simulation_stop_Action.triggered.connect(self.simulation_stop)
-        # self.stop_Action.setEnabled(False)
+        self.simulation_stop_Action.setEnabled(False)
         simulation_Menu.addAction(self.simulation_stop_Action)
 
         # 调试菜单
         debug_Menu = self.menuBar().addMenu('Debug')
 
-        self.debug_stop_Action = QAction(QIcon('icons/run.svg'), 'Run', self) # 运行代码
-        self.debug_stop_Action.setToolTip('Run')
-        self.debug_stop_Action.triggered.connect(self.debug_run)
+        self.debug_run_Action = QAction(QIcon('icons/run.svg'), 'Run', self) # 运行代码
+        self.debug_run_Action.setToolTip('Run')
+        self.debug_run_Action.triggered.connect(self.debug_run)
         # self.stop_Action.setEnabled(False)
-        debug_Menu.addAction(self.debug_stop_Action)
+        debug_Menu.addAction(self.debug_run_Action)
 
         self.debug_run_step_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22)), 'Run step', self) # 单步运行
         self.debug_run_step_Action.setToolTip('Run step')
         self.debug_run_step_Action.triggered.connect(self.debug_run_step)
-        # self.run_step_Action.setEnabled(False)
+        self.debug_run_step_Action.setEnabled(False)
         debug_Menu.addAction(self.debug_run_step_Action)
 
         self.debug_run_undo_Action = QAction(QIcon(QIcon('icons/run_step.svg').pixmap(22, 22).transformed(QTransform().scale(-1, 1))), 'Run undo', self) # 单步退回
         self.debug_run_undo_Action.setToolTip('Run undo')
         self.debug_run_undo_Action.triggered.connect(self.debug_run_undo)
-        # self.run_undo_Action.setEnabled(False)
+        self.debug_run_undo_Action.setEnabled(False)
         debug_Menu.addAction(self.debug_run_undo_Action)
 
         self.debug_reset_Action = QAction(QIcon('icons/reset.svg'), 'Reset', self) # 重启
         self.debug_reset_Action.setToolTip('Reset')
         self.debug_reset_Action.triggered.connect(self.debug_reset)
-        # self.reset_Action.setEnabled(False)
+        self.debug_reset_Action.setEnabled(False)
         debug_Menu.addAction(self.debug_reset_Action)
 
         self.debug_stop_Action = QAction(QIcon('icons/stop.svg'), 'Stop', self) # 停止运行
         self.debug_stop_Action.setToolTip('Stop')
         self.debug_stop_Action.triggered.connect(self.debug_stop)
-        # self.stop_Action.setEnabled(False)
+        self.debug_stop_Action.setEnabled(False)
         debug_Menu.addAction(self.debug_stop_Action)
 
         # 帮助菜单
@@ -619,7 +619,7 @@ class IDE(QMainWindow):
         toolbar3.addAction(self.stop_Action)
 
         toolbar4 = self.addToolBar('Toolbar4')
-        toolbar4.addAction(self.simulation_stop_Action)
+        toolbar4.addAction(self.simulation_run_Action)
         toolbar4.addAction(self.simulation_run_step_Action)
         toolbar4.addAction(self.simulation_run_undo_Action)
         toolbar4.addAction(self.simulation_reset_Action)
@@ -1196,8 +1196,12 @@ class IDE(QMainWindow):
         # 运行程序
         try:
             self.Sim.load_program(self.project_path + f"/build/{self.project_name}.v")
-            print(self.Sim.pyriscv._pc)
             self.setRowBackgroundColor(self.simulation_code_table, self.Sim.pc, QColor(200, 0, 0))
+            self.simulation_run_Action.setEnabled(False)
+            self.simulation_run_step_Action.setEnabled(True)
+            self.simulation_run_undo_Action.setEnabled(True)
+            self.simulation_reset_Action.setEnabled(True)
+            self.simulation_stop_Action.setEnabled(True)
         except:
             pass
 
@@ -1221,7 +1225,12 @@ class IDE(QMainWindow):
 
     def simulation_stop(self):
         # 停止运行程序
-        pass
+        self.Sim = None
+        self.simulation_run_Action.setEnabled(True)
+        self.simulation_run_step_Action.setEnabled(False)
+        self.simulation_run_undo_Action.setEnabled(False)
+        self.simulation_reset_Action.setEnabled(False)
+        self.simulation_stop_Action.setEnabled(False)
 
     def fillCode(self):
         # 按行分割文本

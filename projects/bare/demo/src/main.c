@@ -11,12 +11,12 @@ void demo_DVP(void);
 
 void main()
 {
-    // demo_GPIO();
+    demo_GPIO();
     demo_USART();
     // demo_I2C();
     // demo_SPI();
-    demo_TIM();
-    demo_PWM();
+    // demo_TIM();
+    // demo_PWM();
     // demo_WDG();
     // demo_DVP();
 }
@@ -64,7 +64,7 @@ void Camera_Init(void) {
     OV5640_Object_t ov5640;
 
     if (OV5640_RegisterBusIO(&ov5640, &ov5640_io) != 0) {
-        printf("Bus IO registration failed\n");
+        // printf("Bus IO registration failed\n");
         return;
     }
 

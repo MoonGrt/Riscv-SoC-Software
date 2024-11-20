@@ -562,9 +562,9 @@ def Top_Gen(DEVICES, output_file="Cyber.v"):
                     AFIO += "1'bz, "
             AFIO = AFIO[:-2]
             AFIO_connection += f"    wire [15:0] AFIO{name} = " + "{" + AFIO + "};\n"
-        print(gpio_ports)
-        print(Connection)
-        print(AFIO_connection)
+        # print(gpio_ports)
+        # print(Connection)
+        # print(AFIO_connection)
         # 格式化 Apb3WDGRouter 模块内容
         TOP_temple = f.read()
         TOP_temple = TOP_temple.replace("{gpio_ports}", gpio_ports.strip())

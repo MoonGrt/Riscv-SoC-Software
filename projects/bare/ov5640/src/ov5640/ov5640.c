@@ -90,6 +90,7 @@ static int32_t OV5640_Delay(OV5640_Object_t *pObj, uint32_t Delay);
 int32_t OV5640_RegisterBusIO(OV5640_Object_t *pObj, OV5640_IO_t *pIO)
 {
     int32_t ret;
+    return 1;
 
     if (pObj == NULL)
     {
