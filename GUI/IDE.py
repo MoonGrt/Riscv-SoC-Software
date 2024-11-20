@@ -163,6 +163,7 @@ class IDE(QMainWindow):
         # self.project_name = ''
         # self.project_path = ''
         self.openocd_process = None  # 用于保存 openocd 进程
+        self.connect()
 
     def init_ui(self):
         # 设置应用图标
@@ -376,6 +377,7 @@ class IDE(QMainWindow):
         splitter_layout = QVBoxLayout(main_widget)
         splitter_layout.addWidget(self.splitterl)  # 将QSplitter添加到布局中
         main_widget.setLayout(splitter_layout)
+
 
     def menu(self):
         # 文件菜单
@@ -1133,23 +1135,20 @@ class IDE(QMainWindow):
     def connect(self):
         if self.openocd_process is None:
             self.message_showmessage('Openocd connecting...')
-            QTimer.singleShot(3000, self.start_openocd)
+            try:
+                # 运行 openocd 并将其放入后台
+                self.openocd_process = subprocess.Popen(
+                    ['/home/moon/openocd_riscv/src/openocd', '-f', '/mnt/hgfs/share/Riscv-SoC-Software/scripts/cyber.cfg'],
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp
+                )
+                # self.message_showmessage('Openocd: connected successed.')
+                self.connect_Action.setEnabled(False)
+                self.disconnect_Action.setEnabled(True)
+                self.download_Action.setEnabled(True)
+            except Exception as e:
+                self.message_showmessage(f'Openocd: connected failed-{str(e)}')
         else:
             self.message_showmessage('openocd already running in the background')
-
-    def start_openocd(self):
-        try:
-            # 运行 openocd 并将其放入后台
-            self.openocd_process = subprocess.Popen(
-                ['/home/moon/openocd_riscv/src/openocd', '-f', '/mnt/hgfs/share/Riscv-SoC-Software/scripts/cyber.cfg'],
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp
-            )
-            # self.message_showmessage('Openocd: connected successed.')
-            self.connect_Action.setEnabled(False)
-            self.disconnect_Action.setEnabled(True)
-            self.download_Action.setEnabled(True)
-        except Exception as e:
-            self.message_showmessage(f'Openocd: connected failed-{str(e)}')
 
     def disconnect(self):
         if self.openocd_process is not None:
@@ -1157,7 +1156,7 @@ class IDE(QMainWindow):
                 # 结束 openocd 进程
                 os.killpg(os.getpgid(self.openocd_process.pid), signal.SIGTERM)
                 self.openocd_process = None
-                self.message_showmessage('Openocd: disconnected.')
+                self.message_showmessage('Openocd disconnected.')
                 self.connect_Action.setEnabled(True)
                 self.disconnect_Action.setEnabled(False)
                 self.download_Action.setEnabled(False)
