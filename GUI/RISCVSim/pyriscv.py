@@ -23,7 +23,7 @@ class Sim:
         self.pyriscv.step()
         self.last_pc = self.pc
         self.pc = self.pyriscv._pc
-        
+
 
 class PyRiscv:
     def __init__(self, imem, dmem, reset_vec=0x00000000, bw=32):
@@ -38,7 +38,7 @@ class PyRiscv:
 
     def step(self):
         if not self._exit:
-            print("0x{:08x}".format(self._pc))
+            # print("0x{:08x}".format(self._pc))
             inst = self.__stage_if(self._pc)
             decode_map = self.__stage_decode(inst)
             self.__stage_exec(decode_map)
