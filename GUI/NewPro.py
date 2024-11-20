@@ -537,25 +537,41 @@ def Top_Gen(DEVICES, output_file="Cyber.v"):
     """生成顶层文件 Top.v"""
     Cyber = ""
 
-    Connection = ""
-    for GPIO_port, AFIO in DEVICES["GPIO"].items():
-        AFIO_connection = ""
-        for i, pin in enumerate(AFIO):
-            if pin:
-                _, type = pin.split("_", 1)
-                if type in ["RX", "MISO"]:
-                    AFIO_connection += "1'bz, "
-                    Connection += f"wire {pin} = AFIO{GPIO_port}[{16-i}];\n"
-                else:
-                    AFIO_connection += f"{pin}, "
-                    Connection += f"wire {pin};\n"
-            else:
-                AFIO_connection += "1'bz, "
-        AFIO_connection = AFIO_connection[:-2]
-        Connection += f"wire [15:0] AFIO{GPIO_port} = " + "{" + AFIO_connection + "};\n"
-
     with open("demo/Cyber.v", "r", encoding="utf-8") as f:
-        Cyber += f.read() + "\n\n"
+        # Cyber += f.read() + "\n\n"
+        # 模板代码片段
+        TOP_GPIO_Port_Temple = "    inout wire [15:0] GPIO{name},"
+        # 初始化模块的各个部分内容
+        gpio_ports = "    // GPIO\n"
+        Connection = "    // GPIO\n"
+        AFIO_connection = "    // AFIO Contection\n"
+        Interrupt = "    // Interrupt\n"  # TODO
+        for name, ports in DEVICES["GPIO"].items():
+            gpio_ports += TOP_GPIO_Port_Temple.format(name=name) + "\n"
+            AFIO = ""
+            for i, pin in enumerate(ports):
+                if pin:
+                    _, type = pin.split("_", 1)
+                    if type in ["RX", "MISO"]:
+                        AFIO += "1'bz, "
+                        Connection += f"    wire {pin} = AFIO{name}[{16-i}];\n"
+                    else:
+                        AFIO += f"{pin}, "
+                        Connection += f"    wire {pin};\n"
+                else:
+                    AFIO += "1'bz, "
+            AFIO = AFIO[:-2]
+            AFIO_connection += f"    wire [15:0] AFIO{name} = " + "{" + AFIO + "};\n"
+        print(gpio_ports)
+        print(Connection)
+        print(AFIO_connection)
+        # 格式化 Apb3WDGRouter 模块内容
+        TOP_temple = f.read()
+        TOP_temple = TOP_temple.replace("{gpio_ports}", gpio_ports.strip())
+        TOP_temple = TOP_temple.replace("{Connection}", Connection.strip() + "\n" + AFIO_connection.strip())
+        # print(TOP_temple)
+        Cyber += TOP_temple
+
     with open("demo/RISCV/VexRiscv.v", "r", encoding="utf-8") as f:
         Cyber += f.read() + "\n\n"
     with open("demo/RISCV/APB3RAM.v", "r", encoding="utf-8") as f:

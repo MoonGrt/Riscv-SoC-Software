@@ -103,7 +103,10 @@ class GPIOConf(QDialog):
     def __init__(self):
         super().__init__()
 
-        self.DEVICES = {"GPIO": {"A": [], "B": []},
+        self.DEVICES = {"GPIO": {'A': ['', '', '', '', '', '', '', '',
+                                       'UART1_TX', 'UART1_RX', 'UART2_TX', 'UART2_RX', 'I2C1_SCL', 'I2C1_SDA', 'I2C2_SCL', 'I2C2_SDA'],
+                                 'B': ['SPI1_SCK', 'SPI1_MOSI', 'SPI1_MISO', 'SPI1_CS', 'SPI2_SCK', 'SPI2_MOSI', 'SPI2_MISO', 'SPI2_CS',
+                                       'TIM1_CH1', 'TIM1_CH2', 'TIM1_CH3', 'TIM1_CH4', 'TIM2_CH1', 'TIM2_CH2', 'TIM2_CH3', 'TIM2_CH4']},
                         "UART": {"1": {"TX": ["A8"], "RX": ["A9"]},
                                  "2": {"TX": ["A10"], "RX": ["A11"]}},
                         "I2C": {"1": {"SCL": ["A12"], "SDA": ["A13"]},
@@ -113,7 +116,6 @@ class GPIOConf(QDialog):
                         "TIM": {"1": {"CH1": ["B8"], "CH2": ["B9"], "CH3": ["B10"], "CH4": ["B11"]},
                                 "2": {"CH1": ["B12"], "CH2": ["B13"], "CH3": ["B14"], "CH4": ["B15"]}},
                         "WDG": {"IWDG": True, "WWDG": True}}  # 设备
-        self.gpio_config = {}  # 用于存储GPIO配置
         self.row_indexes = {}  # 用于存储每个设备对应的行索引
         self.row = 0
         self.col = 0
@@ -171,7 +173,10 @@ class GPIOConf(QDialog):
 
     # 重置表格内容
     def reset_table(self):
-        self.DEVICES = {"GPIO": {"A": [], "B": []},
+        self.DEVICES = {"GPIO": {'A': ['', '', '', '', '', '', '', '',
+                                       'UART1_TX', 'UART1_RX', 'UART2_TX', 'UART2_RX', 'I2C1_SCL', 'I2C1_SDA', 'I2C2_SCL', 'I2C2_SDA'],
+                                 'B': ['SPI1_SCK', 'SPI1_MOSI', 'SPI1_MISO', 'SPI1_CS', 'SPI2_SCK', 'SPI2_MOSI', 'SPI2_MISO', 'SPI2_CS',
+                                       'TIM1_CH1', 'TIM1_CH2', 'TIM1_CH3', 'TIM1_CH4', 'TIM2_CH1', 'TIM2_CH2', 'TIM2_CH3', 'TIM2_CH4']},
                         "UART": {"1": {"TX": ["A8"], "RX": ["A9"]},
                                  "2": {"TX": ["A10"], "RX": ["A11"]}},
                         "I2C": {"1": {"SCL": ["A12"], "SDA": ["A13"]},
@@ -188,17 +193,18 @@ class GPIOConf(QDialog):
     # 生成配置
     def Gen(self):
         # 读取表格内容
-        self.gpio_config = {}
+        gpio_config = {}
         for i, gpio in enumerate(self.DEVICES["GPIO"]):
-            self.gpio_config[gpio] = []
+            gpio_config[gpio] = []
             for j in range(1, 17):
                 port = self.table.item(2, i*16+j).text()
                 if port == "":
-                    self.gpio_config[gpio].append(port)
+                    gpio_config[gpio].append(port)
                     continue
                 device_type, device_num, port_name = self.get_device_type(port)
                 port = device_type + device_num + "_" + port_name
-                self.gpio_config[gpio].append(port)
+                gpio_config[gpio].append(port)
+        self.DEVICES["GPIO"] = gpio_config
         # 退出窗口
         self.accept()
 
