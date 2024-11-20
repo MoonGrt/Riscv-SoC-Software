@@ -95,14 +95,13 @@ void DVP_init(void)
 int main(void)
 {
     /* 硬件初始化 */
-    init_filesystem();
     rt_hw_interrupt_disable(); /* 关中断 */
     USART_init();              /* 初始化串口 */
     Camera_Init();             /* 初始化Camera */
     DVP_init();                /* 初始化DVP */
     hw_timer_init();           /* 初始化硬件定时器 */
+    init_filesystem();
     printf("init successed!\r\n");
-
 
     /* 系统定时器列表初始化 */
     rt_system_timer_init();

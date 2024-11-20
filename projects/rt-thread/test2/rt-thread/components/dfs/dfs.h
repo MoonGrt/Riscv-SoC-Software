@@ -9,9 +9,9 @@
 #include "cyber.h"
 
 #define MAX_NAME_LENGTH 16
-#define MAX_CONTENT_LENGTH 32
-#define MAX_FILES_IN_DIR 3
-#define MAX_SUBDIR_IN_DIR 2
+#define MAX_CONTENT_LENGTH 256
+#define MAX_FILES_IN_DIR 5
+#define MAX_SUBDIR_IN_DIR 3
 
 // 文件结构体
 typedef struct File {
