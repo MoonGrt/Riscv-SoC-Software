@@ -2,6 +2,7 @@ import sys, os, shutil, re
 from PyQt5.QtWidgets import QApplication, QFrame, QCheckBox, QDialog, QHBoxLayout, QVBoxLayout, QLabel, QLineEdit, QPushButton, QComboBox, QMessageBox, QFileDialog
 from PyQt5.QtGui import QIcon
 from GPIOConf import GPIOConf
+from DVPConf import DVPConf
 
 def Extract_APB3GPIO(template_file="demo/RISCV/APB3GPIO.v"):
     """读取文件并提取Apb3GPIORouter模块的内容，返回文件内容和Apb3GPIORouter内容"""
@@ -509,7 +510,93 @@ def DMA_Gen(output_file="AhbDMA.v"):
     # print(f"'{output_file}' 生成成功。")
     return content
 
-def DVP_Gen(output_file="AHBDVP.v"):
+def module_template(module_type, module_name, inport):
+    # inport = 
+    if len(inport) == 1:
+        # 单输入端口
+        inport = single_inport(module_name, inport)
+    else:
+        # 多输入端口
+        inport = multi_inport(module_name, inport)
+    template = f"""
+    //--------------------------------------------------------------------------
+    // {module_type}
+    //--------------------------------------------------------------------------
+    {inport}
+    wire        {module_name}_post_vs;  // Processed Image data vs valid signal
+    wire        {module_name}_post_de;  // Processed Image data output/capture enable clock
+    wire [23:0] {module_name}_post_data;  // Processed Image output
+    {module_type} {module_name} (
+        .clk      (clk),
+        .rst_n    (rst_n),
+        .mode     ({module_name}_mode),  // 00: bypass, 01: gaussian, 10: median, 11: mean
+
+        .pre_vs   ({module_name}_post_vs),
+        .pre_de   ({module_name}_post_de),
+        .pre_data ({module_name}_post_data),
+        .post_vs  ({module_name}_post_vs),
+        .post_de  ({module_name}_post_de),
+        .post_data({module_name}_post_data)
+    );
+    """
+    return template
+
+def single_inport(module_name, inport):
+    # 定义一个函数，用于生成输入端口
+    return f"""wire        {module_name}_pre_vs = {inport[0].split('.')[1]}_post_vs;  // Prepared Image data vs valid signal
+    wire        {module_name}_pre_de = {inport[0].split('.')[1]}_post_vs;  // Prepared Image data output/capture enable clock
+    wire [23:0] {module_name}_pre_data = {inport[0].split('.')[1]}_post_vs;  // Prepared Image output"""
+
+def multi_inport(module_name, inport):
+    # 定义一个函数，用于生成多个输入端口
+    # 生成case语句的模板
+    case_statements = ""
+    for i, port in enumerate(inport, start=1):
+        case_statements += f"""
+                2'b{"%02d" % i}: begin
+                    {module_name}_pre_vs   = {port.split('.')[1].lower()}_post_vs;
+                    {module_name}_pre_de   = {port.split('.')[1].lower()}_post_de;
+                    {module_name}_pre_data = {port.split('.')[1].lower()}_post_data;
+                end"""
+    template = f"""    wire        {module_name}_pre_vs;  // Prepared Image data vs valid signal
+    wire        {module_name}_pre_de;  // Prepared Image data output/capture enable clock
+    wire [23:0] {module_name}_pre_data;  // Prepared Image output
+    always @ (*) begin
+        if (~rst_n) begin
+            {module_name}_pre_vs   = 1'b0;
+            {module_name}_pre_de   = 1'b0;
+            {module_name}_pre_data = 24'd0;
+        end else begin
+            case ({module_name}_mode)
+                {case_statements}
+                default: begin
+                    {module_name}_pre_vs   = 1'b0;
+                    {module_name}_pre_de   = 1'b0;
+                    {module_name}_pre_data = 24'd0;
+                end
+            endcase
+        end
+    end
+    """
+    return template
+
+def VP_Gen(VPFunc, output_file="AhbVP.v"):
+    VP = ""
+    for module, port in VPFunc.items():
+        # 遍历VPFunc列表，依次生成每个功能模块
+        module_type = module.split('.')[0]
+        module_name = module.split('.')[1]
+        # 解析模块名称和类型
+        if module_type == 'VI' or module_type == 'VO':
+            # 输入输出模块
+            pass
+        else:
+            VP += module_template(module_type=module_type, module_name=module_name, inport=port["in"])
+    # with open(output_file, 'w') as f:
+    #     f.write(VP)
+    return VP
+
+def DVP_Gen(DVPFunc, output_file="AHBDVP.v"):
     content = ""
     file_paths = [
         "demo/RISCV/AHBDVP.v",
@@ -531,6 +618,7 @@ def DVP_Gen(output_file="AHBDVP.v"):
     # with open(output_file, "w") as f:
     #     f.write(content)
     # print(f"'{output_file}' 生成成功。")
+    # print(VP_Gen(DVPFunc))
     return content
 
 def Top_Gen(DEVICES, output_file="Cyber.v"):
@@ -583,6 +671,8 @@ class NewPro(QDialog):
         super().__init__()
         self.GPIOConf = GPIOConf()
         self.DEVICES = self.GPIOConf.DEVICES
+        self.DVPConf = DVPConf()
+        self.DVPFunc = self.DVPConf.DVPFunc
         self.project_path = ""
 
         self.setWindowTitle("New Project")
@@ -645,11 +735,14 @@ class NewPro(QDialog):
         self.ahb_checkbox = QCheckBox("Enable")
         self.ahb_checkbox.setChecked(True)
         self.ahb_checkbox.toggled.connect(self.toggle_ahb_config)
+        self.ahbaxi_checkbox = QCheckBox("AXI")
+        self.ahbaxi_checkbox.setChecked(True)
         self.ahb_button = QPushButton("DVP Conf")
-        # self.ahb_button.clicked.connect(self.open_gpio_config)
+        self.ahb_button.clicked.connect(self.open_dvp_config)
         ahb_layout = QHBoxLayout()
         ahb_layout.addWidget(self.ahb_label)
         ahb_layout.addWidget(self.ahb_checkbox)
+        ahb_layout.addWidget(self.ahbaxi_checkbox)
         ahb_layout.addWidget(self.ahb_button)
         main_layout.addLayout(ahb_layout)
         # APB 配置
@@ -657,11 +750,14 @@ class NewPro(QDialog):
         self.apb_checkbox = QCheckBox("Enable")
         self.apb_checkbox.setChecked(True)
         self.apb_checkbox.toggled.connect(self.toggle_apb_config)
+        self.apbaxi_checkbox = QCheckBox("AXI")
+        self.apbaxi_checkbox.setChecked(True)
         self.apb_button = QPushButton("GPIO Conf")
         self.apb_button.clicked.connect(self.open_gpio_config)
         apb_layout = QHBoxLayout()
         apb_layout.addWidget(self.apb_label)
         apb_layout.addWidget(self.apb_checkbox)
+        apb_layout.addWidget(self.apbaxi_checkbox)
         apb_layout.addWidget(self.apb_button)
         main_layout.addLayout(apb_layout)
 
@@ -716,15 +812,24 @@ class NewPro(QDialog):
     def toggle_ahb_config(self):
         # 控制 AHB 配置按钮的使能状态
         self.ahb_button.setEnabled(self.ahb_checkbox.isChecked())
+        self.ahbaxi_checkbox.setEnabled(self.ahb_checkbox.isChecked())
 
     def toggle_apb_config(self):
         # 控制 APB 配置按钮的使能状态
         self.apb_button.setEnabled(self.apb_checkbox.isChecked())
+        self.apbaxi_checkbox.setEnabled(self.apb_checkbox.isChecked())
 
     def open_gpio_config(self):
         # 创建并显示 GPIO 配置对话框
         if self.GPIOConf.exec_() == QDialog.Accepted:  # QDialog.Accepted 若用户点击了确定按钮
             self.DEVICES = self.GPIOConf.DEVICES
+            print(self.DEVICES)
+
+    def open_dvp_config(self):
+        # 创建并显示 DVP 配置对话框
+        if self.DVPConf.exec_() == QDialog.Accepted:  # QDialog.Accepted 若用户点击了确定按钮
+            self.DVPFunc = self.DVPConf.DVPFunc
+            print(self.DVPFunc)
 
     def update_options(self):
         # 获取第一个选择框的选中项
@@ -1008,7 +1113,7 @@ class NewPro(QDialog):
                 AHB += f.read() + "\n\n"
             AHB += RCC_Gen() + "\n\n"
             AHB += DMA_Gen() + "\n\n"
-            AHB += DVP_Gen() + "\n\n"
+            AHB += DVP_Gen(self.DVPFunc) + "\n\n"
         if self.cyber_checkbox.isChecked():
             Cyber += Top_Gen(self.DEVICES) + "\n\n"
 
