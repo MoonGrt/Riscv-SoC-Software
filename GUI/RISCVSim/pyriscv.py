@@ -30,34 +30,34 @@ class PyRiscv:
         self._imem = imem
         self._dmem = dmem
         self._pc   = reset_vec
-        self._regs = PyRiscvRegs(32,bw)
+        self._regs = PyRiscvRegs(32, bw)
         self._operator = PyRiscvOperator(bw)
         self._bw = bw
         self._exit = False
-        # self.__control()
+        self.__control()
 
     def step(self):
         if not self._exit:
-            # print("0x{:08x}".format(self._pc))
             inst = self.__stage_if(self._pc)
+            # print("0x{:08x}: ".format(self._pc)+"{:08x}".format(inst[31:0]))
             decode_map = self.__stage_decode(inst)
             self.__stage_exec(decode_map)
 
     def __control(self):
         while not self._exit:
-            # print("0x{:08x}".format(self._pc))
             inst = self.__stage_if(self._pc)
+            print("0x{:08x}: ".format(self._pc)+"{:08x}".format(inst[31:0]))
             decode_map = self.__stage_decode(inst)
             self.__stage_exec(decode_map)
 
-    def __stage_if(self,pc):
+    def __stage_if(self, pc):
         return PyRiscvLogic(
             self._imem[pc] +
             (self._imem[pc+1] << 8) +
             (self._imem[pc+2] << 16) +
             (self._imem[pc+3] << 24))
 
-    def __stage_decode(self,w):
+    def __stage_decode(self, w):
         decode_map = PyRiscvStruct()
         decode_map.CODECLASS           = PYRSISCV_CODECLASS.FV(w[1:0])
         decode_map.OPCODE              = PYRSISCV_OPCODE.FV(w[6:2])
@@ -83,7 +83,7 @@ class PyRiscv:
                 decode_map.FUNCT3_OP_IMM_OP = PYRSISCV_FUNCT3_OP_IMM_OP.SRA
         return decode_map
 
-    def __stage_exec(self,decode_map):
+    def __stage_exec(self, decode_map):
 
         if decode_map.OPCODE == PYRSISCV_OPCODE.JAL:
             self._regs[decode_map.RD] = self._pc + 4
@@ -92,15 +92,15 @@ class PyRiscv:
             self._regs[decode_map.RD] = self._pc + 4
             self._pc = ((decode_map.IMM + self._regs[decode_map.RS1]) | 0x1) - 1 + self._pc
         elif decode_map.OPCODE == PYRSISCV_OPCODE.BRANCH:
-            if self._operator(decode_map.FUNCT3_BRANCH,self._regs[decode_map.RS1],self._regs[decode_map.RS2]):
+            if self._operator(decode_map.FUNCT3_BRANCH, self._regs[decode_map.RS1], self._regs[decode_map.RS2]):
                 self._pc += decode_map.IMMB
             else:
                 self._pc += 4
         elif decode_map.OPCODE == PYRSISCV_OPCODE.OP_IMM:
-            self._regs[decode_map.RD] = self._operator(decode_map.FUNCT3_OP_IMM_OP,self._regs[decode_map.RS1],decode_map.IMMI)
+            self._regs[decode_map.RD] = self._operator(decode_map.FUNCT3_OP_IMM_OP, self._regs[decode_map.RS1], decode_map.IMMI)
             self._pc += 4
         elif decode_map.OPCODE == PYRSISCV_OPCODE.OP:
-            self._regs[decode_map.RD] = self._operator(decode_map.FUNCT3_OP_IMM_OP,self._regs[decode_map.RS1],self._regs[decode_map.RS2])
+            self._regs[decode_map.RD] = self._operator(decode_map.FUNCT3_OP_IMM_OP, self._regs[decode_map.RS1], self._regs[decode_map.RS2])
             self._pc += 4
         elif decode_map.OPCODE == PYRSISCV_OPCODE.LUI:
             self._regs[decode_map.RD] = decode_map.IMMU
@@ -111,8 +111,7 @@ class PyRiscv:
         elif decode_map.OPCODE == PYRSISCV_OPCODE.LOAD:
             dmem_base = self._regs[decode_map.RS1] + decode_map.IMMI
             if decode_map.FUNCT3_LOADSTORE == PYRSISCV_FUNCT3_LOAD_STORE.W:
-                self._regs[decode_map.RD] = PyRiscvOperator(self._bw).signed(self._dmem[dmem_base] + (self._dmem[dmem_base + 1] << 8) + \
-                                            (self._dmem[dmem_base + 2] << 16) + (self._dmem[dmem_base + 3] << 24))
+                self._regs[decode_map.RD] = PyRiscvOperator(self._bw).signed(self._dmem[dmem_base] + (self._dmem[dmem_base + 1] << 8) + (self._dmem[dmem_base + 2] << 16) + (self._dmem[dmem_base + 3] << 24))
             elif decode_map.FUNCT3_LOADSTORE == PYRSISCV_FUNCT3_LOAD_STORE.H:
                 self._regs[decode_map.RD] = PyRiscvOperator(16).signed(self._dmem[dmem_base] + (self._dmem[dmem_base + 1] << 8))
             elif decode_map.FUNCT3_LOADSTORE == PYRSISCV_FUNCT3_LOAD_STORE.HU:
@@ -145,3 +144,5 @@ class PyRiscv:
 if __name__ == '__main__':
     imem = PyMEM("./test2.v")
     PyRiscv(imem, imem)
+
+# TODO: 读取外设有问题

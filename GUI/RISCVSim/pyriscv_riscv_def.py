@@ -14,7 +14,7 @@ class PYRSISCV_OPCODE(PyRiscvEnum):
     LOAD      = 0b00000
     STORE     = 0b01000
     CSR       = 0b11100
-    
+
 class PYRSISCV_FUNCT3_OP_IMM_OP(PyRiscvEnum):
     ADD  = 0b000
     SUB  = 0b1000
@@ -26,7 +26,7 @@ class PYRSISCV_FUNCT3_OP_IMM_OP(PyRiscvEnum):
     XOR  = 0b100
     OR   = 0b110
     AND  = 0b111
-    
+
 class PYRSISCV_FUNCT3_BRANCH(PyRiscvEnum):
     BEQ  = 0b000
     BNE  = 0b001
@@ -34,7 +34,7 @@ class PYRSISCV_FUNCT3_BRANCH(PyRiscvEnum):
     BGE  = 0b101
     BLTU = 0b110
     BGEU = 0b111
-    
+
 class PYRSISCV_FUNCT3_LOAD_STORE(PyRiscvEnum):
     B  = 0b000
     H  = 0b001
