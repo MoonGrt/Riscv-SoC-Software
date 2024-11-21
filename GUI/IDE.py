@@ -2,7 +2,7 @@ import sys, serial, serial.tools.list_ports, os, subprocess, shutil, signal, pex
 from PyQt5.QtWidgets import QVBoxLayout, QSplitter, QGridLayout, QTableWidget, QLabel, QTableWidgetItem, QHBoxLayout, QMessageBox, QFormLayout
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QAction, QFileDialog, QTabWidget, QWidget, QPushButton, QTabBar, QComboBox
 from PyQt5.QtWidgets import QTreeView, QFileSystemModel, QDialog
-from PyQt5.QtCore import Qt, QTimer, QThread, pyqtSignal
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtGui import QIcon, QTransform, QColor
 from NewPro import NewPro
 from RISCVSim.pyriscv import Sim
