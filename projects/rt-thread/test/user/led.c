@@ -79,7 +79,7 @@ long led_init(void)
 {
     /* 初始化线程 */
     rt_thread_init(&th_led,                /* 线程控制块 */
-                   "th_led ",               /* 线程名称，唯一 */
+                   "th_led ",              /* 线程名称，唯一 */
                    th_led_en,              /* 线程入口地址 */
                    RT_NULL,                /* 线程形参 */
                    &rt_thled_stack[0],     /* 线程栈起始地址 */

@@ -1,9 +1,9 @@
 import sys, serial, serial.tools.list_ports, os, subprocess, shutil, signal, pexpect, re
 from PyQt5.QtWidgets import QVBoxLayout, QSplitter, QGridLayout, QTableWidget, QLabel, QTableWidgetItem, QHBoxLayout, QMessageBox, QFormLayout
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QAction, QFileDialog, QTabWidget, QWidget, QPushButton, QTabBar, QComboBox
-from PyQt5.QtWidgets import QTreeView, QFileSystemModel, QDialog, QCheckBox, QLineEdit
+from PyQt5.QtWidgets import QTreeView, QFileSystemModel, QDialog, QLineEdit
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QSize, QPoint
-from PyQt5.QtGui import QIcon, QTransform, QColor, QTextCursor
+from PyQt5.QtGui import QIcon, QTransform, QColor, QTextCursor, QFont
 from NewPro import NewPro
 from RISCVSim.pyriscv import Sim
 
@@ -304,6 +304,77 @@ class SearchDialog(QDialog):
     def closeEvent(self, event):
         self.main_window.edit_area.currentWidget().setFocus()  # 关闭时设置焦点到当前文本编辑器
         event.accept()  # 接受事件
+
+
+class CodeEditor(QTextEdit):
+    def __init__(self):
+        super().__init__()
+        self.setFont(QFont('Courier', 10))
+        self.setTabStopDistance(40)
+        self.setAcceptRichText(False)  # 禁用富文本模式
+
+    def comment_code(self):
+        cursor = self.textCursor()
+        selected_text = cursor.selectedText()
+
+        if selected_text:  # 有选中的文本
+            # self.comment_selected_text(selected_text) # TODO: 实现选中文本的注释功能
+            pass
+        else:
+            # 如果没有选中文本，就注释当前行
+            self.comment_current_line()
+
+    def comment_current_line(self):
+        cursor = self.textCursor()
+        cursor.select(cursor.LineUnderCursor)  # 选中当前行
+        selected_text = cursor.selectedText()
+
+        # 获取当前行的前导空格
+        leading_whitespace = self.get_leading_whitespace(selected_text)
+        
+        if selected_text.strip().startswith("//"):  # 如果已经是注释，则取消注释
+            cursor.removeSelectedText()
+            cursor.insertText(leading_whitespace + selected_text.lstrip(" //").strip())
+        else:  # 否则添加注释
+            cursor.removeSelectedText()
+            cursor.insertText(leading_whitespace + "// " + selected_text.strip())
+
+        self.setTextCursor(cursor)
+
+    def comment_selected_text(self, selected_text):
+        cursor = self.textCursor()
+        cursor.select(cursor.Document)  # 选中所有文本
+        lines = selected_text.split('\n')
+
+        commented_lines = []
+        for line in lines:
+            # 获取每一行的前导空格
+            leading_whitespace = self.get_leading_whitespace(line)
+            if line.strip().startswith("//"):  # 如果已经是注释，取消注释
+                commented_lines.append(leading_whitespace + line.lstrip("//").strip())
+            else:  # 否则添加注释
+                commented_lines.append(leading_whitespace + "// " + line.strip())
+
+        cursor.removeSelectedText()
+        cursor.insertText("\n".join(commented_lines))
+        self.setTextCursor(cursor)
+
+    def get_leading_whitespace(self, line):
+        """ 获取行首的空白字符（空格或制表符） """
+        return ' ' * (len(line) - len(line.lstrip()))
+
+    def remove_block_comment(self):
+        cursor = self.textCursor()
+        cursor.select(cursor.Document)  # 选中所有文本
+        selected_text = cursor.selectedText()
+
+        # 如果已经是多行注释，则去掉块注释
+        if selected_text.strip().startswith('/*') and selected_text.strip().endswith('*/'):
+            lines = selected_text.split('\n')
+            uncommented_lines = [line.strip('/* ').strip() for line in lines if not line.strip().startswith('/*')]
+            cursor.removeSelectedText()
+            cursor.insertText("\n".join(uncommented_lines))
+            self.setTextCursor(cursor)
 
 
 class IDE(QMainWindow):
@@ -635,11 +706,17 @@ class IDE(QMainWindow):
 
         edit_Menu.addSeparator()  # 分隔线
 
-        search_Action = QAction(QIcon('icons/paste.svg'), 'Paste', self) # 粘贴操作
-        search_Action.setToolTip('Paste')
+        search_Action = QAction(QIcon('icons/search.svg'), 'Search', self) # 粘贴操作
+        search_Action.setToolTip('Search')
         search_Action.setShortcut('Ctrl+F')  # 设置快捷键
         search_Action.triggered.connect(self.search)
         edit_Menu.addAction(search_Action)
+
+        comment_Action = QAction(QIcon('icons/comment.svg'), 'Comment', self) # 粘贴操作
+        comment_Action.setToolTip('Comment')
+        comment_Action.setShortcut('Ctrl+/')  # 设置快捷键
+        comment_Action.triggered.connect(self.comment)
+        edit_Menu.addAction(comment_Action)
 
         # 运行菜单
         run_Menu = self.menuBar().addMenu('Run')
@@ -769,6 +846,8 @@ class IDE(QMainWindow):
         toolbar2.addAction(cut_Action)
         toolbar2.addAction(copy_Action)
         toolbar2.addAction(paste_Action)
+        toolbar2.addAction(search_Action)
+        toolbar2.addAction(comment_Action)
 
         toolbar3 = self.addToolBar('Toolbar3')
         toolbar3.addAction(assemble_Action)
@@ -987,7 +1066,7 @@ class IDE(QMainWindow):
         filePath = self.model.filePath(index)
         if os.path.isfile(filePath):
             # 创建新的文本编辑器选项卡
-            text_edit = QTextEdit(self)
+            text_edit = CodeEditor()
             text_edit.setStyleSheet("""
                 QTextEdit {
                     background-image: url('icons/new.png');
@@ -1017,7 +1096,7 @@ class IDE(QMainWindow):
 
     def newFile(self, start_page=False):
         # 创建新的文本编辑器选项卡
-        text_edit = QTextEdit(self)
+        text_edit = CodeEditor()
         text_edit.setStyleSheet("""
             QTextEdit {
                 background-image: url('icons/new.png');
@@ -1050,7 +1129,7 @@ class IDE(QMainWindow):
             if file_path:
                 print(f"打开文件: {file_path}")
                 # 创建新的文本编辑器选项卡
-                text_edit = QTextEdit(self)
+                text_edit = CodeEditor()
                 text_edit.file_path = file_path  # 设置文件路径属性
                 self.edit_area.addTab(text_edit, file_path.split("/")[-1])
                 # 读取文件内容并显示在文本编辑器中
@@ -1090,20 +1169,6 @@ class IDE(QMainWindow):
         dirName = QFileDialog.getExistingDirectory(self, 'Open Folder', '/mnt/hgfs/share/Riscv-SoC-Software/Workspace')
         if dirName:
             self.switchfolder(dirName)
-
-    def addFileToEditArea(self, filePath):
-        # 创建新的标签页
-        new_tab = QWidget()
-        new_layout = QVBoxLayout(new_tab)
-        # 创建 QTextEdit 并加载文件内容
-        editor_area = QTextEdit()
-        with open(filePath, 'r', encoding='utf-8') as file:
-            content = file.read()
-            editor_area.setPlainText(content)
-        new_layout.addWidget(editor_area)
-        # 将新标签页添加到 edit_area
-        self.edit_area.addTab(new_tab, os.path.basename(filePath))
-        self.edit_area.setCurrentWidget(new_tab)  # 切换到新标签页
 
     def closeFile(self):
         # 获取当前活动的选项卡索引
@@ -1194,6 +1259,11 @@ class IDE(QMainWindow):
         self.search_dialog.show()  # 打开搜索对话框
         self.search_dialog.raise_()  # 将对话框置于最前
         self.search_dialog.activateWindow()  # 激活对话框窗口
+
+    def comment(self):
+        current_widget = self.edit_area.currentWidget()
+        if isinstance(current_widget, CodeEditor):
+            current_widget.comment_code()
 
     # Python程序从Intel HEX文件中读取RISC-V指令并列出a
     def parse_hex_line(self, line):
