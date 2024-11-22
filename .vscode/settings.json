@@ -48,6 +48,7 @@
         "type_traits": "c",
         "limits": "c",
         "typeinfo": "c",
-        "utils.h": "c"
+        "utils.h": "c",
+        "functional": "c"
     }
 }

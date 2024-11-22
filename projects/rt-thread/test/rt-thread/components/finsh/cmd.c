@@ -107,7 +107,7 @@ long list_thread(void)
                 thread->stack_size,
                 (thread->stack_size - ((rt_ubase_t) ptr - (rt_ubase_t) thread->stack_addr)),
                 thread->remaining_tick,
-                thread->error);
+                0);  // thread->error
     }
     
     return 0;
