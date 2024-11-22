@@ -175,7 +175,10 @@ void OutRes(int argc, char** argv)
     if (argc != 3)
         printf("OutRes [OUTPUT_X_RES] [OUTPUT_Y_RES]\r\n");
     else
+    {
+        DVP->VP_SCALER = (720 & 0xFFFF) << 16 | (1280 & 0xFFFF); // 将OUTPUT_Y_RES和OUTPUT_X_RES写入VP_SCALER
         DVP->VP_SCALER = (atoi(argv[2]) & 0xFFFF) << 16 | (atoi(argv[1]) & 0xFFFF); // 将OUTPUT_Y_RES和OUTPUT_X_RES写入VP_SCALER
+    }
 }
 MSH_CMD_EXPORT(OutRes, OutRes)
 

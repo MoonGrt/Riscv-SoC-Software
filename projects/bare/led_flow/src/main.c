@@ -3,7 +3,7 @@
 /* 软件延时 */
 void delay(unsigned int count)
 {
-    count *= 50000;
+    count *= 10000;
     for (; count != 0; count--)
         ;
 }

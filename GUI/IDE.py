@@ -170,7 +170,7 @@ class SearchDialog(QDialog):
         # 设置窗口属性：无边框且始终在最上层
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         # 设置窗口样式
-        self.setStyleSheet("background-color: #A68F8B; border: 1px solid gray;")
+        self.setStyleSheet("background-color: #A68F8B; border: None;")
 
         # 搜索输入框
         self.search_input = QLineEdit(self)
@@ -181,26 +181,26 @@ class SearchDialog(QDialog):
         self.case_sensitive_button = QPushButton(self)
         self.case_sensitive_button.setIcon(QIcon('icons/case_sensitive.svg'))  # 设置图标
         self.case_sensitive_button.setCheckable(True)  # 按钮可切换状态
-        self.case_sensitive_button.setStyleSheet("border: none; background: none;")
+        self.case_sensitive_button.setStyleSheet("QPushButton:checked { background-color: rgba(0, 0, 0, 0.2); /* 被选中状态的背景色 */}")
         self.case_sensitive_button.setIconSize(QSize(15, 15))  # 设置图标大小
         # 全字匹配复选框
         self.whole_word_button = QPushButton(self)
         self.whole_word_button.setIcon(QIcon('icons/whole_word_match.svg'))  # 设置图标
         self.whole_word_button.setCheckable(True)  # 按钮可切换状态
-        self.whole_word_button.setStyleSheet("border: none; background: none;")
+        self.whole_word_button.setStyleSheet("QPushButton:checked {background-color: rgba(0, 0, 0, 0.2); /* 被选中状态的背景色 */}")
         self.whole_word_button.setIconSize(QSize(15, 15))  # 设置图标大小
 
         # 向前搜索按钮
         self.search_forward_button = QPushButton(self)
         self.search_forward_button.setIcon(QIcon('icons/forward.svg'))  # 设置图标
-        self.search_forward_button.setStyleSheet("border: none; background: none;")
-        self.search_forward_button.setIconSize(QSize(20, 20))  # 设置图标大小
+        self.search_forward_button.setStyleSheet("QPushButton:pressed {background-color: rgba(0, 0, 0, 0.1); /* 半透明背景色 */}")
+        self.search_forward_button.setIconSize(QSize(15, 15))  # 设置图标大小
         self.search_forward_button.clicked.connect(self.search_forward)  # 向前搜索
         # 向后搜索按钮
         self.search_backward_button = QPushButton(self)
         self.search_backward_button.setIcon(QIcon('icons/backward.svg'))  # 设置图标
-        self.search_backward_button.setStyleSheet("border: none; background: none;")
-        self.search_backward_button.setIconSize(QSize(20, 20))  # 设置图标大小
+        self.search_backward_button.setStyleSheet("QPushButton:pressed {background-color: rgba(0, 0, 0, 0.1); /* 半透明背景色 */}")
+        self.search_backward_button.setIconSize(QSize(15, 15))  # 设置图标大小
         self.search_backward_button.clicked.connect(self.search_backward)  # 向后搜索
         # 关闭按钮
         self.close_button = QPushButton("×", self)
@@ -245,8 +245,8 @@ class SearchDialog(QDialog):
         cursor = current_text_edit.textCursor()  # 获取光标
         current_pos = cursor.position()  # 当前光标位置
 
-        case_sensitive = self.case_sensitive.isChecked()  # 大小写匹配选项
-        whole_word = self.whole_word.isChecked()  # 全字匹配选项
+        case_sensitive = self.case_sensitive_button.isChecked()  # 大小写匹配选项
+        whole_word = self.whole_word_button.isChecked()  # 全字匹配选项
 
         # 根据搜索方向设置搜索范围
         if direction == "forward":
@@ -260,19 +260,24 @@ class SearchDialog(QDialog):
         if whole_word:  # 如果选择全字匹配，将查询文本包装为单词边界
             query = rf"\b{re.escape(query)}\b"
 
+        # 开始搜索
         match = None
         if direction == "forward":  # 向前搜索
             match = re.search(query, search_range, flags)
         else:  # 向后搜索
             match = list(re.finditer(query, search_range, flags))
             if match:
-                match = match[-1]  # 获取最后一个匹配项
+                if len(match) > 1:  # 如果有多个匹配项
+                    match = match[-2]  # 获取倒数第二个匹配项
+                else:
+                    match = match[-1]  # 获取最后一个匹配项
+            else:
+                match = None
 
         if match:
             # 设置光标到匹配的起始和结束位置，并高亮显示
             start = match.start() + (current_pos if direction == "forward" else 0)
             end = match.end() + (current_pos if direction == "forward" else 0)
-
             cursor.setPosition(start)
             cursor.setPosition(end, QTextCursor.KeepAnchor)  # 保持选中状态
             current_text_edit.setTextCursor(cursor)  # 设置光标
@@ -287,6 +292,7 @@ class SearchDialog(QDialog):
     def mouseMoveEvent(self, event):
         if self.is_dragging:  # 如果正在拖动
             delta = event.globalPos() - self.drag_start_position  # 计算偏移
+            # print(self.x(), self.y())
             self.move(self.x() + delta.x(), self.y() + delta.y())  # 移动窗口
             self.drag_start_position = event.globalPos()  # 更新起始位置
 
@@ -298,7 +304,6 @@ class SearchDialog(QDialog):
     def closeEvent(self, event):
         self.main_window.edit_area.currentWidget().setFocus()  # 关闭时设置焦点到当前文本编辑器
         event.accept()  # 接受事件
-
 
 
 class IDE(QMainWindow):
@@ -354,12 +359,11 @@ class IDE(QMainWindow):
         # 创建左侧的编辑区域
         self.edit_area = QTabWidget(file_tab)  # 用于文件编辑的区域
         self.edit_area.setStyleSheet("background-color: #D1A7A4")  # 设置为指定的背景色
+        # self.edit_area.setStyleSheet("background-color: lightgray")  # 设置为指定的背景色
         self.newFile(start_page=True)
 
         # 汇编代码区域
         assemble_layout = QVBoxLayout()  # 为汇编代码创建垂直布局
-        # assemble_label = QLabel("             Assemble Code")
-        # assemble_layout.addWidget(assemble_label)  # 添加标签
         self.assemble_code_area = QTextEdit()
         self.assemble_code_area.setStyleSheet("background-color: #CEA69B")  # 设置为指定的背景色
         self.assemble_code_area.setReadOnly(True)
@@ -367,8 +371,6 @@ class IDE(QMainWindow):
         assemble_layout.addWidget(self.assemble_code_area)  # 添加文本编辑区域
         # 机械码区域
         machine_layout = QVBoxLayout()  # 为机械码创建垂直布局
-        # machine_label = QLabel("             Machine Code")
-        # machine_layout.addWidget(machine_label)  # 添加标签
         self.machine_code_area = QTextEdit()
         self.machine_code_area.setStyleSheet("background-color: #CEA69B")  # 设置为指定的背景色
         self.machine_code_area.setReadOnly(True)
@@ -1188,7 +1190,7 @@ class IDE(QMainWindow):
     def search(self):
         if not self.search_dialog:
             self.search_dialog = SearchDialog(self)
-        self.search_dialog.move(804, 134)
+        self.search_dialog.move(999, 165)
         self.search_dialog.show()  # 打开搜索对话框
         self.search_dialog.raise_()  # 将对话框置于最前
         self.search_dialog.activateWindow()  # 激活对话框窗口
@@ -1262,6 +1264,9 @@ class IDE(QMainWindow):
         try:
             assemble_path = self.project_path + f"/build/{self.project_name}.asm"
             self.assemble_code_area.setPlainText(self.extract_assemblecode(assemble_path))
+        except:
+            pass
+        try:
             machine_path = self.project_path + f"/build/{self.project_name}.hex"
             self.machine_code_area.setPlainText(self.extract_machinecode(machine_path))
         except:
