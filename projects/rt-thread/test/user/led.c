@@ -65,7 +65,6 @@ void th_led_en(void *p_arg)
     GPIO_init();
     PWM_init();
 
-    printf("th_led_en\r\n");
     for (;;)
     {
         led_flow_breathe(0, 1); // LED 0; 逐渐变亮

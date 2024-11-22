@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QTextEdit, QLineEdit, QVBoxLayout,
     QDialog, QPushButton, QLabel, QHBoxLayout, QCheckBox, QFileDialog, QAction, QMenuBar, QTabWidget, QWidget
 )
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, QPoint
 from PyQt5.QtGui import QTextCursor, QIcon
 import re
 
@@ -14,8 +14,13 @@ class SearchDialog(QDialog):
         self.setWindowTitle("搜索")
         self.init_ui()
 
+        # For dragging the window
+        self.setMouseTracking(True)
+        self.is_dragging = False
+        self.drag_start_position = QPoint()
+
     def init_ui(self):
-        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.setStyleSheet("background-color: white; border: 1px solid gray;")
 
         self.search_input = QLineEdit(self)
@@ -112,6 +117,21 @@ class SearchDialog(QDialog):
         self.main_window.tab_widget.currentWidget().setFocus()
         event.accept()
 
+    # Mouse events to allow dragging the dialog window
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.is_dragging = True
+            self.drag_start_position = event.globalPos()  # Start position of mouse press
+
+    def mouseMoveEvent(self, event):
+        if self.is_dragging:
+            delta = event.globalPos() - self.drag_start_position
+            self.move(self.x() + delta.x(), self.y() + delta.y())
+            self.drag_start_position = event.globalPos()
+
+    def mouseReleaseEvent(self, event):
+        self.is_dragging = False
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -183,6 +203,8 @@ class MainWindow(QMainWindow):
         self.search_dialog.activateWindow()  # 激活对话框窗口
 
     def closeEvent(self, event):
+        if self.search_dialog:
+            self.search_dialog.close()  # Close the search dialog when the main window is closed
         self.tab_widget.currentWidget().setFocus()
         event.accept()
 

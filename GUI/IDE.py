@@ -2,7 +2,7 @@ import sys, serial, serial.tools.list_ports, os, subprocess, shutil, signal, pex
 from PyQt5.QtWidgets import QVBoxLayout, QSplitter, QGridLayout, QTableWidget, QLabel, QTableWidgetItem, QHBoxLayout, QMessageBox, QFormLayout
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QAction, QFileDialog, QTabWidget, QWidget, QPushButton, QTabBar, QComboBox
 from PyQt5.QtWidgets import QTreeView, QFileSystemModel, QDialog, QCheckBox, QLineEdit
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, QSize
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QSize, QPoint
 from PyQt5.QtGui import QIcon, QTransform, QColor, QTextCursor
 from NewPro import NewPro
 from RISCVSim.pyriscv import Sim
@@ -160,106 +160,145 @@ class SearchDialog(QDialog):
     def __init__(self, main_window: 'IDE'):
         super().__init__()
         self.main_window = main_window  # 保存主窗口实例
-        self.setWindowTitle("搜索")
-        self.init_ui()
+        self.init_ui()  # 初始化用户界面
+
+        self.setMouseTracking(True)  # 启用鼠标追踪
+        self.is_dragging = False  # 记录是否正在拖动窗口
+        self.drag_start_position = QPoint()  # 窗口拖动起始位置
 
     def init_ui(self):
-        self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setStyleSheet("background-color: white; border: 1px solid gray;")
+        # 设置窗口属性：无边框且始终在最上层
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
+        # 设置窗口样式
+        self.setStyleSheet("background-color: #A68F8B; border: 1px solid gray;")
 
+        # 搜索输入框
         self.search_input = QLineEdit(self)
-        self.search_input.setPlaceholderText("搜索...")
+        self.search_input.setPlaceholderText("Search...")  # 占位符文本
+        self.search_input.setStyleSheet("background-color: #D1A7A4;")
 
-        self.case_sensitive = QCheckBox("区分大小写", self)
-        self.case_sensitive.setStyleSheet("QCheckBox { border: none; background: none; }")
+        # 大小写区分复选框
+        self.case_sensitive_button = QPushButton(self)
+        self.case_sensitive_button.setIcon(QIcon('icons/case_sensitive.svg'))  # 设置图标
+        self.case_sensitive_button.setCheckable(True)  # 按钮可切换状态
+        self.case_sensitive_button.setStyleSheet("border: none; background: none;")
+        self.case_sensitive_button.setIconSize(QSize(15, 15))  # 设置图标大小
+        # 全字匹配复选框
+        self.whole_word_button = QPushButton(self)
+        self.whole_word_button.setIcon(QIcon('icons/whole_word_match.svg'))  # 设置图标
+        self.whole_word_button.setCheckable(True)  # 按钮可切换状态
+        self.whole_word_button.setStyleSheet("border: none; background: none;")
+        self.whole_word_button.setIconSize(QSize(15, 15))  # 设置图标大小
 
-        self.whole_word = QCheckBox("全字匹配", self)
-        self.whole_word.setStyleSheet("QCheckBox { border: none; background: none; }")
-
+        # 向前搜索按钮
         self.search_forward_button = QPushButton(self)
-        self.search_forward_button.setIcon(QIcon('icons/forward.svg'))
+        self.search_forward_button.setIcon(QIcon('icons/forward.svg'))  # 设置图标
         self.search_forward_button.setStyleSheet("border: none; background: none;")
-        self.search_forward_button.setIconSize(QSize(20, 20))
-
+        self.search_forward_button.setIconSize(QSize(20, 20))  # 设置图标大小
+        self.search_forward_button.clicked.connect(self.search_forward)  # 向前搜索
+        # 向后搜索按钮
         self.search_backward_button = QPushButton(self)
-        self.search_backward_button.setIcon(QIcon('icons/backward.svg'))
+        self.search_backward_button.setIcon(QIcon('icons/backward.svg'))  # 设置图标
         self.search_backward_button.setStyleSheet("border: none; background: none;")
-        self.search_backward_button.setIconSize(QSize(20, 20))
-
+        self.search_backward_button.setIconSize(QSize(20, 20))  # 设置图标大小
+        self.search_backward_button.clicked.connect(self.search_backward)  # 向后搜索
+        # 关闭按钮
         self.close_button = QPushButton("×", self)
-        self.close_button.setFixedWidth(30)
+        self.close_button.setFixedWidth(30)  # 固定宽度
         self.close_button.setStyleSheet("border: none; color: red; font-weight: bold; font-size: 20px;")
+        self.close_button.clicked.connect(self.close)  # 关闭按钮
 
+        # 布局管理
         layout = QHBoxLayout()
+        # 添加控件到布局
         layout.addWidget(self.search_input)
-        layout.addWidget(self.case_sensitive)
-        layout.addWidget(self.whole_word)
+        layout.addWidget(self.case_sensitive_button)
+        layout.addWidget(self.whole_word_button)
         layout.addWidget(self.search_forward_button)
         layout.addWidget(self.search_backward_button)
         layout.addWidget(self.close_button)
 
-        layout.setContentsMargins(5, 5, 5, 5)
-        layout.setSpacing(10)
+        layout.setContentsMargins(5, 5, 5, 5)  # 设置布局边距
+        layout.setSpacing(10)  # 设置控件间距
+        self.setLayout(layout)  # 设置布局
 
-        self.setLayout(layout)
-
-        self.close_button.clicked.connect(self.close)
-        self.search_forward_button.clicked.connect(self.search_forward)
-        self.search_backward_button.clicked.connect(self.search_backward)
-
+    # 向前搜索
     def search_forward(self):
         self.search(direction="forward")
 
+    # 向后搜索
     def search_backward(self):
         self.search(direction="backward")
 
+    # 搜索功能实现
     def search(self, direction):
-        query = self.search_input.text()
+        query = self.search_input.text()  # 获取搜索文本
         if not query:
-            return
+            return  # 如果没有输入则返回
 
         # 获取当前活动标签页的 QTextEdit
         current_text_edit = self.main_window.edit_area.currentWidget()
         if not current_text_edit:
-            return
+            return  # 如果没有活动的文本编辑器则返回
 
-        content = current_text_edit.toPlainText()
-        cursor = current_text_edit.textCursor()
-        current_pos = cursor.position()
+        content = current_text_edit.toPlainText()  # 获取文本内容
+        cursor = current_text_edit.textCursor()  # 获取光标
+        current_pos = cursor.position()  # 当前光标位置
 
-        case_sensitive = self.case_sensitive.isChecked()
-        whole_word = self.whole_word.isChecked()
+        case_sensitive = self.case_sensitive.isChecked()  # 大小写匹配选项
+        whole_word = self.whole_word.isChecked()  # 全字匹配选项
 
+        # 根据搜索方向设置搜索范围
         if direction == "forward":
             start_pos = current_pos
-            search_range = content[start_pos:]
+            search_range = content[start_pos:]  # 向前搜索的范围
         else:
             start_pos = 0
-            search_range = content[:current_pos]
+            search_range = content[:current_pos]  # 向后搜索的范围
 
-        flags = 0 if case_sensitive else re.IGNORECASE
-        if whole_word:
+        flags = 0 if case_sensitive else re.IGNORECASE  # 设置正则表达式标志
+        if whole_word:  # 如果选择全字匹配，将查询文本包装为单词边界
             query = rf"\b{re.escape(query)}\b"
 
         match = None
-        if direction == "forward":
+        if direction == "forward":  # 向前搜索
             match = re.search(query, search_range, flags)
-        else:
+        else:  # 向后搜索
             match = list(re.finditer(query, search_range, flags))
             if match:
-                match = match[-1]
+                match = match[-1]  # 获取最后一个匹配项
 
         if match:
+            # 设置光标到匹配的起始和结束位置，并高亮显示
             start = match.start() + (current_pos if direction == "forward" else 0)
             end = match.end() + (current_pos if direction == "forward" else 0)
 
             cursor.setPosition(start)
-            cursor.setPosition(end, QTextCursor.KeepAnchor)
-            current_text_edit.setTextCursor(cursor)
+            cursor.setPosition(end, QTextCursor.KeepAnchor)  # 保持选中状态
+            current_text_edit.setTextCursor(cursor)  # 设置光标
 
+    # 鼠标按下事件
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.is_dragging = True  # 开始拖动
+            self.drag_start_position = event.globalPos()  # 记录起始位置
+
+    # 鼠标移动事件
+    def mouseMoveEvent(self, event):
+        if self.is_dragging:  # 如果正在拖动
+            delta = event.globalPos() - self.drag_start_position  # 计算偏移
+            self.move(self.x() + delta.x(), self.y() + delta.y())  # 移动窗口
+            self.drag_start_position = event.globalPos()  # 更新起始位置
+
+    # 鼠标释放事件
+    def mouseReleaseEvent(self, event):
+        self.is_dragging = False  # 停止拖动
+
+    # 窗口关闭事件
     def closeEvent(self, event):
-        self.main_window.tab_widget.currentWidget().setFocus()
-        event.accept()
+        self.main_window.edit_area.currentWidget().setFocus()  # 关闭时设置焦点到当前文本编辑器
+        event.accept()  # 接受事件
+
 
 
 class IDE(QMainWindow):
@@ -1149,6 +1188,7 @@ class IDE(QMainWindow):
     def search(self):
         if not self.search_dialog:
             self.search_dialog = SearchDialog(self)
+        self.search_dialog.move(804, 134)
         self.search_dialog.show()  # 打开搜索对话框
         self.search_dialog.raise_()  # 将对话框置于最前
         self.search_dialog.activateWindow()  # 激活对话框窗口
@@ -1491,8 +1531,10 @@ class IDE(QMainWindow):
         self.serial_tab.setPlainText('')
 
     def closeEvent(self, event):
-        """ 在窗口关闭时自动断开连接 """
+        """ 在窗口关闭时自动断开连接, 并关闭搜索窗口 """
         self.disconnect()
+        if self.search_dialog:
+            self.search_dialog.close()  # Close the search dialog when the main window is closed
         event.accept()  # 关闭窗口
 
 
