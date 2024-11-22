@@ -1,11 +1,12 @@
-import sys, serial, serial.tools.list_ports, os, subprocess, shutil, signal, pexpect
+import sys, serial, serial.tools.list_ports, os, subprocess, shutil, signal, pexpect, re
 from PyQt5.QtWidgets import QVBoxLayout, QSplitter, QGridLayout, QTableWidget, QLabel, QTableWidgetItem, QHBoxLayout, QMessageBox, QFormLayout
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QAction, QFileDialog, QTabWidget, QWidget, QPushButton, QTabBar, QComboBox
-from PyQt5.QtWidgets import QTreeView, QFileSystemModel, QDialog
-from PyQt5.QtCore import Qt, QThread, pyqtSignal
-from PyQt5.QtGui import QIcon, QTransform, QColor
+from PyQt5.QtWidgets import QTreeView, QFileSystemModel, QDialog, QCheckBox, QLineEdit
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QSize
+from PyQt5.QtGui import QIcon, QTransform, QColor, QTextCursor
 from NewPro import NewPro
 from RISCVSim.pyriscv import Sim
+
 
 class Serial(QDialog):
     def __init__(self):
@@ -88,6 +89,7 @@ class Serial(QDialog):
         # 将端口添加到下拉框中
         self.com_line_edit.addItems(ports)
 
+
 class GdbThread(QThread):
     progress_signal = pyqtSignal(str)
 
@@ -153,6 +155,113 @@ class GdbThread(QThread):
         except pexpect.TIMEOUT:
             self.progress_signal.emit("GDB 超时，未能获取输出")
 
+
+class SearchDialog(QDialog):
+    def __init__(self, main_window: 'IDE'):
+        super().__init__()
+        self.main_window = main_window  # 保存主窗口实例
+        self.setWindowTitle("搜索")
+        self.init_ui()
+
+    def init_ui(self):
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setStyleSheet("background-color: white; border: 1px solid gray;")
+
+        self.search_input = QLineEdit(self)
+        self.search_input.setPlaceholderText("搜索...")
+
+        self.case_sensitive = QCheckBox("区分大小写", self)
+        self.case_sensitive.setStyleSheet("QCheckBox { border: none; background: none; }")
+
+        self.whole_word = QCheckBox("全字匹配", self)
+        self.whole_word.setStyleSheet("QCheckBox { border: none; background: none; }")
+
+        self.search_forward_button = QPushButton(self)
+        self.search_forward_button.setIcon(QIcon('icons/forward.svg'))
+        self.search_forward_button.setStyleSheet("border: none; background: none;")
+        self.search_forward_button.setIconSize(QSize(20, 20))
+
+        self.search_backward_button = QPushButton(self)
+        self.search_backward_button.setIcon(QIcon('icons/backward.svg'))
+        self.search_backward_button.setStyleSheet("border: none; background: none;")
+        self.search_backward_button.setIconSize(QSize(20, 20))
+
+        self.close_button = QPushButton("×", self)
+        self.close_button.setFixedWidth(30)
+        self.close_button.setStyleSheet("border: none; color: red; font-weight: bold; font-size: 20px;")
+
+        layout = QHBoxLayout()
+        layout.addWidget(self.search_input)
+        layout.addWidget(self.case_sensitive)
+        layout.addWidget(self.whole_word)
+        layout.addWidget(self.search_forward_button)
+        layout.addWidget(self.search_backward_button)
+        layout.addWidget(self.close_button)
+
+        layout.setContentsMargins(5, 5, 5, 5)
+        layout.setSpacing(10)
+
+        self.setLayout(layout)
+
+        self.close_button.clicked.connect(self.close)
+        self.search_forward_button.clicked.connect(self.search_forward)
+        self.search_backward_button.clicked.connect(self.search_backward)
+
+    def search_forward(self):
+        self.search(direction="forward")
+
+    def search_backward(self):
+        self.search(direction="backward")
+
+    def search(self, direction):
+        query = self.search_input.text()
+        if not query:
+            return
+
+        # 获取当前活动标签页的 QTextEdit
+        current_text_edit = self.main_window.edit_area.currentWidget()
+        if not current_text_edit:
+            return
+
+        content = current_text_edit.toPlainText()
+        cursor = current_text_edit.textCursor()
+        current_pos = cursor.position()
+
+        case_sensitive = self.case_sensitive.isChecked()
+        whole_word = self.whole_word.isChecked()
+
+        if direction == "forward":
+            start_pos = current_pos
+            search_range = content[start_pos:]
+        else:
+            start_pos = 0
+            search_range = content[:current_pos]
+
+        flags = 0 if case_sensitive else re.IGNORECASE
+        if whole_word:
+            query = rf"\b{re.escape(query)}\b"
+
+        match = None
+        if direction == "forward":
+            match = re.search(query, search_range, flags)
+        else:
+            match = list(re.finditer(query, search_range, flags))
+            if match:
+                match = match[-1]
+
+        if match:
+            start = match.start() + (current_pos if direction == "forward" else 0)
+            end = match.end() + (current_pos if direction == "forward" else 0)
+
+            cursor.setPosition(start)
+            cursor.setPosition(end, QTextCursor.KeepAnchor)
+            current_text_edit.setTextCursor(cursor)
+
+    def closeEvent(self, event):
+        self.main_window.tab_widget.currentWidget().setFocus()
+        event.accept()
+
+
 class IDE(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -160,9 +269,10 @@ class IDE(QMainWindow):
         self.Sim = Sim()
         self.init_ui()
 
-        # self.project_name = ''
-        # self.project_path = ''
+        self.project_name = ''
+        self.project_path = ''
         self.openocd_process = None  # 用于保存 openocd 进程
+        self.search_dialog = None
         self.connect()
 
     def init_ui(self):
@@ -228,9 +338,9 @@ class IDE(QMainWindow):
 
         # 创建水平布局
         file_tab_layout = QHBoxLayout(file_tab)
-        file_tab_layout.addWidget(self.edit_area, stretch=6)  # 添加编辑区域
+        file_tab_layout.addWidget(self.edit_area, stretch=8)  # 添加编辑区域
         file_tab_layout.addLayout(assemble_layout, stretch=3)
-        file_tab_layout.addLayout(machine_layout, stretch=1)
+        file_tab_layout.addLayout(machine_layout, stretch=2)
 
 
         # 在 simulation_tab 中创建一个 QGridLayout
@@ -369,6 +479,7 @@ class IDE(QMainWindow):
         self.splitterl.setOrientation(Qt.Horizontal)
         self.splitterl.addWidget(self.fileTree)
         self.splitterl.addWidget(self.splitterr)
+        self.fileTree.setMinimumWidth(50)
         self.splitterl.setSizes([1, 8]) # 设置 edit_tab 和 simulation_tab 的大小比例
         self.splitterl.splitterMoved.connect(self.adjust_tablewidth)
         # 创建主窗口
@@ -480,6 +591,14 @@ class IDE(QMainWindow):
         # paste_Action.setShortcut('Ctrl+V')  # 设置快捷键
         paste_Action.triggered.connect(self.paste)
         edit_Menu.addAction(paste_Action)
+
+        edit_Menu.addSeparator()  # 分隔线
+
+        search_Action = QAction(QIcon('icons/paste.svg'), 'Paste', self) # 粘贴操作
+        search_Action.setToolTip('Paste')
+        search_Action.setShortcut('Ctrl+F')  # 设置快捷键
+        search_Action.triggered.connect(self.search)
+        edit_Menu.addAction(search_Action)
 
         # 运行菜单
         run_Menu = self.menuBar().addMenu('Run')
@@ -1026,6 +1145,13 @@ class IDE(QMainWindow):
         current_tab = self.edit_area.widget(current_index)
         if current_tab:
             current_tab.paste()
+
+    def search(self):
+        if not self.search_dialog:
+            self.search_dialog = SearchDialog(self)
+        self.search_dialog.show()  # 打开搜索对话框
+        self.search_dialog.raise_()  # 将对话框置于最前
+        self.search_dialog.activateWindow()  # 激活对话框窗口
 
     # Python程序从Intel HEX文件中读取RISC-V指令并列出a
     def parse_hex_line(self, line):

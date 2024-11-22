@@ -94,7 +94,7 @@ class Connection(QGraphicsPathItem):
         self.setPath(path)  # 设置路径
 
 
-class MyGraphicsView(QGraphicsView):
+class BlockDesigner(QGraphicsView):
     def __init__(self, Block_label: QLabel, Name_label: QLineEdit):
         self.scene = QGraphicsScene()
         super().__init__(self.scene)
@@ -282,7 +282,7 @@ class DVPConf(QDialog):
         self.module_list.doubleClicked.connect(self.add_block)  # 连接双击事件
 
         # 创建图形视图和场景
-        self.view = MyGraphicsView(self.block_label, self.block_name_label)  # 使用自定义的 MyGraphicsView
+        self.view = BlockDesigner(self.block_label, self.block_name_label)  # 使用自定义的 BlockDesigner
 
         # 在底部添加按钮
         self.button_layout = QHBoxLayout()
