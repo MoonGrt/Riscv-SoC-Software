@@ -730,21 +730,6 @@ class NewPro(QDialog):
         hardware_layout.addStretch()  # 添加弹性空格
         hardware_layout.addWidget(self.cyber_checkbox)
         main_layout.addLayout(hardware_layout)
-        # AHB 配置
-        self.ahb_label = QLabel("AHB Device")
-        self.ahb_checkbox = QCheckBox("Enable")
-        self.ahb_checkbox.setChecked(True)
-        self.ahb_checkbox.toggled.connect(self.toggle_ahb_config)
-        self.ahbaxi_checkbox = QCheckBox("AXI")
-        self.ahbaxi_checkbox.setChecked(True)
-        self.ahb_button = QPushButton("DVP Conf")
-        self.ahb_button.clicked.connect(self.open_dvp_config)
-        ahb_layout = QHBoxLayout()
-        ahb_layout.addWidget(self.ahb_label)
-        ahb_layout.addWidget(self.ahb_checkbox)
-        ahb_layout.addWidget(self.ahbaxi_checkbox)
-        ahb_layout.addWidget(self.ahb_button)
-        main_layout.addLayout(ahb_layout)
         # APB 配置
         self.apb_label = QLabel("APB Device")
         self.apb_checkbox = QCheckBox("Enable")
@@ -760,6 +745,21 @@ class NewPro(QDialog):
         apb_layout.addWidget(self.apbaxi_checkbox)
         apb_layout.addWidget(self.apb_button)
         main_layout.addLayout(apb_layout)
+        # AHB 配置
+        self.ahb_label = QLabel("AHB Device")
+        self.ahb_checkbox = QCheckBox("Enable")
+        self.ahb_checkbox.setChecked(True)
+        self.ahb_checkbox.toggled.connect(self.toggle_ahb_config)
+        self.ahbaxi_checkbox = QCheckBox("AXI")
+        self.ahbaxi_checkbox.setChecked(True)
+        self.ahb_button = QPushButton("DVP Conf")
+        self.ahb_button.clicked.connect(self.open_dvp_config)
+        ahb_layout = QHBoxLayout()
+        ahb_layout.addWidget(self.ahb_label)
+        ahb_layout.addWidget(self.ahb_checkbox)
+        ahb_layout.addWidget(self.ahbaxi_checkbox)
+        ahb_layout.addWidget(self.ahb_button)
+        main_layout.addLayout(ahb_layout)
 
         # 横条：分隔线
         line = QFrame()
@@ -779,7 +779,7 @@ class NewPro(QDialog):
         main_layout.addLayout(template_layout)
         # 工程模板和子模板下拉框
         self.template_combo = QComboBox()
-        self.template_combo.addItems(["bare", "freertos", "rt-thread"])
+        self.template_combo.addItems(["bare", "freertos", "rt-thread", "pika-python"])
         self.template_combo.currentIndexChanged.connect(self.update_options)
         self.sub_template_combo = QComboBox()
         self.update_options()
@@ -846,6 +846,8 @@ class NewPro(QDialog):
                 "demo1-thread", "demo2-container", "demo3-delay", "demo4-muti_priority",
                 "demo5-timer", "demo6-timeslice", "demo7-finsh", "demo7-finsh+", "test"
             ])
+        elif selected_template == "pika-python":
+            self.sub_template_combo.addItems(["test"])
 
     def Generate(self):
         # 验证输入内容
