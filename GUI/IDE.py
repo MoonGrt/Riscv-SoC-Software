@@ -395,7 +395,7 @@ class IDE(QMainWindow):
         self.setWindowIcon(QIcon('icons/app.svg'))
 
         # 设置主窗口属性
-        self.setGeometry(200, 200, 1600, 900)
+        self.resize(1600, 900)
         self.setWindowTitle('IDE')
         self.setStyleSheet("background-color: #A68F8B")  # 设置为指定的背景色
         self.showMaximized()
@@ -594,13 +594,13 @@ class IDE(QMainWindow):
         self.fileTree.setMinimumWidth(50)
         self.splitterl.setSizes([1, 8]) # 设置 edit_tab 和 simulation_tab 的大小比例
         self.splitterl.splitterMoved.connect(self.adjust_tablewidth)
+        self.adjust_tablewidth(230)
         # 创建主窗口
         main_widget = QWidget(self)
         self.setCentralWidget(main_widget)
         splitter_layout = QVBoxLayout(main_widget)
         splitter_layout.addWidget(self.splitterl)  # 将QSplitter添加到布局中
         main_widget.setLayout(splitter_layout)
-
 
     def menu(self):
         # 文件菜单
@@ -898,15 +898,15 @@ class IDE(QMainWindow):
         self.debug_register_table.verticalHeader().setVisible(False)
 
         # 设置表格列宽
-        self.set_ColumnWidth(self.simulation_code_table, 9)
-        self.set_ColumnWidth(self.simulation_label_table, 8)
-        self.set_ColumnWidth(self.simulation_data_table, 8)
-        self.set_ColumnWidth(self.simulation_register_table, 8)
-        self.set_ColumnWidth(self.debug_code_table, 9)
-        self.set_ColumnWidth(self.debug_label_table, 8)
-        self.set_ColumnWidth(self.debug_data_table, 8)
-        self.set_ColumnWidth(self.debug_register_table, 8)
-
+        # self.set_ColumnWidth(self.simulation_code_table, 9)
+        # self.set_ColumnWidth(self.simulation_label_table, 8)
+        # self.set_ColumnWidth(self.simulation_data_table, 8)
+        # self.set_ColumnWidth(self.simulation_register_table, 8)
+        # self.set_ColumnWidth(self.debug_code_table, 9)
+        # self.set_ColumnWidth(self.debug_label_table, 8)
+        # self.set_ColumnWidth(self.debug_data_table, 8)
+        # self.set_ColumnWidth(self.debug_register_table, 8)
+        
         # 设置表格行高
         self.set_RowWidth()
 
@@ -1038,11 +1038,10 @@ class IDE(QMainWindow):
             self.debug_register_table.setColumnWidth(0, 170)  # Register
             self.debug_register_table.setColumnWidth(1, 175)  # Name
 
-    def adjust_tablewidth(self):
+    def adjust_tablewidth(self, pos=None):
         # 获取分隔条两边的宽度
-        widths = self.splitterl.sizes()
-        left_width = widths[0]
-        right_width = widths[1]
+        left_width = pos
+        right_width = 1920 - pos - 25
         # 计算每个列的宽度，使其适应表格宽度
         self.simulation_code_table.setColumnWidth(0, int((right_width-70)/4*3*0.25))  # Address
         self.simulation_code_table.setColumnWidth(1, int((right_width-70)/4*3*0.25))  # Code
@@ -1476,6 +1475,8 @@ class IDE(QMainWindow):
     def fillCode(self):
         # 按行分割文本
         lines_assembly = list(filter(lambda line: line.strip() != "", self.assemble_code_area.toPlainText().split('\n'))) # 去除空行
+        if len(lines_assembly) == 0:
+            return
         address = []
         machine = []
         assemble = []

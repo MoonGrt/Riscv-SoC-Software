@@ -46,7 +46,7 @@ class PyRiscv:
     def __control(self):
         while not self._exit:
             inst = self.__stage_if(self._pc)
-            print("0x{:08x}: ".format(self._pc)+"{:08x}".format(inst[31:0]))
+            # print("0x{:08x}: ".format(self._pc)+"{:08x}".format(inst[31:0]))
             decode_map = self.__stage_decode(inst)
             self.__stage_exec(decode_map)
 

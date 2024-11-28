@@ -109,21 +109,63 @@ class BlockDesigner(QGraphicsView):
 
         # 添加主要块
         self.create_blocks_and_connections()
+        self.add_splitter()  # 添加分割线
 
     def create_blocks_and_connections(self):
         """创建块和连接，并分配颜色。"""
-        # 添加多个块
-        block1 = self.add_block(20, 200, "VI", "VI", Qt.lightGray)
-        block2 = self.add_block(120, 200, "Cutter", "Cutter", Qt.lightGray)
-        block3 = self.add_block(220, 200, "Filter", "Filter", Qt.lightGray)
-        block4 = self.add_block(320, 150, "Color", "Color", Qt.lightGray)
-        block5 = self.add_block(400, 300, "Scaler", "Scaler", Qt.lightGray)
-        block6 = self.add_block(420, 100, "Bit", "Bit", Qt.lightGray)
-        block7 = self.add_block(420, 200, "Edger", "Edger", Qt.lightGray)
-        block8 = self.add_block(520, 150, "Filler", "Filler", Qt.lightGray)
-        block9 = self.add_block(620, 150, "VO", "VO", Qt.lightGray)
-        # 添加连接
-        self.add_connection(block1, block2)  # VI -> Cutter
+        # # 添加多个块
+        # block_test = self.add_block(20, 100, "Test", "Test", Qt.lightGray)
+        # block_hdmi_in = self.add_block(20, 200, "HDMI_RX", "HDMI", Qt.lightGray)  # 指向 VI 的 HDMI
+        # block_cam = self.add_block(20, 300, "CAM", "CAM", Qt.lightGray)
+        # block1 = self.add_block(120, 200, "VI", "VI", Qt.lightGray)
+        # block2 = self.add_block(220, 200, "Cutter", "Cutter", Qt.lightGray)
+        # block3 = self.add_block(320, 200, "Filter", "Filter", Qt.lightGray)
+        # block4 = self.add_block(420, 150, "Color", "Color", Qt.lightGray)
+        # block5 = self.add_block(500, 300, "Scaler", "Scaler", Qt.lightGray)
+        # block6 = self.add_block(520, 100, "Bit", "Bit", Qt.lightGray)
+        # block7 = self.add_block(520, 200, "Edger", "Edger", Qt.lightGray)
+        # block8 = self.add_block(620, 150, "Filler", "Filler", Qt.lightGray)
+        # block9 = self.add_block(720, 150, "VO", "VO", Qt.lightGray)
+        # block_lcd = self.add_block(820, 150, "LCD", "LCD", Qt.lightGray)
+        # block_vga = self.add_block(820, 250, "VGA", "VGA", Qt.lightGray)
+        # block_hdmi_out = self.add_block(820, 50, "HDMI_TX", "HDMI", Qt.lightGray)  # VO 指向的 HDMI
+
+        # # 添加连接
+        # self.add_connection(block_test, block1)     # Test -> VI
+        # self.add_connection(block_hdmi_in, block1)  # HDMI_IN -> VI
+        # self.add_connection(block_cam, block1)     # CAM -> VI
+        # self.add_connection(block1, block2)  # VI -> Cutter
+        # self.add_connection(block2, block3)  # Cutter -> Filter
+        # self.add_connection(block3, block4)  # Filter -> Color
+        # self.add_connection(block3, block5)  # Filter -> Scaler
+        # self.add_connection(block4, block6)  # Color -> Bit
+        # self.add_connection(block4, block7)  # Color -> Edger
+        # self.add_connection(block5, block8)  # Scaler -> Filler
+        # self.add_connection(block6, block8)  # Bit -> Filler
+        # self.add_connection(block7, block8)  # Edger -> Filler
+        # self.add_connection(block8, block9)  # Filler -> VO
+        # self.add_connection(block9, block_hdmi_out)  # VO -> HDMI_OUT
+        # self.add_connection(block9, block_lcd)     # VO -> LCD
+        # self.add_connection(block9, block_vga)     # VO -> VGA
+
+
+        block_test = self.add_block(20, 100, "Test", "Test", Qt.lightGray)
+        block_hdmi_in = self.add_block(20, 200, "HDMI_RX", "HDMI", Qt.lightGray)  # 指向 VI 的 HDMI
+        block_cam = self.add_block(20, 300, "CAM", "CAM", Qt.lightGray)
+        block2 = self.add_block(160, 200, "Cutter", "Cutter", Qt.lightGray)
+        block3 = self.add_block(260, 200, "Filter", "Filter", Qt.lightGray)
+        block4 = self.add_block(360, 150, "Color", "Color", Qt.lightGray)
+        block5 = self.add_block(460, 300, "Scaler", "Scaler", Qt.lightGray)
+        block6 = self.add_block(460, 100, "Bit", "Bit", Qt.lightGray)
+        block7 = self.add_block(460, 200, "Edger", "Edger", Qt.lightGray)
+        block8 = self.add_block(560, 150, "Filler", "Filler", Qt.lightGray)
+        block_hdmi_out = self.add_block(700, 50, "HDMI_TX", "HDMI", Qt.lightGray)  # VO 指向的 HDMI
+        block_lcd = self.add_block(700, 150, "LCD", "LCD", Qt.lightGray)
+        block_vga = self.add_block(700, 250, "VGA", "VGA", Qt.lightGray)
+
+        self.add_connection(block_test, block2)     # Test -> Cutter
+        self.add_connection(block_hdmi_in, block2)  # HDMI_IN -> Cutter
+        self.add_connection(block_cam, block2)     # CAM -> Cutter
         self.add_connection(block2, block3)  # Cutter -> Filter
         self.add_connection(block3, block4)  # Filter -> Color
         self.add_connection(block3, block5)  # Filter -> Scaler
@@ -132,7 +174,9 @@ class BlockDesigner(QGraphicsView):
         self.add_connection(block5, block8)  # Scaler -> Filler
         self.add_connection(block6, block8)  # Bit -> Filler
         self.add_connection(block7, block8)  # Edger -> Filler
-        self.add_connection(block8, block9)  # Filler -> VO
+        self.add_connection(block8, block_hdmi_out)  # Filler -> HDMI_OUT
+        self.add_connection(block8, block_lcd)     # Filler -> LCD
+        self.add_connection(block8, block_vga)     # Filler -> VGA
 
     def add_block(self, x, y, block_type, name, color):
         """添加一个块到场景中。"""
@@ -155,6 +199,15 @@ class BlockDesigner(QGraphicsView):
         self.scene.addItem(connection)  # 将连接添加到场景
         self.connections.append(connection)  # 将连接添加到连接列表
 
+    def add_splitter(self):
+        """添加分割线。"""
+        # 设置虚线样式的笔
+        dashed_pen = QPen(Qt.black)
+        dashed_pen.setStyle(Qt.DashLine)  # 设置为虚线
+        dashed_pen.setWidth(1)  # 设置线宽
+        self.scene.addLine(120, 0, 120, 400, dashed_pen)  # 添加水平分割线
+        self.scene.addLine(600, 0, 600, 400, dashed_pen)  # 添加水平分割线
+        
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             clicked_item = self.itemAt(event.pos())  # 获取点击位置的项
@@ -262,7 +315,7 @@ class DVPConf(QDialog):
         # 设置应用图标
         self.setWindowIcon(QIcon("icons/DVP.svg"))
         self.setWindowTitle("DVPConf")
-        self.resize(900, 500)
+        self.resize(1000, 600)
         self.setStyleSheet("background-color: #D1A7A4;")  # 将这里的颜色设置为你想要的颜色
 
         # 创建属性面板
