@@ -40,9 +40,6 @@ class Block(QGraphicsRectItem):
     def add_connection(self, curve):
         self.connections.append(curve)  # 添加连接
 
-    # def remove_connection(self, curve):
-    #     self.connections.remove(curve)  # 移除连接
-
     def update_connections(self):
         """更新所有连接的曲线。"""
         for curve in self.connections:  # 遍历所有连接
@@ -113,55 +110,19 @@ class BlockDesigner(QGraphicsView):
 
     def create_blocks_and_connections(self):
         """创建块和连接，并分配颜色。"""
-        # # 添加多个块
-        # block_test = self.add_block(20, 100, "Test", "Test", Qt.lightGray)
-        # block_hdmi_in = self.add_block(20, 200, "HDMI_RX", "HDMI", Qt.lightGray)  # 指向 VI 的 HDMI
-        # block_cam = self.add_block(20, 300, "CAM", "CAM", Qt.lightGray)
-        # block1 = self.add_block(120, 200, "VI", "VI", Qt.lightGray)
-        # block2 = self.add_block(220, 200, "Cutter", "Cutter", Qt.lightGray)
-        # block3 = self.add_block(320, 200, "Filter", "Filter", Qt.lightGray)
-        # block4 = self.add_block(420, 150, "Color", "Color", Qt.lightGray)
-        # block5 = self.add_block(500, 300, "Scaler", "Scaler", Qt.lightGray)
-        # block6 = self.add_block(520, 100, "Bit", "Bit", Qt.lightGray)
-        # block7 = self.add_block(520, 200, "Edger", "Edger", Qt.lightGray)
-        # block8 = self.add_block(620, 150, "Filler", "Filler", Qt.lightGray)
-        # block9 = self.add_block(720, 150, "VO", "VO", Qt.lightGray)
-        # block_lcd = self.add_block(820, 150, "LCD", "LCD", Qt.lightGray)
-        # block_vga = self.add_block(820, 250, "VGA", "VGA", Qt.lightGray)
-        # block_hdmi_out = self.add_block(820, 50, "HDMI_TX", "HDMI", Qt.lightGray)  # VO 指向的 HDMI
-
-        # # 添加连接
-        # self.add_connection(block_test, block1)     # Test -> VI
-        # self.add_connection(block_hdmi_in, block1)  # HDMI_IN -> VI
-        # self.add_connection(block_cam, block1)     # CAM -> VI
-        # self.add_connection(block1, block2)  # VI -> Cutter
-        # self.add_connection(block2, block3)  # Cutter -> Filter
-        # self.add_connection(block3, block4)  # Filter -> Color
-        # self.add_connection(block3, block5)  # Filter -> Scaler
-        # self.add_connection(block4, block6)  # Color -> Bit
-        # self.add_connection(block4, block7)  # Color -> Edger
-        # self.add_connection(block5, block8)  # Scaler -> Filler
-        # self.add_connection(block6, block8)  # Bit -> Filler
-        # self.add_connection(block7, block8)  # Edger -> Filler
-        # self.add_connection(block8, block9)  # Filler -> VO
-        # self.add_connection(block9, block_hdmi_out)  # VO -> HDMI_OUT
-        # self.add_connection(block9, block_lcd)     # VO -> LCD
-        # self.add_connection(block9, block_vga)     # VO -> VGA
-
-
-        block_test = self.add_block(20, 100, "Test", "Test", Qt.lightGray)
-        block_hdmi_in = self.add_block(20, 200, "HDMI_RX", "HDMI", Qt.lightGray)  # 指向 VI 的 HDMI
-        block_cam = self.add_block(20, 300, "CAM", "CAM", Qt.lightGray)
-        block2 = self.add_block(160, 200, "Cutter", "Cutter", Qt.lightGray)
-        block3 = self.add_block(260, 200, "Filter", "Filter", Qt.lightGray)
-        block4 = self.add_block(360, 150, "Color", "Color", Qt.lightGray)
-        block5 = self.add_block(460, 300, "Scaler", "Scaler", Qt.lightGray)
-        block6 = self.add_block(460, 100, "Bit", "Bit", Qt.lightGray)
-        block7 = self.add_block(460, 200, "Edger", "Edger", Qt.lightGray)
-        block8 = self.add_block(560, 150, "Filler", "Filler", Qt.lightGray)
-        block_hdmi_out = self.add_block(700, 50, "HDMI_TX", "HDMI", Qt.lightGray)  # VO 指向的 HDMI
-        block_lcd = self.add_block(700, 150, "LCD", "LCD", Qt.lightGray)
-        block_vga = self.add_block(700, 250, "VGA", "VGA", Qt.lightGray)
+        block_test = self.add_block(20, 100, "Test", "Test", QColor("#6495ED"))
+        block_hdmi_in = self.add_block(20, 200, "HDMI_RX", "HDMI", QColor("#6495ED"))  # 指向 VI 的 HDMI
+        block_cam = self.add_block(20, 300, "CAM", "CAM", QColor("#6495ED"))
+        block2 = self.add_block(160, 200, "Cutter", "Cutter", QColor("#8CBAB7"))
+        block3 = self.add_block(260, 200, "Filter", "Filter", QColor("#8CBAB7"))
+        block4 = self.add_block(360, 150, "Color", "Color", QColor("#8CBAB7"))
+        block5 = self.add_block(440, 300, "Scaler", "Scaler", QColor("#8CBAB7"))
+        block6 = self.add_block(460, 100, "Bit", "Bit", QColor("#8CBAB7"))
+        block7 = self.add_block(460, 200, "Edger", "Edger", QColor("#8CBAB7"))
+        block8 = self.add_block(560, 150, "Filler", "Filler", QColor("#8CBAB7"))
+        block_hdmi_out = self.add_block(700, 50, "HDMI_TX", "HDMI", QColor("#6495ED"))  # VO 指向的 HDMI
+        block_lcd = self.add_block(700, 150, "LCD", "LCD", QColor("#6495ED"))
+        block_vga = self.add_block(700, 250, "VGA", "VGA", QColor("#6495ED"))
 
         self.add_connection(block_test, block2)     # Test -> Cutter
         self.add_connection(block_hdmi_in, block2)  # HDMI_IN -> Cutter
@@ -265,7 +226,10 @@ class BlockDesigner(QGraphicsView):
                         # 创建连接
                         self.add_connection(self.right_click_block, selected_item)
                     # 重置右键选择的块
-                    self.right_click_block.setBrush(Qt.lightGray)
+                    if self.right_click_block.name in ["Test", "HDMI", "CAM"]:
+                        self.right_click_block.setBrush(QColor("#6495ED"))
+                    else:
+                        self.right_click_block.setBrush(QColor("#8CBAB7"))
                     self.right_click_block = None
                 else:
                     self.right_click_block = selected_item  # 记录右键点击的块
@@ -330,9 +294,17 @@ class DVPConf(QDialog):
         self.properties_layout.addRow("Name:", self.block_name_label)
 
         # 创建模块列表
-        self.module_list = QListWidget()
-        self.module_list.addItems(["Cutter", "Filter", "Color", "Scaler", "Bit", "Edger", "Filler"])
-        self.module_list.doubleClicked.connect(self.add_block)  # 连接双击事件
+        self.module_vi_list = QListWidget()
+        self.module_vi_list.addItems(["Test", "HDMI", "CAM"])
+        self.module_vi_list.doubleClicked.connect(self.add_vi_block)  # 连接双击事件
+
+        self.module_vp_list = QListWidget()
+        self.module_vp_list.addItems(["Cutter", "Filter", "Color", "Scaler", "Bit", "Edger", "Filler"])
+        self.module_vp_list.doubleClicked.connect(self.add_vp_block)  # 连接双击事件
+
+        self.module_vo_list = QListWidget()
+        self.module_vo_list.addItems(["HDMI", "LCD", "VGA"])
+        self.module_vo_list.doubleClicked.connect(self.add_vo_block)  # 连接双击事件
 
         # 创建图形视图和场景
         self.view = BlockDesigner(self.block_label, self.block_name_label)  # 使用自定义的 BlockDesigner
@@ -350,7 +322,9 @@ class DVPConf(QDialog):
         # 创建上下布局
         self.Vl_layout = QVBoxLayout()
         self.Vl_layout.addWidget(self.properties_panel)
-        self.Vl_layout.addWidget(self.module_list)
+        self.Vl_layout.addWidget(self.module_vi_list)
+        self.Vl_layout.addWidget(self.module_vp_list)
+        self.Vl_layout.addWidget(self.module_vo_list)
         # 创建上下布局
         self.Vr_layout = QVBoxLayout()
         self.Vr_layout.addWidget(self.view)
@@ -371,6 +345,7 @@ class DVPConf(QDialog):
         self.view.connections = []  # 存储所有连接
         self.view.right_click_block = None  # 右键选择的块
         self.view.create_blocks_and_connections()  # 重新创建所有块和连接
+        self.view.add_splitter()
 
     def confirm(self):
         """生成连接的网络列表（netlist）。"""
@@ -397,14 +372,33 @@ class DVPConf(QDialog):
         # 退出窗口
         self.accept()
 
-    def add_block(self):
+    def add_vi_block(self):
         """根据模块列表中选中的模块，添加一个块到场景中。"""
-        selected_module = self.module_list.currentItem().text()  # 获取选中的模块名称
+        selected_module = self.module_vi_list.currentItem().text()  # 获取选中的模块名称
         module_cnt = 0  # 记录模块数量
         for block in self.view.blocks:
             if block.block_type == selected_module:
                 module_cnt += 1
         self.view.add_block(320, 50, selected_module, selected_module + str(module_cnt), Qt.lightGray)  # 创建新块并添加到场景中
+
+    def add_vp_block(self):
+        """根据模块列表中选中的模块，添加一个块到场景中。"""
+        selected_module = self.module_vp_list.currentItem().text()  # 获取选中的模块名称
+        module_cnt = 0  # 记录模块数量
+        for block in self.view.blocks:
+            if block.block_type == selected_module:
+                module_cnt += 1
+        self.view.add_block(320, 50, selected_module, selected_module + str(module_cnt), Qt.lightGray)  # 创建新块并添加到场景中
+
+    def add_vo_block(self):
+        """根据模块列表中选中的模块，添加一个块到场景中。"""
+        selected_module = self.module_vo_list.currentItem().text()  # 获取选中的模块名称
+        module_cnt = 0  # 记录模块数量
+        for block in self.view.blocks:
+            if block.block_type == selected_module:
+                module_cnt += 1
+        self.view.add_block(320, 50, selected_module, selected_module + str(module_cnt), Qt.lightGray)  # 创建新块并添加到场景中
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

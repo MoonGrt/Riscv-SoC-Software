@@ -34,7 +34,7 @@ class PyRiscv:
         self._operator = PyRiscvOperator(bw)
         self._bw = bw
         self._exit = False
-        self.__control()
+        # self.__control()
 
     def step(self):
         if not self._exit:

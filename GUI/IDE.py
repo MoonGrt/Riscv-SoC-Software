@@ -1041,7 +1041,7 @@ class IDE(QMainWindow):
     def adjust_tablewidth(self, pos=None):
         # 获取分隔条两边的宽度
         left_width = pos
-        right_width = 1920 - pos - 25
+        right_width = 1920 - pos - 280
         # 计算每个列的宽度，使其适应表格宽度
         self.simulation_code_table.setColumnWidth(0, int((right_width-70)/4*3*0.25))  # Address
         self.simulation_code_table.setColumnWidth(1, int((right_width-70)/4*3*0.25))  # Code
