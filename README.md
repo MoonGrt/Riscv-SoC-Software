@@ -191,7 +191,7 @@ Figure 2: RTL diagram of the ‘CoreVision’ system project (exported by Gowin 
 
 #### System Architecture
 
-The system consists of two major components, hardware and software, working in tandem to provide a comprehensive video processing solution. The hardware part includes a processor based on RISC-√ architecture and a specially designed video processing path, while the software part includes an integrated development environment (iDE) and supporting libraries (libs, Makefile, linker).
+The system consists of two major components, hardware and software, working in tandem to provide a comprehensive video processing solution. The hardware part includes a processor based on RISC-V architecture and a specially designed video processing path, while the software part includes an integrated development environment (iDE) and supporting libraries (libs, Makefile, linker).
 
 ##### hardware part:
 
@@ -265,7 +265,7 @@ Fig. 5. RTL diagram of the video processing (VP) module (exported by Gowan IDE)
 
 The video processing module is used to perform a variety of image processing operations on the input video stream data, specifically including cropping, filtering, scaling, colour space conversion, edge detection, binarization and filling, etc. The VP module can dynamically enable or disable these processing functions according to the configuration of the control registers, so as to support diversified video application scenarios.
 
-The VP module receives data from the VI module, processes the data sequentially through multiple function modules, and finally outputs the processed data stream. The following are the main data flow processes within the √P module and the processing steps of the functional modules, all VP Control Register:
+The VP module receives data from the VI module, processes the data sequentially through multiple function modules, and finally outputs the processed data stream. The following are the main data flow processes within the VP module and the processing steps of the functional modules, all VP Control Register:
 
 1. Input and Signal Conversion
 The input video data is accessed to the VP module in 16-bit RGB565 format. The data is first converted to 24-bit RGB format after entering the VP module to meet the processing requirements of subsequent modules. There are video valid signals (de) and vertical sync signals (vs) in the module to ensure the timing and validity of data processing.
@@ -286,7 +286,7 @@ The Fill module is used to fill the image edges when the resolution of the scale
 
 ##### Video Output (VO)
 
-The Video Output module (VO module) is used to output video data to the HDMI interface. It is responsible for generating the timing and differential signals required by HDMI from the incoming video data and ensuring that the video data is output to the display at the correct time and location.The VO module consists of three main parts: input processing, timing generation and HDMI transmission.The VO module receives 16-bit video data from the incoming √P module. When the signal is valid, it maps the input data to complete 24-bit RGB data and generates the output display clock. The processing includes parsing out each bit of the red, green and blue tri-colour signals from the input signal and splicing them in the format required for HDMI display. After processing by the timing generation module, the generated timing signal and the processed RGB data are input to the DVI/HDMI transmission module. This module generates the TMDS signal (Transmission Minimum Differential Signal) required by HDMI through differential transmission, including clock signals and TMDS data signals. This system supports LCD, HDMI and other video output methods for users to choose from, through the VOControlRegister.
+The Video Output module (VO module) is used to output video data to the HDMI interface. It is responsible for generating the timing and differential signals required by HDMI from the incoming video data and ensuring that the video data is output to the display at the correct time and location.The VO module consists of three main parts: input processing, timing generation and HDMI transmission.The VO module receives 16-bit video data from the incoming VP module. When the signal is valid, it maps the input data to complete 24-bit RGB data and generates the output display clock. The processing includes parsing out each bit of the red, green and blue tri-colour signals from the input signal and splicing them in the format required for HDMI display. After processing by the timing generation module, the generated timing signal and the processed RGB data are input to the DVI/HDMI transmission module. This module generates the TMDS signal (Transmission Minimum Differential Signal) required by HDMI through differential transmission, including clock signals and TMDS data signals. This system supports LCD, HDMI and other video output methods for users to choose from, through the VOControlRegister.
 
 #### 2.2 System Software:
 
