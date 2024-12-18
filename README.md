@@ -138,9 +138,13 @@ This project has a wide range of application prospects, covering fields such as 
 #### 3. Key Technical Features
 
 **(1) Modular RISC-V processor architecture**: supports RV32IM instruction set with hardware and software interrupt management: provides a good foundation for multi-tasking and real-time response, suitable for embedded devices and real-time applications.
+
 **(2) Efficient Video Processing Link**: Integrated hardware-accelerated image processing capability to quickly perform operations such as edge detection, scaling and filtering, and support for HDMI input and DMA transmission to enhance video data processing efficiency.
+
 **(3) RTOS compatibility**: Supports RT-Thread and FreeRTOS operating systems with bare-metal development, providing efficient task management and real-time response capabilities to meet the needs of latency-sensitive applications. The supporting SDK facilitates rapid development and application deployment.
+
 **(4) Arbitrary Zoom**: Video zoom can be scaled by arbitrary multiples, either expanding any size to full screen or reducing the full screen to any resolution, leaving a series of interfaces for users to configure.
+
 **(5) Based on the software and hardware co-optimisation of custom development capabilities**: This system allows users to flexibly configure the GPIO module through the supporting graphical IDE developed by the team to expand the input and output interfaces of the RISC-V processor. Users are not only able to regulate the peripheral control logic of the system, but also extend the hardware functions on the FPGA through customised Hardware Description Language (HDL) code to achieve algorithm acceleration or edge computing functions for specific industry needs.
 
 #### 4. Key Performance Indicators
@@ -245,7 +249,8 @@ DVP module: video processing module, realising the processing system application
 <div style="text-align: center;">
 
 ![](Document/images/report/dvp.jpg)
-Figure 4. Block diagram of the video processing pathway
+Figure 4. Block diagram of the video processing pathway.
+
 </div>
 
 The video processing path is divided into three parts, video input (VI), video processing (VP) and video output (VO), according to the flow of video streaming data and functions.
@@ -257,7 +262,7 @@ The Video Input (VI) module is a multi-functional video capture and processing u
 <div style="text-align: center;">
 
 ![](Document/images/report/dvp_RTL.jpg)
-Fig. 5. RTL diagram of the video processing (VP) module (exported by Gowan IDE)
+Fig. 5. RTL diagram of the video processing (VP) module (exported by Gowan IDE).
 
 </div>
 
@@ -295,7 +300,7 @@ Ubuntu side (IDE), Windows side (UART)
 <div style="text-align: center;">
 
 ![](Document/images/report/block_diagram_software_part.jpg)
-Figure 6. Ubuntu side (IDE), Windows side (UART)
+Figure 6. Ubuntu side (IDE), Windows side (UART).
 
 </div>
 
@@ -340,7 +345,8 @@ The IDE page (shown in Figure 7) developed by our team is simple and clear, and 
 <div style="text-align: center;">
 
 ![](Document/images/IDE/overview.png)
-Figure 7. IDE page
+Figure 7. IDE page.
+
 </div>
 
 **(1) Project Management**: Users can create, open and manage multiple project files in the IDE to make the development process more efficient. In order to enhance the comfort of use and smooth operation, when the user selects a target file, the system will automatically import the directory where the file is located into the file resource management bar on the left side of the IDE page, which makes it easy for the user to quickly switch and access the file in one window. The file resource management bar supports hierarchical display and directory tree operation, in which users can directly view, edit and manage items from the file structure. In addition, through the buttons on the top of the resource management bar, users can easily rename, delete, copy and other operations, thus further improving the convenience and operational efficiency of project management (as shown in Figure 8).
@@ -348,7 +354,8 @@ Figure 7. IDE page
 <div style="text-align: center;">
 
 ![](Document/images/report/resource_management_column.jpg)
-Figure 8. Resource management column
+Figure 8. Resource management column.
+
 </div>
 
 **(2) Project Configuration**: support for users to create new projects in the IDE (as shown in Figure 9), can be compatible with multiple types of core users can follow their own needs for AHB or APB enablement, if there is no specified core, tick Cyber ’, you can generate the team produced lightweight core Cyber.h.
@@ -358,13 +365,13 @@ After the selection is complete, you can configure the GPIO autonomy on the visu
 <div style="text-align: center;">
 
 ![](Document/images/IDE/new_project.png)
-Figure 9. New Project Window
+Figure 9. New Project Window.
 
 ![](Document/images/IDE/GPIO_conf.png)
-Figure 10. GPIO Autoconfiguration Window
+Figure 10. GPIO Autoconfiguration Window.
 
 ![](Document/images/report/hardware_gen.jpg)
-Figure 11. Generating the .v hardware file
+Figure 11. Generating the .v hardware file.
 
 </div>
 
@@ -375,13 +382,13 @@ If the user selects ‘Compile’, the system will automatically compile the cur
 <div style="text-align: center;">
 
 ![](Document/images/report/sections.jpg)
-Figure 12. Compile the file to generate assembly and machine code
+Figure 12. Compile the file to generate assembly and machine code.
 
 ![](Document/images/report/simulation.jpg)
-Figure 13. Stepping assembly code for simulation
+Figure 13. Stepping assembly code for simulation.
 
 ![](Document/images/IDE/message.png)
-Figure 14. Message
+Figure 14. Message.
 
 </div>
 
@@ -392,7 +399,7 @@ The complete video processing pathway algorithm developed by our team has succes
 <div style="text-align: center;">
 
 ![](Document/images/report/finsh.jpg)
-Figure 15. Logging in to the real-time operating system to view demos and threads
+Figure 15. Logging in to the real-time operating system to view demos and threads.
 
 </div>
 
@@ -401,7 +408,7 @@ Take the OV5640 camera as the video input source as an example, configure it as 
 <div style="text-align: center;">
 
 ![](Document/images/report/commend.jpg)
-Figure 16. Video Reduce and Fill Blanks command
+Figure 16. Video Reduce and Fill Blanks command.
 
 </div>
 
@@ -413,7 +420,7 @@ The video zoom in and zoom out is shown in Figure 17, with a team member standin
 <div style="text-align: center;">
 
 ![](Document/images/report/vp_effect.jpg)
-Fig. 17. Video captured in three cases
+Fig. 17. Video captured in three cases.
 
 </div>
 
@@ -421,7 +428,7 @@ Fig. 17. Video captured in three cases
 
 The project completes a variety of custom peripherals: timer, GPIO, SPI, UART, interrupt, and watchdog. Table 1 shows the APB bus signal name definitions and descriptions:
 
-<div style="text-align: center;">Table 1. APB bus emulation waveform signal name definition and description</div>
+<div style="text-align: center;">Table 1. APB bus emulation waveform signal name definition and description.</div>
 
 | **APB Bus Signal Names** | **Signal Definitions and Functional Descriptions** |
 |-----------------------|-------------------------------------------|
@@ -434,7 +441,7 @@ The project completes a variety of custom peripherals: timer, GPIO, SPI, UART, i
 | io_apb_PWDATA | APB Data bus, used for writing data | io_apb_PWDATA | APB Write enable signal, high for write operation, low for read operation
 | io_apb_PRDATA | APB data bus for read data | | io_apb_PWDATA | APB write enable signal, high for write operation, low for read operation
 
-<div style="text-align: center;">Table 2. GPIO Configuration Register Name Descriptions</div>
+<div style="text-align: center;">Table 2. GPIO Configuration Register Name Descriptions.</div>
 
 | **GPIO Configuration Registers** | **Signal Definitions and Functional Description** |
 |:---------------------:|:---------------------:|
@@ -451,7 +458,7 @@ The GPIO configuration and push-pull and open-drain output waveforms are shown i
 Figure 18. GPIO section function prototypes
 
 ![](Document/images/report/gpio_simulation.jpg)
-Figure 19. GPIO configuration, push-pull open-drain output simulation waveforms
+Figure 19. GPIO configuration, push-pull open-drain output simulation waveforms.
 
 </div>
 
@@ -460,10 +467,10 @@ The UART configuration, transmit-receive interrupt waveform is shown in the figu
 <div style="text-align: center;">
 
 ![](Document/images/report/uart_function.jpg)
-Figure 20. Prototype of the UART part of the function
+Figure 20. Prototype of the UART part of the function.
 
 ![](Document/images/report/uart_simulation.jpg)
-Figure 21. UART Configuration, Send-Receive Interrupt Waveforms
+Figure 21. UART Configuration, Send-Receive Interrupt Waveforms.
 
 </div>
 
@@ -472,14 +479,14 @@ The SPI configuration, output waveforms are shown below. During the SPI configur
 <div style="text-align: center;">
 
 ![](Document/images/report/spi_function.jpg)
-Figure 20. SPI Port API Function Prototype
+Figure 20. SPI Port API Function Prototype.
 
 ![](Document/images/report/spi_simulation.jpg)
-Figure 21. SPI configuration, output waveforms
+Figure 21. SPI configuration, output waveforms.
 
 </div>
 
-<div style="text-align: center;">Table 3. Timer Configuration Register Name Descriptions</div>
+<div style="text-align: center;">Table 3. Timer Configuration Register Name Descriptions.</div>
 
 | **TIM Register Name** | **Signal Definition and Function Description** |
 |---------------------|-----------------------|
@@ -498,10 +505,10 @@ The timer configuration and PWM output waveforms are shown below. In the timer c
 <div style="text-align: center;">
 
 ![](Document/images/report/tim_funcion.jpg)
-Figure 22. Timer Port API Function Prototype
+Figure 22. Timer Port API Function Prototype.
 
 ![](Document/images/report/tim_simulation.jpg)
-Figure 23. Timer configuration, PWM output waveforms
+Figure 23. Timer configuration, PWM output waveforms.
 
 </div>
 
@@ -510,7 +517,7 @@ The timer configuration, timing interrupt waveform is shown below. An interrupt 
 <div style="text-align: center;">
 
 ![](Document/images/report/tim_interrupt.jpg)
-Figure 24. Timer Configuration, Timed Interrupt Waveforms
+Figure 24. Timer Configuration, Timed Interrupt Waveforms.
 
 </div>
 
@@ -519,10 +526,10 @@ The Independent Watchdog (IWDG) Configuration, Watchdog Reset output waveform is
 <div style="text-align: center;">
 
 ![](Document/images/report/iwdg_function.jpg)
-Figure 25. Independent Watchdog Port API Function Prototype
+Figure 25. Independent Watchdog Port API Function Prototype.
 
 ![](Document/images/report/iwdg_simulation.jpg)
-Figure 26. IWDG configuration, watchdog reset output waveforms
+Figure 26. IWDG configuration, watchdog reset output waveforms.
 
 </div>
 
@@ -531,10 +538,10 @@ The window watchdog (WWDG) configuration, watchdog reset output waveform is show
 <div style="text-align: center;">
 
 ![](Document/images/report/wwdg_function.jpg)
-Figure 25. Window Watchdog Port API Function Prototype
+Figure 25. Window Watchdog Port API Function Prototype.
 
 ![](Document/images/report/wwdg_simulation.jpg)
-Figure 26. WWDG configuration, watchdog reset output waveforms
+Figure 26. WWDG configuration, watchdog reset output waveforms.
 
 </div>
 
@@ -547,7 +554,7 @@ The video path hardware implementation simulation results are simulated using th
 <div style="text-align: center;">
 
 ![](Document/images/report/scaler_up_simulation.jpg)
-Figure 27. Original image zoomed to two times (bilinear interpolation algorithm) waveforms
+Figure 27. Original image zoomed to two times (bilinear interpolation algorithm) waveforms.
 
 </div>
 
@@ -556,7 +563,7 @@ Figure 27. Original image zoomed to two times (bilinear interpolation algorithm)
 <div style="text-align: center;">
 
 ![](Document/images/report/scaler_down_simulation.jpg)
-Figure 28. The original image is reduced to 1/2(Bilinear interpolation algorithm) waveform
+Figure 28. The original image is reduced to 1/2(Bilinear interpolation algorithm) waveform.
 
 </div>
 
@@ -565,7 +572,7 @@ Figure 28. The original image is reduced to 1/2(Bilinear interpolation algorithm
 <div style="text-align: center;">
 
 ![](Document/images/report/binarization_simulation.jpg)
-Figure 29. Image binarization waveform
+Figure 29. Image binarization waveform.
 
 </div>
 
@@ -574,7 +581,7 @@ Figure 29. Image binarization waveform
 <div style="text-align: center;">
 
 ![](Document/images/report/edge_detecter_simulation.jpg)
-Figure 30. Edge detection waveform (sobel operator)
+Figure 30. Edge detection waveform (sobel operator).
 
 </div>
 
@@ -583,7 +590,7 @@ Figure 30. Edge detection waveform (sobel operator)
 <div style="text-align: center;">
 
 ![](Document/images/report/rescource.jpg)
-Figure 31. Rexcore system resource consumption
+Figure 31. Rexcore system resource consumption.
 
 </div>
 
@@ -606,7 +613,7 @@ For the smallest system (without peripherals), the maximum clock frequency is sh
 <div style="text-align: center;">
 
 ![](Document/images/report/clk.jpg)
-Figure 32. Minimum system maximum clock frequency
+Figure 32. Minimum system maximum clock frequency.
 
 </div>
 
@@ -615,7 +622,7 @@ For a full CPU processing system, the maximum clock rate is shown in Figure 33:
 <div style="text-align: center;">
 
 ![](Document/images/report/clk_max.jpg)
-Figure 32. The maximum actual clock frequency can exceed 50MHz of the crystal oscillator frequency of the development board
+Figure 32. The maximum actual clock frequency can exceed 50MHz of the crystal oscillator frequency of the development board.
 
 </div>
 
@@ -626,7 +633,7 @@ For the smallest system (without peripherals), the power consumption data is sho
 <div style="text-align: center;">
 
 ![](Document/images/report/power.jpg)
-Figure 34. Minimum system power consumption
+Figure 34. Minimum system power consumption.
 
 </div>
 
@@ -635,7 +642,7 @@ For a full CPU processing system, the power consumption data is shown in Figure 
 <div style="text-align: center;">
 
 ![](Document/images/report/power_max.jpg)
-Figure 35. Maximum system power consumption
+Figure 35. Maximum system power consumption.
 
 </div>
 
@@ -687,7 +694,7 @@ The picture of the Tang Mega 138K pro development board based on this project wa
 
 Through calculation, the PSNR and SSIM indexes obtained by bilinear interpolation and adjacent domain algorithm in scaling up and reducing the above verification are shown in Table 4.
 
-<div style="text-align: center;">Table 4. Video streaming scaling algorithm verification and comparison</div>
+<div style="text-align: center;">Table 4. Video streaming scaling algorithm verification and comparison.</div>
 
 | Algorithm | Bilinear interpolation | adjacent field |
 | ------------------ | ---------- | -------------- |
