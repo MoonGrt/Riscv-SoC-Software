@@ -15,8 +15,7 @@
     <img src="Document/images/logo.png" alt="Logo" width="80" height="80">
     </a>
 <h3 align="center">Riscv-SoC-Software</h3>
-    <p align="center">
-    项目简介
+    <p align="center">项目简介
     <br />
     <a href="https://github.com/MoonGrt/Riscv-SoC-Software"><strong>浏览文档 »</strong></a>
     <br />
@@ -183,15 +182,11 @@
 
 我们的“睿视核”RISC-V处理系统如图1和图2所示(分别为系统框图以及高云IDE导出的RTL图)：
 
-<p align="center">
-    <img src="Document/images/report/block_diagram.jpg" alt="block_diagram">
-    图1. “睿视核”系统整体框图
-</p>
+<p align="center"><img src="Document/images/report/block_diagram.jpg" alt="block_diagram"></p>
+<p align="center">图1. “睿视核”系统整体框图</p>
 
-<p align="center">
-    <img src="Document/images/report/overall_RTL.jpg" alt="overall_RTL">
-    图2. “睿视核”系统工程RTL图(高云IDE导出)
-</p>
+<p align="center"><img src="Document/images/report/overall_RTL.jpg" alt="overall_RTL"></p>
+<p align="center">图2. “睿视核”系统工程RTL图(高云IDE导出)</p>
 
 #### 系统架构
 
@@ -215,10 +210,8 @@
 
 ##### 2.1.1 VexRiscV CPU
 
-<p align="center">
-    <img src="Document/images/report/VexRiscv.jpg" alt="VexRiscv">
-    图3. VexRiscV CPU 核心框图
-</p>
+<p align="center"><img src="Document/images/report/VexRiscv.jpg" alt="VexRiscv"></p>
+<p align="center">图3. VexRiscV CPU 核心框图</p>
 
 本系统处理器设计的结构包含一个核心CPU模块、总线交叉开关、外设接口和控制模块等部分。
 
@@ -245,10 +238,8 @@ DVP模块：视频处理模块，实现特定场景下的RISC-VCPU的处理系�
 
 ##### 2.1.5 视频通路
 
-<p align="center">
-    <img src="Document/images/report/dvp.jpg" alt="dvp">
-    图4. 视频处理通路框图
-</p>
+<p align="center"><img src="Document/images/report/dvp.jpg" alt="dvp"></p>
+<p align="center">图4. 视频处理通路框图</p>
 
 视频处理通路依据视频流媒体数据流动及功能具体分成视频输入(VI)，视频处理(VP)和视频输出(VO)三个部分。
 
@@ -256,10 +247,8 @@ DVP模块：视频处理模块，实现特定场景下的RISC-VCPU的处理系�
 
 视频输入(VI)模块是一个多功能视频采集和处理单元，旨在从CMOS图像传感器或内置测试图案生成器中获取图像数据，并对其进行格式转换和信号同步输出，以供后续的视频处理模块使用。该模块的核心功能包括：基于外部CMOS图像传感器的数据采集与初始化配置、测试图案的生成与输出选择以及8位数据到16位数据的格式转换该模块主要支持两种输入模式：测试图案模式和CMOS数据模式。当模式设置为测试图案时，VI模块激活内部的testpattern子模块生成图案数据。testpattern模块依据配置生成预设的测试图形(如彩条、灰阶或网格图案)与行同步、场同步以及数据使能信号一并输出。模块将接收到的测试图案数据转换为RGB565格式输出，同时控制同步信号、场同步和使能信号的输出，以保证测试图案的时序同步；当设置为CMOS数据模式时，VI模块通过与CMOS图像传感器的接口，利用内部的CAM子模块实现对CMOS传感器的配置和数据米集。首先，CAM模块通过I2C通信方式与CMOS传感器建立联系，配置其工作参数，包括分辨率和帧率等，以确保图像传感器的输出符合预期的规格。在配置完成后，CAM模块在CMOS传感器的像素时钟驱动下，逐行接收图像传感器传输的像素数据。图像数据的有效区域通常由CMOS传感器的水平和垂直参考信号进行标记，以指示当前数据是否有效。为适配后续处理需求，CAM模块内部包含一个数据格式转换子模块，将传感器输出的8位数据转换为16位RGB565格式。这种格式转换确保了数据能够与后续模块的输入格式一致。转换后的16位数据通过CAM模块输出至VI模块的主数据接口。同时，CAM模块生成的控制信号用于标记数据的有效性和同步性，确保数据流在整个系统中的连续和同步。VI模块可通过配Vl Control Register。
 
-<p align="center">
-    <img src="Document/images/report/dvp_RTL.jpg" alt="dvp_RTL">
-    图5. 视频处理(VP)模块RTL图(高云IDE导出)
-</p>
+<p align="center"><img src="Document/images/report/dvp_RTL.jpg" alt="dvp_RTL"></p>
+<p align="center">图5. 视频处理(VP)模块RTL图(高云IDE导出)</p>
 
 ##### 视频处理(VP)
 
@@ -292,10 +281,8 @@ VP模块接收来自VI模块的数据，通过多个功能模块依次对数据�
 
 Ubuntu端(IDE)，Windows端(UART)
 
-<p align="center">
-    <img src="Document/images/report/block_diagram_software_part.jpg" alt="block_diagram_software_part">
-    图6. Ubuntu端(IDE)，Windows端(UART)
-</p>
+<p align="center"><img src="Document/images/report/block_diagram_software_part.jpg" alt="block_diagram_software_part"></p>
+<p align="center">图6. Ubuntu端(IDE)，Windows端(UART)</p>
 
 本系统软件设计方案涵盖了嵌入式系统开发流程，包括代码编译、硬件配置、与FPGA的交互、以及调试等多个模块。
 
@@ -335,81 +322,59 @@ Ubuntu端(IDE)，Windows端(UART)
 
 本团队自主开发的IDE页面(如图7所示)简洁清晰，支持多种集成开发功能。
 
-<p align="center">
-    <img src="Document/images/IDE/overview.png" alt="IDE_overview">
-    图7. IDE页面
-</p>
+<p align="center"><img src="Document/images/IDE/overview.png" alt="IDE_overview"></p>
+<p align="center">图7. IDE页面</p>
 
 **(1)项目管理**：用户可以在IDE中创建、打开并管理多个项目文件，使开发流程更加高效。为了提升使用舒适性和操作流畅度，当用户选择目标文件时，系统会自动将该文件的所在目录导入到IDE页面左侧的文件资源管理栏中，便于用户在一个窗口内快速切换和访问文件。文件资源管理栏支持分层显示和目录树操作，用户可以在其中直接查看、编辑和管理项自文件结构。此外，通过资源管理栏上方的按钮，用户可以方便地进行文件重命名、删除、复制等操作，从而进一步提高项目管理的便捷性和操作效率(如图8所示)。
 
-<p align="center">
-    <img src="Document/images/report/resource_management_column.jpg" alt="resource_management_column">
-    图8. 资源管理栏
-</p>
+<p align="center"><img src="Document/images/report/resource_management_column.jpg" alt="resource_management_column"></p>
+<p align="center">图8. 资源管理栏</p>
 
 **(2)工程配置**：支持用户在IDE新建项目(如图9所示)，可以兼容多类型核用户可以按照自己的需要进行AHB或者APB使能，如果无指定核，勾选Cyber"，即可生成团队制作的轻量核Cyber.h。
 
 选择完成后，可以在可视化页面上进行GPIO的自主配置(如图10所示)。此配置页面支持串口增加，引脚选择，初始引脚无效化，以及自动报错。配置完成后点击生成按钮，则自动生成顶层Cyber.v文件。
 
-<p align="center">
-    <img src="Document/images/IDE/new_project.png" alt="IDE_new_project">
-    图9. 新建项目窗口
-</p>
+<p align="center"><img src="Document/images/IDE/new_project.png" alt="IDE_new_project"></p>
+<p align="center">图9. 新建项目窗口</p>
 
-<p align="center">
-    <img src="Document/images/IDE/GPIO_conf.png" alt="IDE_GPIO_conf">
-    图10. GPIO自主配置窗口
-</p>
+<p align="center"><img src="Document/images/IDE/GPIO_conf.png" alt="IDE_GPIO_conf"></p>
+<p align="center">图10. GPIO自主配置窗口</p>
 
-<p align="center">
-    <img src="Document/images/report/hardware_gen.jpg" alt="hardware_gen">
-    图11. 生成.v硬件文件
-</p>
+<p align="center"><img src="Document/images/report/hardware_gen.jpg" alt="hardware_gen"></p>
+<p align="center">图11. 生成.v硬件文件</p>
 
 **(3) 软件编译**：用户在选择或创建代码文件后，该文件会在IDE的file页面中央编辑窗口中展示(如图12所示)。用户可以在此中央窗口进行代码的编写与修改，享受便捷的编辑体验。编写完成后，用户可点击页面上方的“编译”、“运行”、“调制”按钮，后台会根据所选操作执行对应的工作流程。
 
 若用户选择“编译”操作，系统将自动编译当前代码，并在页面右侧的“AssembleCode"和“MachineCode"区域(如图12所示)实时显示编译生成的汇编码和机器码。这些区域提供了汇编语言与机器码的直观展示，便于用户进行代码性能分析与优化。通过这种直观的编译反馈，用户能够迅速检测并纠正代码中的错误，优化代码逻辑，从而显著提升开发效率。
 
-<p align="center">
-    <img src="Document/images/report/sections.jpg" alt="sections">
-    图12. 编译文件，生成汇编码和机械码
-</p>
+<p align="center"><img src="Document/images/report/sections.jpg" alt="sections"></p>
+<p align="center">图12. 编译文件，生成汇编码和机械码</p>
 
-<p align="center">
-    <img src="Document/images/report/simulation.jpg" alt="simulation">
-    图13. 步进汇编码，进行仿真
-</p>
+<p align="center"><img src="Document/images/report/simulation.jpg" alt="simulation"></p>
+<p align="center">图13. 步进汇编码，进行仿真</p>
 
-<p align="center">
-    <img src="Document/images/IDE/message.png" alt="IDE_message">
-    图14. Message 消息
-</p>
+<p align="center"><img src="Document/images/IDE/message.png" alt="IDE_message"></p>
+<p align="center">图14. Message 消息</p>
 
 **实时操作系统及对应视频通路算法**
 
 本团队开发的完整视频处理通路算法已成功通过GDB工具将可执行文件(.elf文件)下载至板载DDR内存。用户在登录系统时，可以选择裸机升发或选择任一实时操作系统(RT-Thread Free RTOS，推荐使用RT-Thread，)来输入指令并运行程序。在用户登录界面(如图15所示)，系统要求用户输入密码以确保访问安全。成功登录后，用户可以使用“list"指令(类似常用的“help"指令)查看可供执行的程序列表，通过“list-thread"指令则可查看当前CPU正在运行的所有线程为提升系统的用户友好性，本系统集成了一系列交互式功能。例如，在登录过程中，如果用户输入密码错误，系统会及时提醒用户重新输入。此外，系统支持指令的自动补全功能，用户可以通过按下“Tab"键完成指令中部分字母的补全，从而提高操作效率。这些功能设计旨在优化用户的操作体验，确保用户在实时系统中可以高效、便捷地控制和执行所需的程序。
 
-<p align="center">
-    <img src="Document/images/report/finsh.jpg" alt="finsh">
-    图15. 登录实时操作系统，查看Demo及线程
-</p>
+<p align="center"><img src="Document/images/report/finsh.jpg" alt="finsh"></p>
+<p align="center">图15. 登录实时操作系统，查看Demo及线程</p>
 
 以OV5640摄像头作为视频输入源为例，配置为 1280*720 视频帧输入FPGA。通过如图16所示指令设置视频缩小模式，用"SetOutRes756423"将 1280*720 视频帧缩小至 756*423 ，并通过"Fl指令将屏幕剩余部分填充为黑色，防止执行缩小指令前一帧缓存图像同时与缩小后的实时显示视频帧图像同时呈现在屏幕上。
 
-<p align="center">
-    <img src="Document/images/report/commend.jpg" alt="commend">
-    图16. 视频缩小并填充空白指令
-</p>
+<p align="center"><img src="Document/images/report/commend.jpg" alt="commend"></p>
+<p align="center">图16. 视频缩小并填充空白指令</p>
 
 指令设置视频放大模式，利用"SetOutReS1280720"设置输出图像像素为  1280*720  ，放大区域通过"SetStart12364"和"SetEnd802400"确定区域的起始
 点和终止点坐标为(123，64)，(802，400)。
 
 视频放大缩小如图17，以一位队员手拿平板站在距离摄像头相同距离和角度位置进行三种情况下拍摄：原图，缩小图，放大图。如图所示，视频放大缩小均可实时处理，清晰度高、低延迟。
 
-<p align="center">
-    <img src="Document/images/report/vp_effect.jpg" alt="vp_effect">
-    图17. 三种情况下拍摄的视频
-</p>
+<p align="center"><img src="Document/images/report/vp_effect.jpg" alt="vp_effect"></p>
+<p align="center">图17. 三种情况下拍摄的视频</p>
 
 #### 3.2 CPU部分仿真波形
 
@@ -445,39 +410,27 @@ GPIO配置与推挽、开漏输出波形如下图所示。CRL和CRH于配置GPIO
 
 </div>
 
-<p align="center">
-    <img src="Document/images/report/gpio_function.jpg" alt="gpio_function">
-    图18. GPIO 部分函数原型
-</p>
+<p align="center"><img src="Document/images/report/gpio_function.jpg" alt="gpio_function"></p>
+<p align="center">图18. GPIO 部分函数原型</p>
 
-<p align="center">
-    <img src="Document/images/report/gpio_simulation.jpg" alt="gpio_simulation">
-    图19. GPIO 配置、推挽开漏输出仿真波形
-</p>
+<p align="center"><img src="Document/images/report/gpio_simulation.jpg" alt="gpio_simulation"></p>
+<p align="center">图19. GPIO 配置、推挽开漏输出仿真波形</p>
 
 UART配置、发送接收中断波形如下图所示。UART配置阶段，通过BRR寄存器设置UART的波特率，以控制数据传输速度。如图，波形中PWDATA中的数据被写入到BRR地址，这一过程中UART的波特率配置成功。通过CR1和CR2寄存器配置UART的工作模式，并使能发送和接收中断。通过设置CR1中的相应位，UART可以被配置为在接收到数据或发送完成时触发中断信号。数据发送和接收阶段，数据被写入到TX寄存器。每次写入数据后，UART模块会将数据通过UART TX信号发送出去。在波形中可L以观察到UART TX信号的波形变化，表明数据正在逐位发送。UART在UART RX上接收数据，数据会逐位进入UART的接收缓冲区。接收到一个完整字节的数据后，会将其放入RX寄存器中。在波形图中标记的“UART中断处理函数”表示在中断触发后，CPU进入中断服务程序(ISR)。ISR会读取SR中的标志位以确定是发送完成还是接收完成，然后根据情况进行相应处理(如读取接收的数据或准备发送新的数据)，实际仿真波形符合预期设计。
 
-<p align="center">
-    <img src="Document/images/report/uart_function.jpg" alt="uart_function">
-    图20. UART 部分函数原型
-</p>
+<p align="center"><img src="Document/images/report/uart_function.jpg" alt="uart_function"></p>
+<p align="center">图20. UART 部分函数原型</p>
 
-<p align="center">
-    <img src="Document/images/report/uart_simulation.jpg" alt="uart_simulation">
-    图21. UART 配置、发送接收中断波形
-</p>
+<p align="center"><img src="Document/images/report/uart_simulation.jpg" alt="uart_simulation"></p>
+<p align="center">图21. UART 配置、发送接收中断波形</p>
 
 SPI配置、输出波形如下图所示。在SPI配置阶段，通过APB总线向CR1和CR2寄存器写入值，配置SPI通信的参数。配置寄存器的操作通过PADDR地址核PWDATA数据总线完成，PWRITE为高表示写入操作，PSEL和PENABLE共同控制数据的传输有效性。发送数据(MOSI)时，主设备要发送数据时，将数据写入DR寄存器。波形中可以看到在PWDATA上有多个数据写入操作，这些数据被传输到MOSI信号线上。接受数据(MISO)时，MISO信号线用于接收从设备返回的数据，并存储到DR寄存器中。通过PRDATA可以读取到MISO接收到的数据。通信开始时，主设备将CS信号拉低，从而选中对应的从设备。当CS低电平时，SPI数据传输有效，CS返回高电平则结束传输。当传输完成时，SPI模块可以触发中断，通知CPU进行后续处理，由SR信号设置相应的标志位。波形展示了APB总线如何通过寄存器配置SPI模块，以及SPI数据传输过程中SCK、MOSI、MISO和CS的信号变化情况。这种配置和传输过程是典型的SPI通信协议流程，与预期效果一致。
 
-<p align="center">
-    <img src="Document/images/report/spi_function.jpg" alt="spi_function">
-    图22. SPI 端口API函数原型
-</p>
+<p align="center"><img src="Document/images/report/spi_function.jpg" alt="spi_function"></p>
+<p align="center">图22. SPI 端口API函数原型</p>
 
-<p align="center">
-    <img src="Document/images/report/spi_simulation.jpg" alt="spi_simulation">
-    图23. SPI配置、输出波形
-</p>
+<p align="center"><img src="Document/images/report/spi_simulation.jpg" alt="spi_simulation"></p>
+<p align="center">图23. SPI配置、输出波形</p>
 
 **定时器(TIM)**:
 
@@ -501,46 +454,32 @@ SPI配置、输出波形如下图所示。在SPI配置阶段，通过APB总线�
 
 定时器配置、PWM输出波形如下图所示。在定时器配置阶段，通过CR1控制寄存器启用定时器，定时器开始计数。CR1中的相关位设置定时器的工作模式(如向上计数或向下计数)，控制定时器是否立即启动。在PWM波形配置中，通过CCMR1或CCMR2的值决定PWM信号的模式，例如边沿对齐模式或中心对齐模式并实现PWM信号的频率和占空比控制。CR捕获/比较寄存器与入数值，定义PWM信号的高电平持续时间，占空比的值决定了信号的高低电平比例。例如，设置CCR值为 50 时，PWM信号的高电平时间为半个周期。波形图展示了定时器通过PWM输出模式的配置和生成PWM信号的过程，主要关注了定时器的周期设置和占空比调整。通过配置CCMR和CCR寄存器，可以灵活控制PWM信号的输出特性，波形符合预期
 
-<p align="center">
-    <img src="Document/images/report/tim_funcion.jpg" alt="tim_funcion">
-    图24. 定时器端口API函数原型
-</p>
+<p align="center"><img src="Document/images/report/tim_funcion.jpg" alt="tim_funcion"></p>
+<p align="center">图24. 定时器端口API函数原型</p>
 
-<p align="center">
-    <img src="Document/images/report/tim_simulation.jpg" alt="tim_simulation">
-    图25. 定时器配置、PWM输出波形
-</p>
+<p align="center"><img src="Document/images/report/tim_simulation.jpg" alt="tim_simulation"></p>
+<p align="center">图25. 定时器配置、PWM输出波形</p>
 
 定时器配置、定时中断波形如下图所示。定时器达到自动重装载值并触发更新事件时，会产生中断信号。该信号用于通知CPU处理定时器中断服务程序(ISR)。定时器配置阶段，进行使能和模式设置并预分频和重装载值。通过写入PSC和ARR寄存器，设置定时器的时钟分频值和自动重装载值。在DIER寄存器中设置相应的位，启用定时器更新中断。定时器从○开始计数，按照预设的分频因子逐步增加。当计数值达到ARR的设定值时，计数器会重置，同时生成一个更新事件。当定时器的计数器达到ARR值并重装载时，更新事件触发中断。波形中可以看到在特定时刻TIM中断信号被拉高，表示中断已触发。中断触发后，CPU进入中断服务程序(ISR)，对定时器溢出事件进行处理。从波形图中可以看到，定时器的中断信号在固定的时间间隔内反复触发，形成一个周期性中断，符合设计。
 
-<p align="center">
-    <img src="Document/images/report/tim_interrupt.jpg" alt="tim_interrupt">
-    图26. 定时器配置、定时中断波形
-</p>
+<p align="center"><img src="Document/images/report/tim_interrupt.jpg" alt="tim_interrupt"></p>
+<p align="center">图26. 定时器配置、定时中断波形</p>
 
 独立看门狗(IWDG)配置、看门狗复位输出波形如下图所示。MDG配置阶段，波形中可以看到PADDR选择了PR寄存器的地址，并且PWDATA写入了预分频值。例如，12h01e表示写入特定值来配置IWDG的预分频参数，改变计数器的递减速度。在另一个时间点，PADDR指向RLR寄存器地址，PWDATA中写入了重装载值(例如32h00000073)，这表示当计数器从此值递减到0时，将触发复位操作。喂狗操作(KR寄存器写入)中，可以看到PADDR选择KR寄存器地址，并且PWDATA写入了特定的喂狗值。这会将计数器重置为RLR寄存器中的重装载值，防止看门狗触发复位。PR和RLR寄存器分别用于设置计数器的预分频和重装载值，控制计数器的倒计时间隔和复位时间。通过此波形图验证了包括计数器倒数、喂狗操作及寄存器配置生效，验证了WDR模块的基本功能。
 
-<p align="center">
-    <img src="Document/images/report/iwdg_function.jpg" alt="iwdg_function">
-    图27. 独立看门狗端口API函数原型
-</p>
+<p align="center"><img src="Document/images/report/iwdg_function.jpg" alt="iwdg_function"></p>
+<p align="center">图27. 独立看门狗端口API函数原型</p>
 
-<p align="center">
-    <img src="Document/images/report/iwdg_simulation.jpg" alt="iwdg_simulation">
-    图28. IWDG配置、看门狗复位输出波形
-</p>
+<p align="center"><img src="Document/images/report/iwdg_simulation.jpg" alt="iwdg_simulation"></p>
+<p align="center">图28. IWDG配置、看门狗复位输出波形</p>
 
 窗口看门狗(WWDG)配置、看门狗复位输出波形如下图所示。配置阶段，通过PADDR选择CFR寄存器地址，入特定的预分频值和窗口值以设置计数器的时间窗口。窗口值决定喂狗的时机，如果喂狗过早或过晚都会导致复位。例如，8c0和7h40表示设置窗口的上限和下限，只有在该窗口内进行喂狗操作才是有效的。波形图展示了包括设置窗口和预分频因子以及在窗口期内进行喂狗操作等配置过程，符合预期[7, 8]。
 
-<p align="center">
-    <img src="Document/images/report/wwdg_function.jpg" alt="wwdg_function">
-    图29. 窗口看门狗端口API函数原型
-</p>
+<p align="center"><img src="Document/images/report/wwdg_function.jpg" alt="wwdg_function"></p>
+<p align="center">图29. 窗口看门狗端口API函数原型</p>
 
-<p align="center">
-    <img src="Document/images/report/wwdg_simulation.jpg" alt="wwdg_simulation">
-    图30. WWDG配置、看门狗复位输出波形
-</p>
+<p align="center"><img src="Document/images/report/wwdg_simulation.jpg" alt="wwdg_simulation"></p>
+<p align="center">图30. WWDG配置、看门狗复位输出波形</p>
 
 #### 3.3 视频通路仿真波形
 
@@ -548,38 +487,28 @@ SPI配置、输出波形如下图所示。在SPI配置阶段，通过APB总线�
 
 **放大**：这里设置为切割出视频流每帧的中间172部分，并把切出的图像放大为原来两倍。此处使用 1280*720 像素彩条进行仿真。当prede为高电平时，表示当前时刻的像素输入数据是有效的图像数据，格式为24位宽的RGB888信号。cutter为负责图像剪切的模块。输入图像在经过cutter模块后，输出的是剪切后的数据(即选定区域的图像数据)，然后送入下一级的filter模块对图像数据进行平滑或边缘处理。在放大时，插值会在原始像素之间生成新的像素，因此postdata会包含中间颜色的值，而不是简单的重复。例如，颜色从24h3e003e到24hba00ba之间，插值可能生成中间值，逐步过渡；post_de会更频繁地为高电平，意味看输出的有效数据更多，因为插值生成了更多的中间像素。仿真结果表明图像被放大了，仿真结果理想且正确。
 
-<p align="center">
-    <img src="Document/images/report/scaler_up_simulation.jpg" alt="scaler_up_simulation">
-    图31. 原图放大至二倍(双线性插值算法)波形
-</p>
+<p align="center"><img src="Document/images/report/scaler_up_simulation.jpg" alt="scaler_up_simulation"></p>
+<p align="center">图31. 原图放大至二倍(双线性插值算法)波形</p>
 
 **缩小**：将摄像头采集并传入的1280*720图像缩小至原来的1/2像素大小，并置于屏幕左上角位置显示。此处使用1280*720像素彩条进行仿真。与放大部分数据流类似，经过cutter及filter模块后进入scaler进行缩小。在缩小时，双线性插值会对原图多个像素进行加权平均，这样可以在缩小后的图像中保留更多细节。同样，post_data中的数据会是多个像素的混合值。由于输出数据减少, post_data的高电平相对稀疏。波形仿真表明图像被缩小，结果符合预期且正确。
 
-<p align="center">
-    <img src="Document/images/report/scaler_down_simulation.jpg" alt="scaler_down_simulation">
-    图32. 将原图缩小至1/2(双线性插值算法)波形
-</p>
+<p align="center"><img src="Document/images/report/scaler_down_simulation.jpg" alt="scaler_down_simulation"></p>
+<p align="center">图32. 将原图缩小至1/2(双线性插值算法)波形</p>
 
 **图像二值化**：将摄像头输入的RGB565图像转化成本黑白图像输出。二值化后的数据 通常是1位的数据，每个像素点只有0或1两种状态。0通常代表黑色，1代表白色。因此，高电平表示该像素点被判断为白色，而低电平表示该像素点被判断为黑色。通过观察postbit的变化，可以看出哪些像素点被判定为黑或白，形成黑白图像。
 
-<p align="center">
-    <img src="Document/images/report/binarization_simulation.jpg" alt="binarization_simulation">
-    图33. 图像二值化波形
-</p>
+<p align="center"><img src="Document/images/report/binarization_simulation.jpg" alt="binarization_simulation"></p>
+<p align="center">图33. 图像二值化波形</p>
 
 **边缘检测**：对摄像头输入的RGB565图像进行物体的轮廓识别，边缘部分使用白色勾勒，其余部分使用黑色填充凸显轮廓。观察到edge/post_bit信号的变化，查看经过边缘检测处理后的图像。通过postbit信号的高低电平可以确定哪些像素属于边缘，哪些像素属于背景。post_bit信号为高电平(1)时，表示该像素被检测为边缘，应该以白色显示。这些高电平脉冲在postbit中以较短的间隔分布，表示检测到图像的边缘轮廓。post_bit信号为低电平(o)时，表示该像素属于背景，应该以黑色显示。大部分post_bit保持低电平，表示图像的背景区域没有显著变化。从仿真结果可以看出，post_bit在每一帧图像仿真中拉高8次，对应彩条八个色块与边缘之间的颜色变化间隙，仿真结果符合预期。
 
-<p align="center">
-    <img src="Document/images/report/edge_detecter_simulation.jpg" alt="edge_detecter_simulation">
-    图34. 边缘检测波形(sobel算子)
-</p>
+<p align="center"><img src="Document/images/report/edge_detecter_simulation.jpg" alt="edge_detecter_simulation"></p>
+<p align="center">图34. 边缘检测波形(sobel算子)</p>
 
 #### 3.3 资源消耗
 
-<p align="center">
-    <img src="Document/images/report/rescource.jpg" alt="rescource">
-    图35. “睿视核”系统资源消耗
-</p>
+<p align="center"><img src="Document/images/report/rescource.jpg" alt="rescource"></p>
+<p align="center">图35. “睿视核”系统资源消耗</p>
 
 本系统资源消耗如图31所示，主要包括寄存器(Register)、查找表(LUT)、算术逻辑单元(ALU)、块状SRAM(BSRAM)和切片SRAM(SSRAM)等资源。各模块在FPGA上的资源消耗根据功能划分，并以层次结构展示。
 
@@ -597,33 +526,25 @@ CAM：AhbDVP模块下的子模块CAM也使用了相对较多的资源，特别�
 
 对于最小系统(无外设)，最大时钟频率如图32所示：
 
-<p align="center">
-    <img src="Document/images/report/clk.jpg" alt="clk">
-    图36. 最小系统最大时钟频率
-</p>
+<p align="center"><img src="Document/images/report/clk.jpg" alt="clk"></p>
+<p align="center">图36. 最小系统最大时钟频率</p>
 
 对于完整CPU处理系统，最大时钟频率如图33所示：
 
-<p align="center">
-    <img src="Document/images/report/clk_max.jpg" alt="clk_max">
-    图37. 最大实际时钟频率均可超过开发板晶振频率50MHz
-</p>
+<p align="center"><img src="Document/images/report/clk_max.jpg" alt="clk_max"></p>
+<p align="center">图37. 最大实际时钟频率均可超过开发板晶振频率50MHz</p>
 
 ##### 功耗分析：
 
 对于最小系统(无外设)，功耗数据如图34所示：
 
-<p align="center">
-    <img src="Document/images/report/power.jpg" alt="power">
-    图38. 最小系统功耗
-</p>
+<p align="center"><img src="Document/images/report/power.jpg" alt="power"></p>
+<p align="center">图38. 最小系统功耗</p>
 
 对于完整CPU处理系统，功耗数据如图35所示：
 
-<p align="center">
-    <img src="Document/images/report/power_max.jpg" alt="power_max">
-    图39. 最大系统功耗
-</p>
+<p align="center"><img src="Document/images/report/power_max.jpg" alt="power_max"></p>
+<p align="center">图39. 最大系统功耗</p>
 
 对于本团队开发具有视频处理应用功能的“睿视核”工作系统。从以上数据可以看出，该系统的功耗分布合理，动态功耗和静态功耗均被有效控制。结温远低于系统允许的最高温度，这表明散热设计满足系统要求，并且提供了一定的温度裕度，有助于提高系统的长期可靠性。
 
