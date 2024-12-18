@@ -423,12 +423,12 @@ Table 1. APB bus emulation waveform signal name definition and description.
 |-----------------------|-------------------------------------------|
 | io_apb_PCLK | APB bus clock signal |
 | io_apb_PRESET | APB bus reset signal that resets the module when low |
-| io_apb_PADDR | APB address bus, register for GPIO selection | | io_apb_PADDR | APB address bus, register for GPIO selection | | io_apb_PSTOP
-| io_apb_PSEL | APB select signal to select GPIO module | | io_apb_PADDR | APB address bus, used to select GPIO registers
-| io_apb_PENABLE | APB enable signal, when high indicates a valid transfer | | io_apb_PENABLE | APB_PENABLE | APB address bus, used to select the GPIO's registers
-| io_apb_PWRITE | APB Write enable signal, high for write operation, low for read operation | | io_apb_PWRITE | APB Write enable signal, high for write operation, low for read operation
-| io_apb_PWDATA | APB Data bus, used for writing data | io_apb_PWDATA | APB Write enable signal, high for write operation, low for read operation
-| io_apb_PRDATA | APB data bus for read data | | io_apb_PWDATA | APB write enable signal, high for write operation, low for read operation
+| io_apb_PADDR | APB address bus, register for GPIO selection | 
+| io_apb_PSEL | APB select signal to select GPIO module | 
+| io_apb_PENABLE | APB enable signal, when high indicates a valid transfer | 
+| io_apb_PWRITE | APB Write enable signal, high for write operation, low for read operation | 
+| io_apb_PWDATA | APB Data bus, used for writing data |
+| io_apb_PRDATA | APB data bus for read data | 
 
 </div>
 
@@ -440,15 +440,15 @@ Table 2. GPIO Configuration Register Name Descriptions.
 |:---------------------:|:---------------------:|
 | CRL and CRH | IO Configuration Registers |
 | BSRR | IO Set/Reset Register |
-| BSRR | IO Set/Reset Register | IDR | GPIO Input Data Register | ODR | GPIO Input Data Register | ODR
-| ODR | GPIO Output Data Register | BSRR | IO Set/Reset Register | IDR | GPIO Input Data Register
-
-The GPIO configuration and push-pull and open-drain output waveforms are shown in the following figure.CRL and CRH are used to configure the push-pull outputs, open-drain outputs, and input modes of the GPIO pins II, etc. The configuration waveforms in the figure show the configuration of CRL and CRH through PADDR and PWDATA.IDO and ODR are used to read and write the status of the GPIO pins I and II, respectively. In push-pull mode, after configuring GPIO pin I to push-pull mode, the value of ODR register directly controls the output level, which can be used to drive high and low levels; in open-drain mode, after configuring GPIO pin I to open-drain mode, ODR outputs a low level when it writes 'O', and the pin is suspended when it writes '1' (high-resistance state). This mode is suitable for bus communication circuits.
+| IDR | GPIO Input Data Register |
+| ODR | GPIO Output Data Register |
 
 </div>
 
+The GPIO configuration and push-pull and open-drain output waveforms are shown in the following figure.CRL and CRH are used to configure the push-pull outputs, open-drain outputs, and input modes of the GPIO pins II, etc. The configuration waveforms in the figure show the configuration of CRL and CRH through PADDR and PWDATA.IDO and ODR are used to read and write the status of the GPIO pins I and II, respectively. In push-pull mode, after configuring GPIO pin I to push-pull mode, the value of ODR register directly controls the output level, which can be used to drive high and low levels; in open-drain mode, after configuring GPIO pin I to open-drain mode, ODR outputs a low level when it writes 'O', and the pin is suspended when it writes '1' (high-resistance state). This mode is suitable for bus communication circuits.
+
 <p align="center">
-    <img src="Document/images/report/gpio_functions.jpg" alt="gpio_functions">
+    <img src="Document/images/report/gpio_function.jpg" alt="gpio_function">
     Figure 18. GPIO section function prototypes.
 </p>
 
@@ -487,19 +487,19 @@ Table 3. Timer Configuration Register Name Descriptions.
 
 | **TIM Register Name** | **Signal Definition and Function Description** |
 |---------------------|-----------------------|
-|CR1 | Timer Control Register 1, used to enable the timer, set the timer operating mode, counting direction, etc |
-|CR2 | Timer Control Register 2, usually contains additional function configuration options such as output control, etc | |DIER | Disconnect Enable Register 1, used to enable the timer, set the timer operating mode, count direction, etc
-|DIER | Interrupt Enable Register, used to enable interrupts for the timer | |SR | Register, usually contains additional function configuration options such as output control, etc.
-|SR |SR register, used to indicate the status of the timer, e.g. update event, capture compare event, etc. |EGR |Error Generation Register, used to indicate the status of the timer.
-|EGR |File Generation Register for generating update events (e.g., reloading counter values) |CCMR1 CCMR1
-|CCMR1 CCMR2 | Compare Mode Register, configure the output compare mode or input capture mode, here used for PWM output mode configuration |
-|CCR | Get/Compare Register, controls the duty cycle of the PWM signal, i.e., signal high duration ||PSC
-|PSC | Crossover Register, used to set the clock crossover coefficient of the timer and control the timer counting speed | |ARR | Reload Register, used for PWM output mode configuration
-|ARR | Reload Register, used to set the period of the timer. The counter will reload and trigger an update event when it reaches the ARR value ||ARR
-
-The timer configuration and PWM output waveforms are shown below. In the timer configuration stage, the timer is enabled through the CR1 control register, and the timer starts counting. the relevant bits in CR1 set the operation mode of the timer (e.g. counting up or counting down), and control whether the timer will start immediately. In the PWM waveform configuration, the value of CCMR1 or CCMR2 determines the mode of the PWM signal, e.g., edge-aligned mode or centre-aligned mode, and implements the frequency and duty cycle control of the PWM signal. the CR capture/comparison register, with the incoming value, defines the duration of the high level of the PWM signal, and the value of the duty cycle determines the ratio of high and low levels of the signal. For example, setting the CCR value to 50 results in a PWM signal that is high for half a cycle. The waveform diagram shows how the timer is configured and generates the PWM signal through the PWM output mode, focusing mainly on the period setting and duty cycle adjustment of the timer. By configuring the CCMR and CCR registers, the output characteristics of the PWM signal can be flexibly controlled, and the waveform is as expected
+| CR1 | Timer Control Register 1, used to enable the timer, set the timer operating mode, counting direction, etc |
+| CR2 | Timer Control Register 2, usually contains additional function configuration options such as output control, etc |
+| DIER | Disconnect Enable Register 1, used to enable the timer, set the timer operating mode, count direction, etc
+| SR | Register, usually contains additional function configuration options such as output control, etc. |
+| EGR | File Generation Register for generating update events (e.g., reloading counter values) |
+| CCMR1 CCMR2 | Compare Mode Register, configure the output compare mode or input capture mode, here used for PWM output mode configuration |
+| CCR | Get/Compare Register, controls the duty cycle of the PWM signal, i.e., signal high duration |
+| PSC | Crossover Register, used to set the clock crossover coefficient of the timer and control the timer counting speed | 
+| ARR | Reload Register, used to set the period of the timer. The counter will reload and trigger an update event when it reaches the ARR value |
 
 </div>
+
+The timer configuration and PWM output waveforms are shown below. In the timer configuration stage, the timer is enabled through the CR1 control register, and the timer starts counting. the relevant bits in CR1 set the operation mode of the timer (e.g. counting up or counting down), and control whether the timer will start immediately. In the PWM waveform configuration, the value of CCMR1 or CCMR2 determines the mode of the PWM signal, e.g., edge-aligned mode or centre-aligned mode, and implements the frequency and duty cycle control of the PWM signal. the CR capture/comparison register, with the incoming value, defines the duration of the high level of the PWM signal, and the value of the duty cycle determines the ratio of high and low levels of the signal. For example, setting the CCR value to 50 results in a PWM signal that is high for half a cycle. The waveform diagram shows how the timer is configured and generates the PWM signal through the PWM output mode, focusing mainly on the period setting and duty cycle adjustment of the timer. By configuring the CCMR and CCR registers, the output characteristics of the PWM signal can be flexibly controlled, and the waveform is as expected
 
 <p align="center">
     <img src="Document/images/report/tim_funcion.jpg" alt="tim_funcion">

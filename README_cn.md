@@ -446,7 +446,7 @@ GPIO配置与推挽、开漏输出波形如下图所示。CRL和CRH于配置GPIO
 </div>
 
 <p align="center">
-    <img src="Document/images/report/gpio_functions.jpg" alt="gpio_functions">
+    <img src="Document/images/report/gpio_function.jpg" alt="gpio_function">
     图18. GPIO 部分函数原型
 </p>
 
