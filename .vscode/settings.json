@@ -49,6 +49,7 @@
         "limits": "c",
         "typeinfo": "c",
         "utils.h": "c",
-        "functional": "c"
+        "functional": "c",
+        "vga.h": "c"
     }
 }
