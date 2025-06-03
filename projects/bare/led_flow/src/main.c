@@ -61,7 +61,7 @@ void main()
     printf("Led_Flow\r\n");
     for (;;)
     {
-        /*使用GPIO_Write，同时设置GPIOA所有引脚的高低电平，实现LED流水灯*/
+        /* 使用GPIO_Write，同时设置GPIOA所有引脚的高低电平，实现LED流水灯 */
         GPIO_Write(GPIOA, ~0x0001); // 0000 0000 0000 0001，PA0引脚为低电平，其他引脚均为高电平，注意数据有按位取反
         delay(100);
         GPIO_Write(GPIOA, ~0x0002); // 0000 0000 0000 0010，PA1引脚为低电平，其他引脚均为高电平

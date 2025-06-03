@@ -706,13 +706,13 @@ class IDE(QMainWindow):
 
         edit_Menu.addSeparator()  # 分隔线
 
-        search_Action = QAction(QIcon('icons/search.svg'), 'Search', self) # 粘贴操作
+        search_Action = QAction(QIcon('icons/search.svg'), 'Search', self) # 
         search_Action.setToolTip('Search')
         search_Action.setShortcut('Ctrl+F')  # 设置快捷键
         search_Action.triggered.connect(self.search)
         edit_Menu.addAction(search_Action)
 
-        comment_Action = QAction(QIcon('icons/comment.svg'), 'Comment', self) # 粘贴操作
+        comment_Action = QAction(QIcon('icons/comment.svg'), 'Comment', self) # 
         comment_Action.setToolTip('Comment')
         comment_Action.setShortcut('Ctrl+/')  # 设置快捷键
         comment_Action.triggered.connect(self.comment)
@@ -1344,7 +1344,7 @@ class IDE(QMainWindow):
     def assemble(self):
         try:
             # 使用 "make clean && make" 命令
-            make = subprocess.Popen("make clean && make", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self.project_path)
+            make = subprocess.Popen("make clean && make -j8", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self.project_path)
             stdout, stderr = make.communicate()
             if stdout:
                 stdout_lines = stdout.decode('utf-8').splitlines()  # 将输出按行分割

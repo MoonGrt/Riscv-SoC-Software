@@ -26,8 +26,8 @@ make
 sudo make install
 
 # Download and install the Sifive GCC toolchain
-version=riscv64-unknown-elf-gcc-8.3.0-2019.08.0-x86_64-linux-ubuntu14
 wget -O riscv64-unknown-elf-gcc.tar.gz riscv https://static.dev.sifive.com/dev-tools/$version.tar.gz
 tar -xzvf riscv64-unknown-elf-gcc.tar.gz
+version=riscv64-unknown-elf-gcc-8.3.0-2019.08.0-x86_64-linux-ubuntu14
 sudo mv $version /opt/riscv
 echo 'export PATH=/opt/riscv/bin:$PATH' >> ~/.bashrc
