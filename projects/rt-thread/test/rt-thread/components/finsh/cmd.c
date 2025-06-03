@@ -51,7 +51,7 @@ long clear(void)
 MSH_CMD_EXPORT(clear, clear the screen);
 
 /* 列出所有命令 */
-long list(void)
+long help(void)
 {
     printf("--Function List:\r\n");
     {
@@ -64,8 +64,7 @@ long list(void)
 
     return 0;
 }
-MSH_CMD_EXPORT(list, list all command);
-
+MSH_CMD_EXPORT(help, list all command);
 
 /* 列出所有线程信息 */
 long list_thread(void)

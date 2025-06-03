@@ -2,34 +2,42 @@
 #include <rthw.h>
 
 /**
- * This function will move memory content from source address to destination
- * address.
+ * This function will compare two areas of memory
  *
- * @param dest the address of destination memory
- * @param src  the address of source memory
- * @param n the copied length
+ * @param cs one area of memory
+ * @param ct another area of memory
+ * @param count the size of the area
  *
- * @return the address of destination memory
+ * @return the result
  */
-void *rt_memmove(void *dest, const void *src, rt_ubase_t n)
+rt_int32_t rt_memcmp(const void *cs, const void *ct, rt_ubase_t count)
 {
-    char *tmp = (char *)dest, *s = (char *)src;
+    const unsigned char *su1, *su2;
+    int res = 0;
 
-    if (s < tmp && tmp < s + n)
-    {
-        tmp += n;
-        s += n;
+    for (su1 = (const unsigned char *)cs, su2 = (const unsigned char *)ct; 0 < count; ++su1, ++su2, count--)
+        if ((res = *su1 - *su2) != 0)
+            break;
 
-        while (n--)
-            *(--tmp) = *(--s);
-    }
-    else
-    {
-        while (n--)
-            *tmp++ = *s++;
-    }
+    return res;
+}
 
-    return dest;
+/**
+ * This function will return the length of a string, which terminate will
+ * null character.
+ *
+ * @param s the string
+ *
+ * @return the length of string
+ */
+rt_size_t rt_strlen(const char *s)
+{
+    const char *sc;
+
+    for (sc = s; *sc != '\0'; ++sc) /* nothing */
+        ;
+
+    return sc - s;
 }
 
 /**
@@ -177,4 +185,45 @@ int __rt_ffs(int value)
         return __lowest_bit_bitmap[(value & 0xff0000) >> 16] + 17;
 
     return __lowest_bit_bitmap[(value & 0xff000000) >> 24] + 25;
+}
+
+/**
+ * This function will move memory content from source address to destination
+ * address.
+ *
+ * @param dest the address of destination memory
+ * @param src  the address of source memory
+ * @param n the copied length
+ *
+ * @return the address of destination memory
+ */
+void *rt_memmove(void *dest, const void *src, rt_ubase_t n)
+{
+    char *tmp = (char *)dest, *s = (char *)src;
+
+    if (s < tmp && tmp < s + n)
+    {
+        tmp += n;
+        s += n;
+
+        while (n--)
+            *(--tmp) = *(--s);
+    }
+    else
+    {
+        while (n--)
+            *tmp++ = *s++;
+    }
+
+    return dest;
+}
+
+/**
+ * This function will show the version of rt-thread rtos
+ */
+void rt_show_version(void)
+{
+    printf("\n\r \\ | /\n");
+    printf("\r- RT -   Thread Operating System\n");
+    printf("\r / | \\  \n\r");
 }

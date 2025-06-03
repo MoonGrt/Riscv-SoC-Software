@@ -12,6 +12,7 @@
 #endif
 
 typedef int (*cmd_function_t)(int argc, char **argv);
+#define NULL ((void *)0)
 
 #ifdef FINSH_USING_MSH_ONLY
 rt_bool_t msh_is_used(void)
@@ -181,5 +182,90 @@ int msh_exec(char *cmd, rt_size_t length)
     return -1;
 }
 
+static int str_common(const char *str1, const char *str2)
+{
+    const char *str = str1;
+
+    while ((*str != 0) && (*str2 != 0) && (*str == *str2))
+    {
+        str ++;
+        str2 ++;
+    }
+
+    return (str - str1);
+}
+
+void msh_auto_complete(char *prefix)
+{
+    int length, min_length;
+    const char *name_ptr, *cmd_name;
+    struct finsh_syscall *index;
+
+    min_length = 0;
+    name_ptr = RT_NULL;
+
+#ifdef RT_USING_DFS
+    /* check whether a spare in the command */
+    {
+        char *ptr;
+
+        ptr = prefix + rt_rt_strlen(prefix);
+        while (ptr != prefix)
+        {
+            if (*ptr == ' ')
+            {
+                msh_auto_complete_path(ptr + 1);
+                break;
+            }
+
+            ptr --;
+        }
+#ifdef RT_USING_MODULE
+        /* There is a chance that the user want to run the module directly. So
+         * try to complete the file names. If the completed path is not a
+         * module, the system won't crash anyway. */
+        if (ptr == prefix)
+        {
+            msh_auto_complete_path(ptr);
+        }
+#endif
+    }
+#endif
+
+    /* checks in internal command */
+    {
+        for (index = _syscall_table_begin; index < _syscall_table_end; FINSH_NEXT_SYSCALL(index))
+        {
+            /* skip finsh shell function */
+            if (rt_strncmp(index->name, "__cmd_", 6) != 0) continue;
+
+            cmd_name = (const char *) &index->name[6];
+            if (rt_strncmp(prefix, cmd_name, rt_strlen(prefix)) == 0)
+            {
+                if (min_length == 0)
+                {
+                    /* set name_ptr */
+                    name_ptr = cmd_name;
+                    /* set initial length */
+                    min_length = rt_strlen(name_ptr);
+                }
+
+                length = str_common(name_ptr, cmd_name);
+                if (length < min_length)
+                    min_length = length;
+
+                printf("\r%s\n", cmd_name);
+            }
+        }
+    }
+
+    /* auto complete string */
+    if (name_ptr != NULL)
+    {
+        rt_strncpy(prefix, name_ptr, min_length);
+    }
+
+    return ;
+}
 
 #endif /* FINSH_USING_MSH */

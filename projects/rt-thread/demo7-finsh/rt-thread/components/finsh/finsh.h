@@ -4,6 +4,9 @@
 #include <rtthread.h>
 #include "finsh_api.h"
 
+#define FINSH_NEXT_SYSCALL(index)  index++
+#define FINSH_NEXT_SYSVAR(index)   index++
+
 /* system variable table */
 struct finsh_sysvar
 {

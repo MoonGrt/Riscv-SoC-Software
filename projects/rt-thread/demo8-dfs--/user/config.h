@@ -12,5 +12,6 @@
 // #define CYBER_SPI
 // #define CYBER_WWDT
 // #define CYBER_IWDT
+#define CYBER_DVP
 
 #endif /* __CONFIG_H_ */
