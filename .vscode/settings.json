@@ -50,6 +50,8 @@
         "typeinfo": "c",
         "utils.h": "c",
         "functional": "c",
-        "vga.h": "c"
+        "vga.h": "c",
+        "lvgl.h": "c",
+        "ov5640.h": "c"
     }
 }
