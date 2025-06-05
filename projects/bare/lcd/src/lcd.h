@@ -2,7 +2,7 @@
 #define __LCD_H
 
 #include "cyber.h"
-#include "soft_spi.h"
+#include "delay.h"
 
 void LCD_GPIO_Init(void);
 void LCD_Init(void);

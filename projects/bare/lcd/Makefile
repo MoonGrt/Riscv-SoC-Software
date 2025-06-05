@@ -1,6 +1,6 @@
 # make clean && make
 
-PROJ_NAME = demo
+PROJ_NAME = lcd
 DEBUG = yes
 BENCH = no
 FUNC_OPT = yes

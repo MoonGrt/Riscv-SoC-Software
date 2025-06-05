@@ -74,6 +74,7 @@
         "rcc.h": "c",
         "algorithm": "c",
         "systick.h": "c",
-        "delay.h": "c"
+        "delay.h": "c",
+        "lcd.h": "c"
     }
 }
