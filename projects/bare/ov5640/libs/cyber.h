@@ -1,13 +1,57 @@
 #ifndef __CYBER_H_
 #define __CYBER_H_
 
+#include <stdint.h>
+#include "config.h"
+
+/** @defgroup Types
+ * @{
+ */
+#ifdef __cplusplus
+#define __I volatile /*!< Defines 'read only' permissions */
+#else
+#define __I volatile const /*!< Defines 'read only' permissions */
+#endif
+#define __O volatile  /*!< defines 'write only' permissions     */
+#define __IO volatile /*!< defines 'read / write' permissions   */
+
+typedef int8_t s8;
+
+typedef const int32_t sc32; /*!< Read Only */
+typedef const int16_t sc16; /*!< Read Only */
+typedef const int8_t sc8;   /*!< Read Only */
+
+typedef __IO int32_t vs32;
+typedef __IO int16_t vs16;
+typedef __IO int8_t vs8;
+
+typedef __I int32_t vsc32; /*!< Read Only */
+typedef __I int16_t vsc16; /*!< Read Only */
+typedef __I int8_t vsc8;   /*!< Read Only */
+
+typedef uint32_t u32;
+typedef uint16_t u16;
+typedef uint8_t u8;
+
+typedef const uint32_t uc32; /*!< Read Only */
+typedef const uint16_t uc16; /*!< Read Only */
+typedef const uint8_t uc8;   /*!< Read Only */
+
+typedef __IO uint32_t vu32;
+typedef __IO uint16_t vu16;
+typedef __IO uint8_t vu8;
+
+typedef __I uint32_t vuc32; /*!< Read Only */
+typedef __I uint16_t vuc16; /*!< Read Only */
+typedef __I uint8_t vuc8;   /*!< Read Only */
+
 typedef enum{RESET = 0, SET = !RESET} FlagStatus, ITStatus;
 typedef enum{DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
 typedef enum{ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 
-#include <stdint.h>
-#include "config.h"
-
+/** @defgroup Cyber Mem Map
+ * @{
+ */
 /*!< Base memory map */
 #define SRAM_BASE ((uint32_t)0x80000000)   /*!< SRAM base address */
 #define PERIPH_BASE ((uint32_t)0xF0000000) /*!< Peripheral base address */
@@ -16,6 +60,7 @@ typedef enum{ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 #define APBPERIPH_BASE PERIPH_BASE
 #define AHBPERIPH_BASE (PERIPH_BASE + 0x1000000)
 
+/*!< AHB */
 #ifdef CYBER_RCC
 /*!< RCC */
 #include "rcc.h"
@@ -23,6 +68,21 @@ typedef enum{ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 #define RCC ((RCC_TypeDef *)RCC_BASE) // 0xF1000000
 #endif
 
+#ifdef CYBER_DMA
+/*!< DMA */
+#include "dma.h"
+#define DMA_BASE (AHBPERIPH_BASE + 0x10000)
+#define DMA ((DMA_TypeDef *)DMA_BASE) // 0xF1010000
+#endif
+
+#ifdef CYBER_DVP
+/*!< DVP */
+#include "dvp.h"
+#define DVP_BASE (AHBPERIPH_BASE + 0x20000)
+#define DVP ((DVP_TypeDef *)DVP_BASE) // 0xF1020000
+#endif
+
+/*!< APB */
 #ifdef CYBER_GPIO
 /*!< GPIO */
 #include "gpio.h"
@@ -38,6 +98,7 @@ typedef enum{ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 #ifdef CYBER_USART
 /*!< USART */
 #include "usart.h"
+#define UART_SAMPLE_PER_BAUD 5
 #define USART1_BASE (APBPERIPH_BASE + 0x10000)
 #define USART2_BASE (APBPERIPH_BASE + 0x11000)
 #define USART1 ((USART_TypeDef *)USART1_BASE) // 0xF0010000
@@ -69,8 +130,8 @@ typedef enum{ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 #define TIM2_BASE (APBPERIPH_BASE + 0x41000)
 #define TIM3_BASE (APBPERIPH_BASE + 0x42000)
 #define TIM1 ((TIM_TypeDef *)TIM1_BASE) // 0xF0040000
-#define TIM1 ((TIM_TypeDef *)TIM2_BASE) // 0xF0041000
-#define TIM2 ((TIM_TypeDef *)TIM3_BASE) // 0xF0042000
+#define TIM2 ((TIM_TypeDef *)TIM2_BASE) // 0xF0041000
+#define TIM3 ((TIM_TypeDef *)TIM3_BASE) // 0xF0042000
 #endif
 
 #ifdef CYBER_IWDG
@@ -87,6 +148,12 @@ typedef enum{ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 #define WWDG ((WWDG_TypeDef *)WWDG_BASE) // 0xF0051000
 #endif
 
+#ifdef CYBER_SYSTICK // TODO: SYSTICK should not be in APB
+/*!< SYSTICK */
+#include "systick.h"
+#define SysTick_BASE (APBPERIPH_BASE + 0x60000)
+#define SysTick ((SysTick_Type *)SysTick_BASE) // 0xF0060000
+#endif
 
 /* Exported macro ------------------------------------------------------------*/
 #ifdef USE_FULL_ASSERT
@@ -103,27 +170,5 @@ void assert_failed(uint8_t *file, uint32_t line); // customization
 #else
 #define assert_param(expr) ((void)0)
 #endif /* USE_FULL_ASSERT */
-
-/*!< old */
-#include "timer.h"
-#include "interrupt.h"
-#include "vga.h"
-#include "uart.h"
-
-// #define CORE_HZ 12000000
-// #define CORE_HZ 50000000
-
-#define GPIO_A ((Gpio_Reg *)(0xF0000000))
-#define GPIO_B ((Gpio_Reg *)(0xF0000010))
-#define GPIO_C ((Gpio_Reg *)(0xF0000020))
-#define GPIO_D ((Gpio_Reg *)(0xF0000030))
-
-#define UART ((Uart_Reg *)(0xF0010000))
-#define UART_SAMPLE_PER_BAUD 5
-
-#define TIMER_A ((Timer_Reg *)0xF0020040)
-#define TIMER_B ((Timer_Reg *)0xF0020050)
-#define TIMER_PRESCALER ((Prescaler_Reg *)0xF0020000)
-#define TIMER_INTERRUPT ((InterruptCtrl_Reg *)0xF0020010)
 
 #endif /* __CYBER_H_ */

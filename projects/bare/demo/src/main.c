@@ -13,7 +13,7 @@ void demo_DVP(void);
 
 void main()
 {
-    // demo_USART();
+    demo_USART();
     demo_SysTick();
     // demo_GPIO();
     // demo_I2C();

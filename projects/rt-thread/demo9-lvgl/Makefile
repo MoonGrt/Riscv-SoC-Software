@@ -1,6 +1,6 @@
 # make clean && make
 
-PROJ_NAME = dfs
+PROJ_NAME = lvgl
 DEBUG = yes
 BENCH = no
 FUNC_OPT = yes

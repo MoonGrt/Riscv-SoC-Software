@@ -237,15 +237,6 @@ void vAssertCalled(void)
 
 void vToggleLED(void)
 {
-// #ifdef SIMULATION
-// 	// 运行成功
-// 	asm("li x27, 0x01");
-// 	asm("li x26, 0x01");
-// 	while (1)
-// 		;
-// #else
-// 	GPIOA->ODR ^= 0x1;
-// #endif
     static uint16_t currentLED = 0x01;       // 当前点亮的 LED，初始点亮第一个
     static uint8_t direction = 1;           // 流水方向：1 表示从左到右，0 表示从右到左
 

@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "gpio.h": "c",
-        "i2c.h": "c",
-        "iwdg.h": "c"
-    }
-}
