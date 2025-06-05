@@ -38,6 +38,7 @@ typedef enum{ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 #define DVP ((DVP_TypeDef *)DVP_BASE) // 0xF1020000
 #endif
 
+/*!< APB */
 #ifdef CYBER_GPIO
 /*!< GPIO */
 #include "gpio.h"
@@ -102,6 +103,12 @@ typedef enum{ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 #define WWDG ((WWDG_TypeDef *)WWDG_BASE) // 0xF0051000
 #endif
 
+#ifdef CYBER_SYSTICK // TODO: SYSTICK should not be in APB
+/*!< SYSTICK */
+#include "systick.h"
+#define SysTick_BASE (APBPERIPH_BASE + 0x60000)
+#define SysTick ((SysTick_Type *)SysTick_BASE) // 0xF0060000
+#endif
 
 /* Exported macro ------------------------------------------------------------*/
 #ifdef USE_FULL_ASSERT

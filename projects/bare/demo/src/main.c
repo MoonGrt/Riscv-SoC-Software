@@ -1,5 +1,7 @@
 #include "cyber.h"
+#include "delay.h"
 
+void demo_SysTick(void);
 void demo_GPIO(void);
 void demo_WDG(void);
 void demo_USART(void);
@@ -11,8 +13,9 @@ void demo_DVP(void);
 
 void main()
 {
-    demo_GPIO();
-    demo_USART();
+    // demo_USART();
+    demo_SysTick();
+    // demo_GPIO();
     // demo_I2C();
     // demo_SPI();
     // demo_TIM();
@@ -29,7 +32,7 @@ void irqCallback()
     /*!< USART */
     if (USART_GetITStatus(USART1, USART_IT_RXNE) == SET) // 判断是否是USART1的接收事件触发的中断
     {
-        Serial_RxData = USART_ReceiveData(USART1);      // 读取数据寄存器，存放在接收的数据变量
+        Serial_RxData = USART_ReceiveData(USART1); // 读取数据寄存器，存放在接收的数据变量
         USART_SendData(USART1, Serial_RxData);
         // Serial_RxData = USART_ReceiveData(USART1);      // 读取数据寄存器，存放在接收的数据变量
         // Serial_RxFlag = 1;                              // 置接收标志位变量为1
@@ -46,77 +49,39 @@ void irqCallback()
         TIM_ClearITPendingBit(TIM1, TIM_IT_Update); // 清除TIM2更新事件的中断标志位
                                                     // 中断标志位必须清除
                                                     // 否则中断将连续不断地触发，导致主程序卡死
-        USART_SendData(USART1, 'A');  // not "A"
+        USART_SendData(USART1, 'A');                // not "A"
     }
 #endif
 }
 
-#ifdef CYBER_DVP
-#include "ov5640.h"
-
-void Camera_Init(void) {
-    OV5640_IO_t ov5640_io = {
-        .Init       = OV5640_Init,
-        .DeInit     = OV5640_DeInit,
-        .ReadReg    = ov5640_read_reg,
-        .WriteReg   = ov5640_write_reg,
-    };
-    OV5640_Object_t ov5640;
-
-    if (OV5640_RegisterBusIO(&ov5640, &ov5640_io) != 0) {
-        // printf("Bus IO registration failed\n");
-        return;
-    }
-
-    if (OV5640_Init(&ov5640, OV5640_R640x480, OV5640_RGB565) != 0) {
-        printf("Camera initialization failed\n");
-        return;
-    }
-
-    uint32_t camera_id;
-    if (OV5640_ReadID(&ov5640, &camera_id) == 0) {
-        printf("Camera ID: 0x%08X\n", camera_id);
-    }
-
-    OV5640_SetBrightness(&ov5640, 2);
-    OV5640_SetContrast(&ov5640, 3);
-    OV5640_Start(&ov5640);
-}
-
-void demo_DVP(void)
+#ifdef CYBER_SYSTICK
+void demo_SysTick(void)
 {
-    // camera init
-    Camera_Init();
+    delay_init();
 
-    // 创建并配置 DVP 初始化结构体
-    DVP_InitTypeDef DVP_InitStructure;
-    // 配置 VI 模式
-    DVP_InitStructure.VIMode = VI_CAMERA | ENABLE; // 启用 CAMERA 模式
-    // 配置 VP 模式
-    DVP_InitStructure.VPMode.Mode = VP_Scaler | ENABLE;           // 启用 Scaler 模式
-    DVP_InitStructure.VPMode.CutterMode = ENABLE;                 // 启用 Cutter 模式
-    DVP_InitStructure.VPMode.FilterMode = VP_Gaussian | ENABLE;   // 启用 Gaussian 模式
-    DVP_InitStructure.VPMode.ScalerMode = VP_Bilinear | ENABLE;   // 启用 Bilinear 模式
-    DVP_InitStructure.VPMode.ColorMode = VP_YUV422 | ENABLE;      // 启用 YUV422 模式
-    DVP_InitStructure.VPMode.EdgerMode = VP_Sobel | ENABLE;       // 启用 Sobel 模式
-    DVP_InitStructure.VPMode.BinarizerMode = VP_Inverse | ENABLE; // 启用 Normal 模式
-    DVP_InitStructure.VPMode.FillMode = VP_White | ENABLE;        // 启用 Black填充 模式
-    // 配置 VO 模式
-    DVP_InitStructure.VOMode = VO_HDMI | ENABLE;  // 启用 HDMI 输出模式
-    // 初始化 DVP 模块
-    DVP_Init(DVP, &DVP_InitStructure);
-    // 配置 VP 参数
-    // DVP_VP_SetStart(DVP, 0, 0);  // 放大
-    // DVP_VP_SetEnd(DVP, 1280 / 2, 720 / 2);
-    // DVP_VP_SetOutRes(DVP, 1280, 720);
-    DVP_VP_SetStart(DVP, 0, 0);  // 原图
-    DVP_VP_SetEnd(DVP, 1280, 720);
-    DVP_VP_SetOutRes(DVP, 1280, 720);
-    // DVP_VP_SetStart(DVP, 0, 0);  // 缩小
-    // DVP_VP_SetEnd(DVP, 1280, 720);
-    // DVP_VP_SetOutRes(DVP, 1280 / 2, 720 / 2);
-    // 配置 TH
-    DVP_VP_SetThreshold(DVP, 0x40, 0x80);
+    GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    while (1)
+    {
+        GPIO_ResetBits(GPIOA, GPIO_Pin_0);
+        delay_s(1);
+        GPIO_SetBits(GPIOA, GPIO_Pin_0);
+        delay_s(1);
+
+        GPIO_WriteBit(GPIOA, GPIO_Pin_0, Bit_RESET);
+        delay_s(1);
+        GPIO_WriteBit(GPIOA, GPIO_Pin_0, Bit_SET);
+        delay_s(1);
+
+        GPIO_WriteBit(GPIOA, GPIO_Pin_0, (BitAction)0);
+        delay_s(1);
+        GPIO_WriteBit(GPIOA, GPIO_Pin_0, (BitAction)1);
+        delay_s(1);
+    }
 }
 #endif
 
@@ -155,7 +120,7 @@ void demo_WDG(void)
     /*IWDG初始化*/
     IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable); // 独立看门狗写使能
     IWDG_SetPrescaler(IWDG_Prescaler_16);         // 设置预分频为16
-    IWDG_SetReload(30);                          // 设置重装值为2499，独立看门狗的超时时间为1000ms
+    IWDG_SetReload(30);                           // 设置重装值为2499，独立看门狗的超时时间为1000ms
     IWDG_ReloadCounter();                         // 重装计数器，喂狗
     IWDG_Enable();                                // 独立看门狗使能
     /*IWDG喂狗*/
@@ -450,5 +415,78 @@ void demo_PWM(void)
     TIM_Cmd(TIM2, ENABLE); // 使能TIM3，定时器开始运行
     /*PWM输出*/
     TIM_SetCompare1(TIM2, 20);
+}
+#endif
+
+#ifdef CYBER_DVP
+#include "ov5640.h"
+
+void Camera_Init(void)
+{
+    OV5640_IO_t ov5640_io = {
+        .Init = OV5640_Init,
+        .DeInit = OV5640_DeInit,
+        .ReadReg = ov5640_read_reg,
+        .WriteReg = ov5640_write_reg,
+    };
+    OV5640_Object_t ov5640;
+
+    if (OV5640_RegisterBusIO(&ov5640, &ov5640_io) != 0)
+    {
+        // printf("Bus IO registration failed\n");
+        return;
+    }
+
+    if (OV5640_Init(&ov5640, OV5640_R640x480, OV5640_RGB565) != 0)
+    {
+        printf("Camera initialization failed\n");
+        return;
+    }
+
+    uint32_t camera_id;
+    if (OV5640_ReadID(&ov5640, &camera_id) == 0)
+    {
+        printf("Camera ID: 0x%08X\n", camera_id);
+    }
+
+    OV5640_SetBrightness(&ov5640, 2);
+    OV5640_SetContrast(&ov5640, 3);
+    OV5640_Start(&ov5640);
+}
+
+void demo_DVP(void)
+{
+    // camera init
+    Camera_Init();
+
+    // 创建并配置 DVP 初始化结构体
+    DVP_InitTypeDef DVP_InitStructure;
+    // 配置 VI 模式
+    DVP_InitStructure.VIMode = VI_CAMERA | ENABLE; // 启用 CAMERA 模式
+    // 配置 VP 模式
+    DVP_InitStructure.VPMode.Mode = VP_Scaler | ENABLE;           // 启用 Scaler 模式
+    DVP_InitStructure.VPMode.CutterMode = ENABLE;                 // 启用 Cutter 模式
+    DVP_InitStructure.VPMode.FilterMode = VP_Gaussian | ENABLE;   // 启用 Gaussian 模式
+    DVP_InitStructure.VPMode.ScalerMode = VP_Bilinear | ENABLE;   // 启用 Bilinear 模式
+    DVP_InitStructure.VPMode.ColorMode = VP_YUV422 | ENABLE;      // 启用 YUV422 模式
+    DVP_InitStructure.VPMode.EdgerMode = VP_Sobel | ENABLE;       // 启用 Sobel 模式
+    DVP_InitStructure.VPMode.BinarizerMode = VP_Inverse | ENABLE; // 启用 Normal 模式
+    DVP_InitStructure.VPMode.FillMode = VP_White | ENABLE;        // 启用 Black填充 模式
+    // 配置 VO 模式
+    DVP_InitStructure.VOMode = VO_HDMI | ENABLE; // 启用 HDMI 输出模式
+    // 初始化 DVP 模块
+    DVP_Init(DVP, &DVP_InitStructure);
+    // 配置 VP 参数
+    // DVP_VP_SetStart(DVP, 0, 0);  // 放大
+    // DVP_VP_SetEnd(DVP, 1280 / 2, 720 / 2);
+    // DVP_VP_SetOutRes(DVP, 1280, 720);
+    DVP_VP_SetStart(DVP, 0, 0); // 原图
+    DVP_VP_SetEnd(DVP, 1280, 720);
+    DVP_VP_SetOutRes(DVP, 1280, 720);
+    // DVP_VP_SetStart(DVP, 0, 0);  // 缩小
+    // DVP_VP_SetEnd(DVP, 1280, 720);
+    // DVP_VP_SetOutRes(DVP, 1280 / 2, 720 / 2);
+    // 配置 TH
+    DVP_VP_SetThreshold(DVP, 0x40, 0x80);
 }
 #endif
