@@ -42,10 +42,8 @@ static void convert_cb(const lv_area_t * dest_area, const void * src_buf, lv_coo
  **********************/
 
 
-void LV_ATTRIBUTE_FAST_MEM lv_draw_sw_img_decoded(struct _lv_draw_ctx_t * draw_ctx,
-                                                  const lv_draw_img_dsc_t * draw_dsc,
-                                                  const lv_area_t * coords, const uint8_t * src_buf,
-                                                  lv_img_cf_t cf)
+LV_ATTRIBUTE_FAST_MEM void lv_draw_sw_img_decoded(struct _lv_draw_ctx_t * draw_ctx, const lv_draw_img_dsc_t * draw_dsc,
+                                                  const lv_area_t * coords, const uint8_t * src_buf, lv_img_cf_t cf)
 {
     /*Use the clip area as draw area*/
     lv_area_t draw_area;
@@ -272,28 +270,6 @@ static void convert_cb(const lv_area_t * dest_area, const void * src_buf, lv_coo
             cbuf += dest_w;
             abuf += dest_w;
             src_tmp8 += src_new_line_step_byte;
-        }
-    }
-    else if(cf == LV_IMG_CF_RGB565A8) {
-        src_tmp8 += (src_stride * dest_area->y1 * sizeof(lv_color_t)) + dest_area->x1 * sizeof(lv_color_t);
-
-        lv_coord_t src_stride_byte = src_stride * sizeof(lv_color_t);
-
-        lv_coord_t dest_h = lv_area_get_height(dest_area);
-        lv_coord_t dest_w = lv_area_get_width(dest_area);
-        for(y = 0; y < dest_h; y++) {
-            lv_memcpy(cbuf, src_tmp8, dest_w * sizeof(lv_color_t));
-            cbuf += dest_w;
-            src_tmp8 += src_stride_byte;
-        }
-
-        src_tmp8 = (const uint8_t *)src_buf;
-        src_tmp8 += sizeof(lv_color_t) * src_w * src_h;
-        src_tmp8 += src_stride * dest_area->y1 + dest_area->x1;
-        for(y = 0; y < dest_h; y++) {
-            lv_memcpy(abuf, src_tmp8, dest_w);
-            abuf += dest_w;
-            src_tmp8 += src_stride;
         }
     }
 }

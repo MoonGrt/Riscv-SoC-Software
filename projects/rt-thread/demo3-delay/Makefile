@@ -1,4 +1,4 @@
-# make clean && make
+# make clean && make -j $(nproc)
 
 PROJ_NAME = delay
 DEBUG = yes

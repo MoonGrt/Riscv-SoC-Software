@@ -97,7 +97,6 @@ void lv_flex_init(void)
     LV_STYLE_FLEX_MAIN_PLACE = lv_style_register_prop(LV_STYLE_PROP_LAYOUT_REFR);
     LV_STYLE_FLEX_CROSS_PLACE = lv_style_register_prop(LV_STYLE_PROP_LAYOUT_REFR);
     LV_STYLE_FLEX_TRACK_PLACE = lv_style_register_prop(LV_STYLE_PROP_LAYOUT_REFR);
-    LV_STYLE_FLEX_GROW = lv_style_register_prop(LV_STYLE_PROP_LAYOUT_REFR);
 }
 
 void lv_obj_set_flex_flow(lv_obj_t * obj, lv_flex_flow_t flow)
@@ -471,14 +470,8 @@ static void children_repos(lv_obj_t * cont, flex_t * f, int32_t item_first_id, i
                 }
             }
 
-            if(f->row) {
-                item->w_layout = 1;
-                item->h_layout = 0;
-            }
-            else {
-                item->h_layout = 1;
-                item->w_layout = 0;
-            }
+            if(f->row) item->w_layout = 1;
+            else item->h_layout = 1;
 
             if(s != area_get_main_size(&item->coords)) {
                 lv_obj_invalidate(item);

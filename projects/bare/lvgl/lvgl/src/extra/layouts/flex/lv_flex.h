@@ -139,6 +139,7 @@ static inline uint8_t lv_obj_get_style_flex_grow(const lv_obj_t * obj, uint32_t 
     return (uint8_t)v.num;
 }
 
+
 /**********************
  *      MACROS
  **********************/
