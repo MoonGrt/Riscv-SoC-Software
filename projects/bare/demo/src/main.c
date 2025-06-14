@@ -11,10 +11,13 @@ void demo_TIM(void);
 void demo_PWM(void);
 void demo_DVP(void);
 
+void led_flow(void);
+void led_breathe(void);
+
 void main()
 {
     demo_USART();
-    demo_SysTick();
+    // demo_SysTick();
     // demo_GPIO();
     // demo_I2C();
     // demo_SPI();
@@ -22,6 +25,9 @@ void main()
     // demo_PWM();
     // demo_WDG();
     // demo_DVP();
+
+    // led_flow();
+    // led_breathe();
 }
 
 uint8_t Serial_RxData; // 定义串口接收的数据变量
@@ -112,6 +118,30 @@ void demo_GPIO(void)
     // // GPIO_SetBits(GPIOA, GPIO_Pin_2);
     // GPIO_ResetBits(GPIOA, GPIO_Pin_2);
 }
+
+void led_flow()
+{
+    delay_init();
+
+    GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    for (;;)
+    {
+        /* 使用GPIO_Write，同时设置GPIOA所有引脚的高低电平，实现LED流水灯 */
+        GPIO_Write(GPIOA, ~0x0001); // 0000 0000 0000 0001，PA0引脚为低电平，其他引脚均为高电平，注意数据有按位取反
+        delay_s(1);
+        GPIO_Write(GPIOA, ~0x0002); // 0000 0000 0000 0010，PA1引脚为低电平，其他引脚均为高电平
+        delay_s(1);
+        GPIO_Write(GPIOA, ~0x0004); // 0000 0000 0000 0100，PA2引脚为低电平，其他引脚均为高电平
+        delay_s(1);
+        GPIO_Write(GPIOA, ~0x0008); // 0000 0000 0000 1000，PA3引脚为低电平，其他引脚均为高电平
+        delay_s(1);
+    }
+}
 #endif
 
 #ifdef CYBER_WDG
@@ -175,8 +205,6 @@ void demo_USART(void)
     /*USART使能*/
     USART_Cmd(USART1, ENABLE); // 使能USART1，串口开始运行
     /*USART发送*/
-    USART_SendData(USART1, 'A');
-    USART_SendData(USART1, '\n');
     printf("Cyber USART Test\r\n");
 }
 #endif
@@ -415,6 +443,63 @@ void demo_PWM(void)
     TIM_Cmd(TIM2, ENABLE); // 使能TIM3，定时器开始运行
     /*PWM输出*/
     TIM_SetCompare1(TIM2, 20);
+}
+
+void PWM_init(void)
+{
+    /*GPIO初始化*/
+    GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStructure); // 将PA15引脚初始化为复用推挽输出
+                                           // 受外设控制的引脚，均需要配置为复用模式
+
+    /*配置时钟源*/
+    TIM_InternalClockConfig(TIM2); // 选择TIM3为内部时钟，若不调用此函数，TIM默认也为内部时钟
+
+    /*时基单元初始化*/
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;              // 定义结构体变量
+    TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;     // 时钟分频，选择不分频，此参数用于配置滤波器时钟，不影响时基单元功能
+    TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up; // 计数器模式，选择向上计数
+    TIM_TimeBaseInitStructure.TIM_Period = 100 - 1;                 // 计数周期，即ARR的值
+    TIM_TimeBaseInitStructure.TIM_Prescaler = 50 - 1;               // 预分频器，即PSC的值
+    TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;            // 重复计数器，高级定时器才会用到
+    TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructure);             // 将结构体变量交给TIM_TimeBaseInit，配置TIM3的时基单元
+
+    /*输出比较初始化*/
+    TIM_OCInitTypeDef TIM_OCInitStructure;                        // 定义结构体变量
+    TIM_OCStructInit(&TIM_OCInitStructure);                       // 结构体初始化，若结构体没有完整赋值
+                                                                  // 则最好执行此函数，给结构体所有成员都赋一个默认值
+                                                                  // 避免结构体初值不确定的问题
+    TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;             // 输出比较模式，选择PWM模式1
+    TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;     // 输出极性，选择为高，若选择极性为低，则输出高低电平取反
+    TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; // 输出使能
+    TIM_OCInitStructure.TIM_Pulse = 0;                            // 初始的CCR值
+    TIM_OC4Init(TIM2, &TIM_OCInitStructure);                      // 将结构体变量交给TIM_OC1Init，配置TIM3的输出比较通道1
+
+    /*TIM使能*/
+    TIM_Cmd(TIM2, ENABLE); // 使能TIM3，定时器开始运行
+}
+
+uint8_t i; // 定义for循环的变量
+void led_breathe()
+{
+    delay_init();
+    PWM_init();
+    while (1)
+    {
+        for (i = 0; i <= 100; i++)
+        {
+            TIM_SetCompare4(TIM2, i); // 依次将定时器的CCR寄存器设置为0~100，PWM占空比逐渐增大，LED逐渐变亮
+            delay_ms(5);              // 延时5ms
+        }
+        for (i = 0; i <= 100; i++)
+        {
+            TIM_SetCompare4(TIM2, 100 - i); // 依次将定时器的CCR寄存器设置为100~0，PWM占空比逐渐减小，LED逐渐变暗
+            delay_ms(5);                    // 延时5ms
+        }
+    }
 }
 #endif
 

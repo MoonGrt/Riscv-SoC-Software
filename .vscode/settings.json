@@ -75,6 +75,21 @@
         "algorithm": "c",
         "systick.h": "c",
         "delay.h": "c",
-        "lcd.h": "c"
+        "lcd.h": "c",
+        "lv_port_disp_template.h": "c",
+        "xstring": "c",
+        "optional": "c",
+        "regex": "c",
+        "xlocmon": "c",
+        "xlocnum": "c",
+        "xtr1common": "c",
+        "lv_port_fs_template.h": "c",
+        "iosfwd": "c",
+        "xlocbuf": "c",
+        "locale": "c",
+        "thread": "c",
+        "xlocmes": "c",
+        "xloctime": "c",
+        "lv_port_indev_template.h": "c"
     }
 }

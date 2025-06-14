@@ -43,6 +43,23 @@ void USART_init(void)
     USART_SendData(USART1, 'A');
 }
 
+void LCD_Fill_ColorBar(void)
+{
+    for (uint16_t i = 0; i < 32400; i++) // 135 * 240
+    {
+        uint16_t pixel;
+        if (i >= 21600)
+            pixel = 0x001F; // 0xF800
+        else if (i >= 10800)
+            pixel = 0xF800; // 0x07E0
+        else
+            pixel = 0x07E0; // 0x001F
+
+        LCD_WriteData(pixel >> 8);
+        LCD_WriteData(pixel & 0xFF);
+    }
+}
+
 void main()
 {
     delay_init();

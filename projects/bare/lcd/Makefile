@@ -10,9 +10,8 @@ SRCS = $(wildcard libs/*.c) \
        $(wildcard libs/*.S) \
        $(wildcard src/*.c) \
        $(wildcard src/*.S) \
-       $(wildcard src/ov5640/*.c) \
 
-INC += -I./libs -I./src -I./src/ov5640
+INC += -I./libs -I./src
 LDSCRIPT = linker.ld
 
 include ../gcc.mk

@@ -1,6 +1,9 @@
 #include "cyber.h"
+#include "lcd.h"
+#include "lvgl.h"
+#include "lv_port_disp.h"
 
-void demo_USART(void)
+void USART_init(void)
 {
     /*GPIO初始化*/
     GPIO_InitTypeDef GPIO_InitStructure;
@@ -40,13 +43,43 @@ void demo_USART(void)
     USART_Cmd(USART1, ENABLE); // 使能USART1，串口开始运行
     /*USART发送*/
     USART_SendData(USART1, 'A');
-    USART_SendData(USART1, '\n');
-    printf("Cyber USART Test\r\n");
+}
+
+void LCD_Fill_ColorBar(void)
+{
+    for (uint16_t i = 0; i < 32400; i++) // 135 * 240
+    {
+        uint16_t pixel;
+        if (i >= 21600)
+            pixel = 0x001F; // 0xF800
+        else if (i >= 10800)
+            pixel = 0xF800; // 0x07E0
+        else
+            pixel = 0x07E0; // 0x001F
+
+        LCD_WriteData(pixel >> 8);
+        LCD_WriteData(pixel & 0xFF);
+    }
 }
 
 void main()
 {
-    demo_USART();
+    delay_init();
+    USART_init();
+    LCD_GPIO_Init();     // 初始化 LCD 引脚
+    LCD_Init();          // 初始化 LCD 控制器
+    // LCD_Fill_ColorBar(); // 显示彩条
+
+    lv_init();            // lv 系统初始化
+    lv_port_disp_init();  // lvgl 显示接口初始化，放在lv_init后面
+    // lv_port_indev_init(); // lvgl 输入接口初始化，放在 lv_init后面
+
+    // lv_example_btn_1();
+    while (1)
+    {
+        lv_tick_inc(1);
+        lv_task_handler();
+    }
 }
 
 uint8_t Serial_RxData; // 定义串口接收的数据变量
@@ -57,7 +90,7 @@ void irqCallback()
     /*!< USART */
     if (USART_GetITStatus(USART1, USART_IT_RXNE) == SET) // 判断是否是USART1的接收事件触发的中断
     {
-        Serial_RxData = USART_ReceiveData(USART1);      // 读取数据寄存器，存放在接收的数据变量
+        Serial_RxData = USART_ReceiveData(USART1); // 读取数据寄存器，存放在接收的数据变量
         USART_SendData(USART1, Serial_RxData);
         // Serial_RxData = USART_ReceiveData(USART1);      // 读取数据寄存器，存放在接收的数据变量
         // Serial_RxFlag = 1;                              // 置接收标志位变量为1
@@ -74,7 +107,7 @@ void irqCallback()
         TIM_ClearITPendingBit(TIM1, TIM_IT_Update); // 清除TIM2更新事件的中断标志位
                                                     // 中断标志位必须清除
                                                     // 否则中断将连续不断地触发，导致主程序卡死
-        USART_SendData(USART1, 'A');  // not "A"
+        USART_SendData(USART1, 'A');                // not "A"
     }
 #endif
 }
