@@ -90,6 +90,7 @@ const uint16_t init_cmds[] = {
 
 void LCD_Init(void)
 {
+    LCD_GPIO_Init();
     LCD_Reset();
     LCD_WriteCmd(0x11);
     delay_ms(120);

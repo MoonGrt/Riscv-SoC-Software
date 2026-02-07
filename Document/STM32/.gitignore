@@ -13,5 +13,5 @@
 *.d
 
 *.pyc
-Workspace
-.vscode
+Workspace/*
+.vscode/

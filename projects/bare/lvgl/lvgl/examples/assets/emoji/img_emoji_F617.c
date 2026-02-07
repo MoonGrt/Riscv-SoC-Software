@@ -1,7 +1,9 @@
+#if LV_BUILD_EXAMPLES
+
 #ifdef LV_LVGL_H_INCLUDE_SIMPLE
 #include "lvgl.h"
 #else
-#include "lvgl.h"
+#include "lvgl/lvgl.h"
 #endif
 
 #ifndef LV_ATTRIBUTE_MEM_ALIGN
@@ -322,3 +324,5 @@ const lv_img_dsc_t emoji_F617 = {
   .data_size = 5184 * LV_COLOR_SIZE / 8,
   .data = emoji_F617_map,
 };
+
+#endif /* LV_BUILD_EXAMPLES */

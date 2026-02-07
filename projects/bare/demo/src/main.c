@@ -16,8 +16,8 @@ void led_breathe(void);
 
 void main()
 {
-    demo_USART();
     // demo_SysTick();
+    demo_USART();
     // demo_GPIO();
     // demo_I2C();
     // demo_SPI();

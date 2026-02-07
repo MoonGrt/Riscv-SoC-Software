@@ -1,6 +1,11 @@
 {
     "files.associations": {
         "stm32f10x.h": "c",
-        "delay.h": "c"
+        "delay.h": "c",
+        "stm32f10x_gpio.h": "c",
+        "stm32f10x_conf.h": "c",
+        "stm32f10x_iwdg.h": "c",
+        "stm32f10x_rcc.h": "c",
+        "stm32f10x_can.h": "c"
     }
 }

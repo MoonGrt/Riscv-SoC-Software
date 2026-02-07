@@ -11,24 +11,8 @@ SRCS = $(wildcard libs/*.c) \
        $(wildcard libc/*.c) \
        $(wildcard src/*.c) \
        $(wildcard src/*.S) \
-       $(shell find lvgl -name "*.c")
-       # $(wildcard lvgl/src/core/*.c) \
-       # $(wildcard lvgl/src/draw/*.c) \
-       # $(wildcard lvgl/src/draw/arm2d/*.c) \
-       # $(wildcard lvgl/src/draw/nxp_pxp/*.c) \
-       # $(wildcard lvgl/src/draw/nxp_vglite/*.c) \
-       # $(wildcard lvgl/src/draw/sdl/*.c) \
-       # $(wildcard lvgl/src/draw/sw/*.c) \
-       # $(wildcard lvgl/src/extra/*.c) \
-       # $(wildcard lvgl/src/extra/layouts/flex/*.c) \
-       # $(wildcard lvgl/src/extra/layouts/grid/*.c) \
-       # $(wildcard lvgl/src/extra/themes/default/*.c) \
-       # $(wildcard lvgl/src/font/*.c) \
-       # $(wildcard lvgl/src/hal/*.c) \
-       # $(wildcard lvgl/src/misc/*.c) \
-       # $(wildcard lvgl/src/widgets/*.c) \
-       # $(wildcard lvgl/port/*.c) \
-       # $(wildcard lvgl/app/*.c) \
+       $(wildcard lvgl/port/*.c) \
+       $(shell find lvgl/src -name "*.c") \
 
 INC += -I./libs -I./libc -I./src
 INC += -I./lvgl -I./lvgl/port -I./lvgl/example

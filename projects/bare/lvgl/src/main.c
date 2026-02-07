@@ -66,8 +66,7 @@ void main()
 {
     delay_init();
     USART_init();
-    LCD_GPIO_Init();     // 初始化 LCD 引脚
-    LCD_Init();          // 初始化 LCD 控制器
+
     // LCD_Fill_ColorBar(); // 显示彩条
 
     lv_init();            // lv 系统初始化

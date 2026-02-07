@@ -10,13 +10,13 @@
  *      INCLUDES
  *********************/
 #include "lv_port_disp.h"
-#include "../../lvgl.h"
-// #include "./lcd/bsp_ili9341_lcd.h"
+#include "../lvgl.h"
+#include "lcd.h"
 /*********************
  *      DEFINES
  *********************/
-#define  MY_DISP_HOR_RES   240     
-#define  MY_DISP_VER_RES   320	
+#define  MY_DISP_HOR_RES   135
+#define  MY_DISP_VER_RES   240
 /**********************
  *      TYPEDEFS
  **********************/
@@ -44,7 +44,7 @@ static void disp_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_colo
 
 void lv_port_disp_init(void)
 {
-        /*-------------------------
+    /*-------------------------
      * Initialize your display
      * -----------------------*/
     disp_init();
@@ -87,7 +87,7 @@ void lv_port_disp_init(void)
     /*Used to copy the buffer's content to the display*/
     disp_drv.flush_cb = disp_flush;
    
-#define  BUFFER_METHOD     2     //����ʹ�õĻ�������С
+#define BUFFER_METHOD 1
 
 #if   BUFFER_METHOD == 1
     static lv_disp_draw_buf_t draw_buf_dsc_1;
@@ -133,6 +133,7 @@ void lv_port_disp_init(void)
 static void disp_init(void)
 {
     /*You code here*/
+    LCD_Init();
 }
 
 /*Flush the content of the internal buffer the specific area on the display
