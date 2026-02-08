@@ -3,14 +3,13 @@ OUTPUT_ARCH(riscv)
 ENTRY(crtStart)
 
 MEMORY {
-  onChipRam : ORIGIN = 0x80000000, LENGTH = 256k
+  onChipRam : ORIGIN = 0x80000000, LENGTH = 32k
 }
 
 _stack_size = DEFINED(_stack_size) ? _stack_size : 512;
 _heap_size = DEFINED(_heap_size) ? _heap_size : 0;
 
 SECTIONS {
-
   .vector : {
     *init.o(.text);
   } > onChipRam
@@ -76,7 +75,6 @@ SECTIONS {
       . = ALIGN(4);    
   } > onChipRam
 
-
   ._user_heap (NOLOAD):
   {
     . = ALIGN(8);
@@ -96,6 +94,4 @@ SECTIONS {
     . = ALIGN(16);
     PROVIDE (_stack_start = .);
   } > onChipRam
-
 }
-
