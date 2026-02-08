@@ -18,6 +18,8 @@
  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
+#ifdef OV5640
+
 #ifndef OV5640_REG_H
 #define OV5640_REG_H
 
@@ -732,7 +734,6 @@ extern "C"
      *******************************************************************************/
     int32_t ov5640_write_reg(ov5640_ctx_t *ctx, uint16_t reg, uint8_t *pdata, uint16_t length);
     int32_t ov5640_read_reg(ov5640_ctx_t *ctx, uint16_t reg, uint8_t *pdata, uint16_t length);
-
     int32_t ov5640_register_set(ov5640_ctx_t *ctx, uint16_t reg, uint8_t value);
     int32_t ov5640_register_get(ov5640_ctx_t *ctx, uint16_t reg, uint8_t *value);
 
@@ -744,6 +745,9 @@ extern "C"
 #endif
 
 #endif /* OV5640_REG_H */
+
+#endif /* OV5640 */
+
 /**
  * @}
  */

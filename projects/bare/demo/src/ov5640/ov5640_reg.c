@@ -18,6 +18,8 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
+#ifdef OV5640
+
 #include "ov5640_reg.h"
 
 /** @addtogroup BSP
@@ -59,6 +61,8 @@ int32_t ov5640_write_reg(ov5640_ctx_t *ctx, uint16_t reg, uint8_t *data, uint16_
 {
     return ctx->WriteReg(ctx->handle, reg, data, length);
 }
+
+#endif /* OV5640 */
 
 /**
  * @}
