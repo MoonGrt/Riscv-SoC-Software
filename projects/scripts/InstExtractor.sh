@@ -87,7 +87,7 @@ if [[ "$use_temp" == "true" ]]; then
     write_outputs "$tmp_base"
 
     echo "Moving folder to destination..."
-    output_folder="$(dirname "$output_file")/mem"
+    output_folder="$(dirname "$output_file")"
     rm -rf $output_folder
     mv "$temp_dir" $output_folder
 else

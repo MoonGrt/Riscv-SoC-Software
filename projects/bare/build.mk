@@ -1,61 +1,3 @@
-# make clean && make -j $(nproc) && make mem
-
-######################################
-# Project config
-######################################
-
-PROJ_NAME := dvp
-OBJDIR    := build
-MEMSIZE   := 8192
-
-DEBUG     ?= yes
-BENCH     ?= no
-FUNC_OPT  ?= yes
-MULDIV    ?= yes
-
-######################################
-# Directory layout
-######################################
-
-# Public library directory
-LIBS := ../../libs
-# Linker path
-LINKER := ./linker.ld
-
-######################################
-# Source files
-######################################
-
-# Public library source code
-LIB_SRCS := $(notdir $(wildcard $(LIBS)/*.c))
-
-# Project source code
-SRC_DIR := src
-SRC_C_SRCS := $(shell find $(SRC_DIR) -name '*.c')
-SRC_S_SRCS := $(shell find $(SRC_DIR) -name '*.S')
-SRC_SRCS := $(SRC_C_SRCS) $(SRC_S_SRCS)
-
-######################################
-# Object files layout
-######################################
-
-LIB_OBJS := $(addprefix $(OBJDIR)/libs/, $(LIB_SRCS:.c=.o))
-SRC_OBJS := $(SRC_SRCS:$(SRC_DIR)/%=$(OBJDIR)/$(SRC_DIR)/%)
-SRC_OBJS := $(SRC_OBJS:.c=.o)
-SRC_OBJS := $(SRC_OBJS:.S=.o)
-OBJS := $(LIB_OBJS) $(SRC_OBJS)
-
-######################################
-# Include paths & Search paths
-######################################
-
-# Include paths
-INC += -I$(LIBS)
-INC += $(addprefix -I, $(shell find $(SRC_DIR) -type d))
-# Search paths
-VPATH += $(LIBS)
-VPATH += $(SRC_DIR)
-
 ######################################
 # Toolchain
 ######################################
@@ -147,8 +89,8 @@ clean:
 
 .SECONDARY: $(OBJS)
 
-$(OBJDIR):
-	mkdir -p $@
+$(DIRS):
+	@mkdir -p $@
 
 ######################################
 # Link
@@ -163,20 +105,16 @@ $(OBJDIR)/$(PROJ_NAME).elf: $(OBJS) | $(OBJDIR)
 # Compile rules
 ######################################
 
-$(OBJDIR)/libs/%.o: %.c
-	mkdir -p $(dir $@)
+$(OBJDIR)/libs/%.o: %.c | $(DIRS)
 	$(RISCV_CC) -c $(CFLAGS) $(INC) -o $@ $<
 
-$(OBJDIR)/src/%.o: %.c
-	mkdir -p $(dir $@)
+$(OBJDIR)/%.o: %.c | $(DIRS)
 	$(RISCV_CC) -c $(CFLAGS) $(INC) -o $@ $<
 
-$(OBJDIR)/src/%.o: %.cpp
-	mkdir -p $(dir $@)
+$(OBJDIR)/%.o: %.cpp | $(DIRS)
 	$(RISCV_CC) -c $(CFLAGS) $(INC) -o $@ $<
 
-$(OBJDIR)/src/%.o: %.S
-	mkdir -p $(dir $@)
+$(OBJDIR)/%.o: %.S | $(DIRS)
 	$(RISCV_CC) -c $(CFLAGS) -D__ASSEMBLY__=1 -o $@ $<
 
 ######################################

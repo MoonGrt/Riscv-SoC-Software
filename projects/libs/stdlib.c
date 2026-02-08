@@ -20,7 +20,7 @@ char *malloc(int size)
     return p;
 }
 
-void putchar(char c)
+void uart_putchar(char c)
 {
     USART_SendData(USART1, c);
 }
@@ -29,22 +29,22 @@ int puts(char *s)
 {
     while (*s)
     {
-        putchar(*s);
+        uart_putchar(*s);
         s++;
     }
-    putchar('\n');
+    uart_putchar('\n');
     return 0;
 }
 
 static void printf_c(int c)
 {
-    putchar(c);
+    uart_putchar(c);
 }
 
 static void printf_s(char *p)
 {
     while (*p)
-        putchar(*(p++));
+        uart_putchar(*(p++));
 }
 
 static void printf_d(int val)
