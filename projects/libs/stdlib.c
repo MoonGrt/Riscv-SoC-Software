@@ -1,12 +1,6 @@
-#include <stdarg.h>
-#include <stdint.h>
-#include "cyber.h"
+#include "stdlib.h"
 
 #ifdef CYBER_USART
-
-extern char *malloc();
-extern void putchar(char c);
-extern int printf(const char *format, ...);
 
 char heap_memory[1024];
 int heap_memory_used = 0;

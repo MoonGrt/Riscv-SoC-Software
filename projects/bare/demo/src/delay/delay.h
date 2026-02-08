@@ -4,8 +4,8 @@
 #include "cyber.h"
 
 void delay_init(void);
-void delay_ms(uint16_t nms);
 void delay_us(uint32_t nus);
-void delay_us(uint32_t ns);
+void delay_ms(uint32_t nms);
+void delay_s(uint32_t ns);
 
 #endif

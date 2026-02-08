@@ -34,7 +34,7 @@ void delay_us(uint32_t nus)
 // 注意nms的范围
 // SysTick->LOAD,最大延时为: nms<=0xffffffff*1000/CORE_HZ
 // CORE_HZ单位为Hz,nms单位为ms // 50MHz -> 85899ms
-void delay_ms(uint16_t nms)
+void delay_ms(uint32_t nms)
 {
     uint32_t temp;
     SysTick->LOAD = (uint32_t)nms * fac_ms; // 时间加载(SysTick->LOAD)
@@ -52,7 +52,7 @@ void delay_ms(uint16_t nms)
 // 注意ns的范围
 // SysTick->LOAD,最大延时为: ns<=0xffffffff/CORE_HZ
 // CORE_HZ单位为Hz,nms单位为ms // 50MHz -> 85s
-void delay_s(uint16_t ns)
+void delay_s(uint32_t ns)
 {
     uint32_t temp;
     SysTick->LOAD = (uint32_t)ns * fac_s; // 时间加载(SysTick->LOAD)

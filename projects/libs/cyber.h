@@ -98,6 +98,7 @@ typedef enum{ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 #ifdef CYBER_USART
 /*!< USART */
 #include "usart.h"
+#include "stdlib.h"
 #define UART_SAMPLE_PER_BAUD 5
 #define USART1_BASE (APBPERIPH_BASE + 0x10000)
 #define USART2_BASE (APBPERIPH_BASE + 0x11000)

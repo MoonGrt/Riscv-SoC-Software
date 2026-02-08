@@ -14,7 +14,8 @@ SRCS = $(wildcard libs/*.c) \
 
 INC += -I./libs -I./src
 INC += -I./lvgl -I./lvgl/port -I./lvgl/example
-INC += -I./lvgl/src/core -I./lvgl/src/draw -I./lvgl/src/extra -I./lvgl/src/font -I./lvgl/src/hal -I./lvgl/src/misc -I./lvgl/src/widgets
+INC += -I./lvgl/src/core -I./lvgl/src/draw -I./lvgl/src/extra -I./lvgl/src/font \
+	   -I./lvgl/src/hal -I./lvgl/src/misc -I./lvgl/src/widgets
 LDSCRIPT = linker.ld
 
 
@@ -62,12 +63,6 @@ ifeq ($(FUNC_OPT), yes)
 	LDFLAGS += -Wl,--gc-sections
 else
 	CFLAGS += -fno-function-sections -fno-data-sections
-endif
-
-ifeq ($(SIFIVE_GCC_PACK), yes)
-	RISCV_CLIB=$(RISCV_PATH)/$(RISCV_NAME)/lib/$(MARCH)/$(MABI)/
-else
-	RISCV_CLIB=$(RISCV_PATH)/$(RISCV_NAME)/lib/
 endif
 
 
