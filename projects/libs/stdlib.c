@@ -2,24 +2,6 @@
 
 #ifdef CYBER_USART
 
-char heap_memory[1024];
-int heap_memory_used = 0;
-
-void *memset(void *dest, int value, int n) {
-    unsigned char *ptr = (unsigned char *)dest;
-    while (n--) *ptr++ = (unsigned char)value;
-    return dest;
-}
-
-char *malloc(int size)
-{
-    char *p = heap_memory + heap_memory_used;
-    heap_memory_used += size;
-    if (heap_memory_used > 1024)
-        asm volatile("ebreak");
-    return p;
-}
-
 void uart_putchar(char c)
 {
     USART_SendData(USART1, c);
