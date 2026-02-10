@@ -18,13 +18,13 @@
  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifdef OV5640
-
 #ifndef OV5640_REG_H
 #define OV5640_REG_H
 
 // #include <cmsis_compiler.h>
 #include "cyber.h"
+
+#ifdef OV5640
 
 #ifdef __cplusplus
 extern "C"
@@ -744,9 +744,9 @@ extern "C"
 }
 #endif
 
-#endif /* OV5640_REG_H */
-
 #endif /* OV5640 */
+
+#endif /* OV5640_REG_H */
 
 /**
  * @}

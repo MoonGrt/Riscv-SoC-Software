@@ -504,7 +504,6 @@ void led_breathe()
 #endif
 
 #ifdef CYBER_DVP
-#define OV5640
 #include "ov5640.h"
 #include "sccb.h"
 

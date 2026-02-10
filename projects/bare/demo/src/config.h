@@ -17,4 +17,8 @@
 #define CYBER_WDG
 #define CYBER_DVP
 
+#ifdef CYBER_DVP
+#define OV5640
+#endif
+
 #endif /* __CONFIG_H_ */

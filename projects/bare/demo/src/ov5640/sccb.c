@@ -1,6 +1,6 @@
-#ifdef OV5640
-
 #include "sccb.h"
+
+#ifdef OV5640
 
 /*引脚配置层*/
 

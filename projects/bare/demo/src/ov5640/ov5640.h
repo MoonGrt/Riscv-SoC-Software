@@ -18,8 +18,6 @@
  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifdef OV5640
-
 #ifndef OV5640_H
 #define OV5640_H
 
@@ -31,6 +29,8 @@ extern "C"
 /* Includes ------------------------------------------------------------------*/
 #include "ov5640_reg.h"
 #include <stddef.h>
+
+#ifdef OV5640
 
     /** @addtogroup BSP
      * @{
@@ -247,9 +247,9 @@ extern "C"
 }
 #endif
 
-#endif /* OV5640_H */
-
 #endif /* OV5640 */
+
+#endif /* OV5640_H */
 
 /**
  * @}
