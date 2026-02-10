@@ -2,6 +2,7 @@
 #include <rtthread.h>
 #include <rthw.h>
 #include <shell.h>
+#include <dfs.h>
 #include "rtconfig.h"
 #include "cyber.h"
 #include "hw_timer.h"

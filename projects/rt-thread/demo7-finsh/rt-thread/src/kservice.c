@@ -1,5 +1,6 @@
 #include <rtthread.h>
 #include <rthw.h>
+#include "std.h"
 
 /**
  * This function will compare two areas of memory
