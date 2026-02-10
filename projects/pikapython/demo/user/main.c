@@ -1,4 +1,5 @@
 #include "cyber.h"
+#include "std.h"
 #include "pikaScript.h"
 
 /* USART 初始化 */

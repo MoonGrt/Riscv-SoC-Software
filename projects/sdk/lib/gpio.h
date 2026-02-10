@@ -21,14 +21,6 @@ typedef struct
     volatile uint32_t BRR;  // +20 0x10100
     volatile uint32_t LCKR; // +24 0x11000
 } GPIO_TypeDef;
-// typedef struct
-// {
-//     volatile uint32_t EVCR;
-//     volatile uint32_t MAPR;
-//     volatile uint32_t EXTICR[4];
-//     uint32_t RESERVED0;
-//     volatile uint32_t MAPR2;
-// } AFIO_TypeDef;
 
 #define IS_GPIO_ALL_PERIPH(PERIPH) (((PERIPH) == GPIOA) || \
                                     ((PERIPH) == GPIOB) || \
@@ -161,6 +153,9 @@ void GPIO_SetBits(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin);
 void GPIO_ResetBits(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin);
 void GPIO_WriteBit(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, BitAction BitVal);
 void GPIO_Write(GPIO_TypeDef *GPIOx, uint16_t PortVal);
+void GPIO_PinLockConfig(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
+void GPIO_PinRemapConfig(uint32_t GPIO_Remap, FunctionalState NewState);
+void GPIO_EXTILineConfig(uint8_t GPIO_PortSource, uint8_t GPIO_PinSource);
 
 #endif /* CYBER_GPIO */
 #endif /* __GPIO_H */

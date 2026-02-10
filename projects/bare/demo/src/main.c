@@ -1,5 +1,6 @@
 #include "cyber.h"
 #include "delay.h"
+#include "std.h"
 
 void demo_SysTick(void);
 void demo_GPIO(void);
@@ -10,12 +11,15 @@ void demo_SPI(void);
 void demo_TIM(void);
 void demo_PWM(void);
 void demo_DVP(void);
+void demo_DVTC(void);
 
 void led_flow(void);
 void led_breathe(void);
 
 void main()
 {
+    // demo_GPIO();
+    // demo_EXTI();
     // demo_SysTick();
     demo_USART();
     // demo_GPIO();
@@ -25,6 +29,7 @@ void main()
     // demo_PWM();
     // demo_WDG();
     // demo_DVP();
+    // demo_DVTC();
 
     // led_flow();
     // led_breathe();
@@ -575,6 +580,72 @@ void demo_DVP(void)
     // DVP_VP_SetOutRes(DVP, 1280 / 2, 720 / 2);
     // 配置 TH
     DVP_VP_SetThreshold(DVP, 0x40, 0x80);
+}
+
+#endif
+
+#ifdef CYBER_DVTC
+
+#define DEMO_LCD
+
+#ifdef DEMO_HDMI
+
+void demo_hdmi(void)
+{
+}
+
+#endif // DEMO_HDMI
+
+#ifdef DEMO_LCD
+
+#include "lcd.h"
+#include "dvtc.h"
+
+void demo_lcd(void)
+{
+    /* DVTC
+       DVTC仅使用一个图层，如果要使用双图层则需使用DMA2D的前景和背景来实现
+       仅存储的有1帧图像
+    */
+    LCD_DVTC_Init();
+    /* 使能DVTC */
+    DVTC_Cmd(ENABLE);
+
+    // uint16_t offset = 0;
+    // while (1)
+    // {
+    //     printf("offset: %d\r\n", offset);
+    //     uint16_t *ptr = &Framebuffer[0][0];
+    //     for (uint32_t y = 0; y < DISPY; y++)
+    //     {
+    //         uint16_t c = (((y + offset) & 0x1F) << 6);
+    //         for (uint32_t x = 0; x < DISPX; x++)
+    //         {
+    //             *ptr = ((uint16_t)(x & 0x1F)) + c;
+    //             ptr++;
+    //         }
+    //     }
+    //     offset += 4;
+    // }
+    const uint16_t colors[8] = {
+        0xFFFF, 0xFFE0, 0x07FF, 0x07E0,
+        0xF81F, 0xF800, 0x001F, 0x0000
+    };
+    uint16_t *ptr = &Framebuffer[0][0];
+    for (uint32_t y = 0; y < DISPY; y++)
+        for (uint32_t x = 0; x < DISPX; x++)
+            *ptr++ = colors[(x * 8) / DISPX];
+}
+#endif // DEMO_LCD
+
+void demo_DVTC(void)
+{
+#ifdef DEMO_HDMI
+    demo_hdmi();
+#endif
+#ifdef DEMO_LCD
+    demo_lcd();
+#endif
 }
 
 #endif

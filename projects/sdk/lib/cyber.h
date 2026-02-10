@@ -83,6 +83,20 @@ typedef enum{ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 #endif
 
 /*!< APB */
+#ifdef CYBER_AFIO
+/*!< AFIO */
+#include "afio.h"
+#define AFIO_BASE (APBPERIPH_BASE + 0xd0000)
+#define AFIO ((AFIO_TypeDef *)AFIO_BASE) // 0xF00d0000
+#endif
+
+#ifdef CYBER_EXTI
+/*!< EXTI */
+#include "exti.h"
+#define EXTI_BASE (APBPERIPH_BASE + 0xe0000)
+#define EXTI ((EXTI_TypeDef *)EXTI_BASE) // 0xF00e0000
+#endif
+
 #ifdef CYBER_GPIO
 /*!< GPIO */
 #include "gpio.h"
@@ -98,7 +112,6 @@ typedef enum{ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 #ifdef CYBER_USART
 /*!< USART */
 #include "usart.h"
-#include "std.h"
 #define UART_SAMPLE_PER_BAUD 5
 #define USART1_BASE (APBPERIPH_BASE + 0x10000)
 #define USART2_BASE (APBPERIPH_BASE + 0x11000)
@@ -153,7 +166,18 @@ typedef enum{ERROR = 0, SUCCESS = !ERROR} ErrorStatus;
 /*!< SYSTICK */
 #include "systick.h"
 #define SysTick_BASE (APBPERIPH_BASE + 0x60000)
-#define SysTick ((SysTick_Type *)SysTick_BASE) // 0xF0060000
+#define SysTick ((SysTick_TypeDef *)SysTick_BASE) // 0xF0060000
+#endif
+
+#ifdef CYBER_DVTC
+/*!< DVTC */
+#include "dvtc.h"
+#define DVTC_BASE (APBPERIPH_BASE + 0x70000)
+#define DVTC_Layer1_BASE (DVTC_BASE + 0x84)
+#define DVTC_Layer2_BASE (DVTC_BASE + 0x104)
+#define DVTC ((DVTC_TypeDef *)DVTC_BASE) // 0xF0070000
+#define DVTC_Layer1 ((DVTC_Layer_TypeDef *)DVTC_Layer1_BASE)
+#define DVTC_Layer2 ((DVTC_Layer_TypeDef *)DVTC_Layer2_BASE)
 #endif
 
 /* Exported macro ------------------------------------------------------------*/

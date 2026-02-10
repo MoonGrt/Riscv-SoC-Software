@@ -3,6 +3,7 @@
 #include <rthw.h>
 #include "rtconfig.h"
 #include "cyber.h"
+#include "std.h"
 #include "hw_timer.h"
 
 /* 线程控制块定义 */

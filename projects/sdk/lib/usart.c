@@ -136,7 +136,8 @@ void USART_Init(USART_TypeDef *USARTx, USART_InitTypeDef *USART_InitStruct)
 
     /*---------------------------- USART BRR Configuration -----------------------*/
     /* Configure the USART Baud Rate -------------------------------------------*/
-    integerdivider = CORE_HZ / UART_SAMPLE_PER_BAUD / USART_InitStruct->USART_BaudRate;
+    // integerdivider = CORE_HZ / UART_SAMPLE_PER_BAUD / USART_InitStruct->USART_BaudRate;
+    integerdivider = 16 - 1;
     tmpreg = integerdivider << 4;
     USARTx->BRR = (uint16_t)tmpreg;
 

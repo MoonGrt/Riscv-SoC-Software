@@ -5,6 +5,7 @@
 #include <dfs.h>
 #include "rtconfig.h"
 #include "cyber.h"
+#include "std.h"
 #include "hw_timer.h"
 
 /* USART 初始化 */

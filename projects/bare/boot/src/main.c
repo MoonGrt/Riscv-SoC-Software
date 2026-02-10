@@ -1,4 +1,5 @@
-#include "CYBER.h"
+#include "cyber.h"
+#include "std.h"
 
 // 函数声明
 void demo_USART(void);
