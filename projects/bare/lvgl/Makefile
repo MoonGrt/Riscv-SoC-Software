@@ -4,14 +4,16 @@
 # Project config
 ######################################
 
-PROJ_NAME := lvgl
-OBJDIR    := build
-MEMSIZE   := 65536
+PROJNAME := lvgl
+OBJDIR   := build
+MEMSIZE  := 65536
 
-DEBUG     ?= yes
-BENCH     ?= no
-FUNC_OPT  ?= yes
-MULDIV    ?= yes
+DEBUG    ?= yes
+BENCH    ?= no
+FUNCOPT  ?= yes
+MULDIV   ?= yes
+STDLIB   ?= no
+MATHLIB  ?= no
 
 ######################################
 # Directory layout

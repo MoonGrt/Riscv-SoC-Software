@@ -16,8 +16,17 @@ void demo_DVTC(void);
 void led_flow(void);
 void led_breathe(void);
 
+#define SPILCD
+#ifdef SPILCD
+#include "st7789_soft.h"
+void demo_ST7789_SOFT(void);
+#include "st7789_hard.h"
+void demo_ST7789_HARD(void);
+#endif
+
 void main()
 {
+    // delay_init();
     // demo_GPIO();
     // demo_EXTI();
     // demo_SysTick();
@@ -33,6 +42,9 @@ void main()
 
     // led_flow();
     // led_breathe();
+
+    // demo_ST7789_SOFT();
+    // demo_ST7789_HARD();
 }
 
 uint8_t Serial_RxData; // 定义串口接收的数据变量
@@ -53,6 +65,18 @@ void irqCallback()
     }
 #endif
 
+#ifdef CYBER_EXTI
+    if (EXTI_GetITStatus(EXTI_Line0) == SET) // 判断是否是外部中断14号线触发的中断
+    {
+        /*如果出现数据乱跳的现象，可再次判断引脚电平，以避免抖动*/
+        if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_0) == 0)
+            GPIO_SetBits(GPIOA, GPIO_Pin_0);
+        EXTI_ClearITPendingBit(EXTI_Line0); // 清除外部中断0号线的中断标志位
+                                            // 中断标志位必须清除
+                                            // 否则中断将连续不断地触发，导致主程序卡死
+    }
+#endif
+
 #ifdef CYBER_TIM
     /*!< TIM */
     if (TIM_GetITStatus(TIM1, TIM_IT_Update) == SET) // 判断是否是TIM2的更新事件触发的中断
@@ -61,6 +85,14 @@ void irqCallback()
                                                     // 中断标志位必须清除
                                                     // 否则中断将连续不断地触发，导致主程序卡死
         USART_SendData(USART1, 'A');                // not "A"
+    }
+#endif
+
+#ifdef CYBER_SPI
+    /*!< SPI */
+    if (SPI_I2S_GetITStatus(SPI1, SPI_I2S_IT_RXNE) == SET) // 判断是否是SPI1的接收事件触发的中断
+    {
+        Serial_RxData = SPI_I2S_ReceiveData(SPI1); // 读取数据寄存器，存放在接收的数据变量
     }
 #endif
 }
@@ -146,6 +178,47 @@ void led_flow()
         GPIO_Write(GPIOA, ~0x0008); // 0000 0000 0000 1000，PA3引脚为低电平，其他引脚均为高电平
         delay_s(1);
     }
+}
+#endif
+
+#ifdef CYBER_EXTI
+void demo_EXTI(void)
+{
+    /*GPIO初始化*/
+    GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOB, &GPIO_InitStructure); // 将PB0引脚初始化为上拉输入
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+    GPIO_Init(GPIOA, &GPIO_InitStructure); // 将PA0引脚初始化为推挽输出
+
+    /*AFIO选择中断引脚*/
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource0); // 将外部中断的0号线映射到GPIOB，即选择PB0为外部中断引脚
+
+    /*EXTI初始化*/
+    EXTI_InitTypeDef EXTI_InitStructure;                    // 定义结构体变量
+    EXTI_InitStructure.EXTI_Line = EXTI_Line0;              // 选择配置外部中断的14号线
+    EXTI_InitStructure.EXTI_LineCmd = ENABLE;               // 指定外部中断线使能
+    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;     // 指定外部中断线为中断模式
+    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling; // 指定外部中断线为下降沿触发
+    EXTI_Init(&EXTI_InitStructure);                         // 将结构体变量交给EXTI_Init，配置EXTI外设
+
+    // /*NVIC中断分组*/
+    // NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); // 配置NVIC为分组2
+    //                                                 // 即抢占优先级范围：0~3，响应优先级范围：0~3
+    //                                                 // 此分组配置在整个工程中仅需调用一次
+    //                                                 // 若有多个中断，可以把此代码放在main函数内，while循环之前
+    //                                                 // 若调用多次配置分组的代码，则后执行的配置会覆盖先执行的配置
+
+    // /*NVIC配置*/
+    // NVIC_InitTypeDef NVIC_InitStructure;                      // 定义结构体变量
+    // NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;      // 选择配置NVIC的EXTI15_10线
+    // NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;           // 指定NVIC线路使能
+    // NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; // 指定NVIC线路的抢占优先级为1
+    // NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;        // 指定NVIC线路的响应优先级为1
+    // NVIC_Init(&NVIC_InitStructure);                           // 将结构体变量交给NVIC_Init，配置NVIC外设
 }
 #endif
 
@@ -360,14 +433,20 @@ void demo_SPI(void)
     SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;                         // SPI相位，选择第一个时钟边沿采样，极性和相位决定选择SPI模式0
     SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;                            // NSS，选择由软件控制
     SPI_InitStructure.SPI_CRCPolynomial = 7;                             // CRC多项式，暂时用不到，给默认值7
-    SPI_Init(SPI1, &SPI_InitStructure);                                  // 将结构体变量交给SPI_Init，配置SPI1
+#ifdef SPI_IRQ
+    /*SPI中断配置*/
+    SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_RXNE, ENABLE); // 开启串口接收数据的中断
+#endif
 
     /*SPI使能*/
     SPI_Cmd(SPI1, ENABLE); // 使能SPI1，开始运行
-    /*设置默认电平*/
-    GPIO_WriteBit(GPIOA, GPIO_Pin_4, (BitAction)1); // SS默认高电平
+#ifdef SPI_IRQ
+    /*SPI发送*/
+    SPI_I2S_SendData(SPI1, 0x36);
+#else
     /*SPI交换数据*/
-    SPI_SwapByte(0xbb);
+    SPI_SwapByte(0x36);
+#endif
 }
 #endif
 
@@ -580,6 +659,59 @@ void demo_DVP(void)
     // DVP_VP_SetOutRes(DVP, 1280 / 2, 720 / 2);
     // 配置 TH
     DVP_VP_SetThreshold(DVP, 0x40, 0x80);
+}
+
+#endif
+
+#ifdef SPILCD
+void ST7789_SOFT_Fill_ColorBar(void)
+{
+    for (uint16_t i = 0; i < 32400; i++) // 135 * 240
+    {
+        uint16_t pixel;
+        if (i >= 21600)
+            pixel = 0x001F; // 0xF800
+        else if (i >= 10800)
+            pixel = 0xF800; // 0x07E0
+        else
+            pixel = 0x07E0; // 0x001F
+        ST7789_SOFT_WriteData(pixel >> 8);
+        ST7789_SOFT_WriteData(pixel & 0xFF);
+    }
+}
+
+void demo_ST7789_SOFT()
+{
+    delay_init();
+    demo_USART();
+    ST7789_SOFT_GPIO_Init();     // 初始化 ST7789_SOFT 引脚
+    ST7789_SOFT_Init();          // 初始化 ST7789_SOFT 控制器
+    ST7789_SOFT_Fill_ColorBar(); // 显示彩条
+}
+
+void ST7789_HARD_Fill_ColorBar(void)
+{
+    for (uint16_t i = 0; i < 32400; i++) // 135 * 240
+    {
+        uint16_t pixel;
+        if (i >= 21600)
+            pixel = 0x001F; // 0xF800
+        else if (i >= 10800)
+            pixel = 0xF800; // 0x07E0
+        else
+            pixel = 0x07E0; // 0x001F
+        ST7789_HARD_WriteData(pixel >> 8);
+        ST7789_HARD_WriteData(pixel & 0xFF);
+    }
+}
+
+void demo_ST7789_HARD()
+{
+    delay_init();
+    demo_USART();
+    ST7789_HARD_GPIO_Init();     // 初始化 ST7789_HARD 引脚
+    ST7789_HARD_Init();          // 初始化 ST7789_HARD 控制器
+    ST7789_HARD_Fill_ColorBar(); // 显示彩条
 }
 
 #endif

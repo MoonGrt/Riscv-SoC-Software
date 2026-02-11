@@ -51,17 +51,25 @@ ifeq ($(BENCH), yes)
     CFLAGS += -fno-inline
 endif
 
-ifeq ($(FUNC_OPT), yes)
+ifeq ($(FUNCOPT), yes)
     CFLAGS += -ffunction-sections -fdata-sections
     LDFLAGS += -Wl,--gc-sections
 else
     CFLAGS += -fno-function-sections -fno-data-sections
 endif
 
+ifeq ($(STDLIB), no)
+    LDFLAGS += -nostdlib
+endif
+
+ifeq ($(MATHLIB), yes)
+    LDFLAGS += -lm
+endif
+
 CFLAGS  += -MD -fstrict-volatile-bitfields
 LDFLAGS += -nostartfiles -lgcc -mcmodel=medany -ffreestanding\
            -Wl,-Bstatic,-T,$(LINKER) \
-           -Wl,-Map,$(OBJDIR)/$(PROJ_NAME).map,--print-memory-usage
+           -Wl,-Map,$(OBJDIR)/$(PROJNAME).map,--print-memory-usage
 
 ######################################
 # Targets
@@ -69,20 +77,20 @@ LDFLAGS += -nostartfiles -lgcc -mcmodel=medany -ffreestanding\
 
 .PHONY: all
 
-all: $(OBJDIR)/$(PROJ_NAME).elf \
-     $(OBJDIR)/$(PROJ_NAME).hex \
-     $(OBJDIR)/$(PROJ_NAME).asm \
-     $(OBJDIR)/$(PROJ_NAME).v
-	@echo "\nBuild successful for project: $(PROJ_NAME)\n"
-	@echo "Output: $(shell pwd)/$(OBJDIR)/$(PROJ_NAME).elf"
+all: $(OBJDIR)/$(PROJNAME).elf \
+     $(OBJDIR)/$(PROJNAME).hex \
+     $(OBJDIR)/$(PROJNAME).asm \
+     $(OBJDIR)/$(PROJNAME).v
+	@echo "\nBuild successful for project: $(PROJNAME)\n"
+	@echo "Output: $(shell pwd)/$(OBJDIR)/$(PROJNAME).elf"
 
 MEMDIR   := $(OBJDIR)/mem
 MEMTYPE  := bin
 EXTRTEMP := true
-mem: $(OBJDIR)/$(PROJ_NAME).hex
+mem: $(OBJDIR)/$(PROJNAME).hex
 	@echo "\nGenerating .mem from .hex..."
 	mkdir -p $(MEMDIR)
-	@$(SDK)/InstExtractor.sh $< $(MEMDIR)/$(PROJ_NAME) $(MEMSIZE) $(MEMTYPE) $(EXTRTEMP)
+	@$(SDK)/InstExtractor.sh $< $(MEMDIR)/$(PROJNAME) $(MEMSIZE) $(MEMTYPE) $(EXTRTEMP)
 
 clean:
 	rm -rf $(OBJDIR)
@@ -96,7 +104,7 @@ $(DIRS):
 # Link
 ######################################
 
-$(OBJDIR)/$(PROJ_NAME).elf: $(OBJS) | $(DIRS)
+$(OBJDIR)/$(PROJNAME).elf: $(OBJS) | $(DIRS)
 	@echo "\n-----------------------------\n"
 	$(RISCV_CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 	@echo "\n-----------------------------\n"

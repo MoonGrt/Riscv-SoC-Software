@@ -4,14 +4,16 @@
 # Project config
 ######################################
 
-PROJ_NAME := blinky
-OBJDIR    := build
-MEMSIZE   := 8192
+PROJNAME := blinky
+OBJDIR   := build
+MEMSIZE  := 8192
 
-DEBUG     ?= yes
-BENCH     ?= no
-FUNC_OPT  ?= yes
-MULDIV    ?= yes
+DEBUG    ?= yes
+BENCH    ?= no
+FUNCOPT  ?= yes
+MULDIV   ?= yes
+STDLIB   ?= yes
+MATHLIB  ?= no
 
 ######################################
 # Directory layout

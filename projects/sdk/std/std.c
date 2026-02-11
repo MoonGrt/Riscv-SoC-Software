@@ -1,30 +1,30 @@
 #include "std.h"
 
-void uart_putchar(char c)
+void putchar(int c)
 {
-    USART_SendData(USART1, c);
+    USART_SendData(UARTPORT, c);
 }
 
 int puts(char *s)
 {
     while (*s)
     {
-        uart_putchar(*s);
+        putchar(*s);
         s++;
     }
-    uart_putchar('\n');
+    putchar('\n');
     return 0;
 }
 
 static void printf_c(int c)
 {
-    uart_putchar(c);
+    putchar(c);
 }
 
 static void printf_s(char *p)
 {
     while (*p)
-        uart_putchar(*(p++));
+        putchar(*(p++));
 }
 
 static void printf_d(int val)

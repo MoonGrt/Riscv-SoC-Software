@@ -4,14 +4,16 @@
 # Project config
 ######################################
 
-PROJ_NAME := finish
-OBJDIR    := build
-MEMSIZE   := 16384
+PROJNAME := finish
+OBJDIR   := build
+MEMSIZE  := 8192
 
-DEBUG     ?= yes
-BENCH     ?= no
-FUNC_OPT  ?= yes
-MULDIV    ?= yes
+DEBUG    ?= yes
+BENCH    ?= no
+FUNCOPT  ?= yes
+MULDIV   ?= yes
+STDLIB   ?= no
+MATHLIB  ?= no
 
 ######################################
 # Directory layout

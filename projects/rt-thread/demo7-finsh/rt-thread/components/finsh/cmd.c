@@ -40,6 +40,13 @@ long hello(void)
 }
 MSH_CMD_EXPORT(hello, say hello world);
 
+static long clear(void)
+{
+    printf("\x1b[2J\x1b[H");
+    return 0;
+}
+MSH_CMD_EXPORT(clear, clear the terminal screen);
+
 /* 列出所有命令 */
 long help(void)
 {
